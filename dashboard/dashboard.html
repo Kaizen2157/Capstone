@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="dashboard.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
+    <title>Dashboard</title>
+</head>
+<body>
+
+<nav>
+    <div class="logo">
+      <a href="home-dashboard.html">
+          <img src="logo-removebg-preview.png" alt="loading...">
+          <p>ParkWise</p>
+      </a>
+    </div>
+
+    <div class="btn">
+
+        <div class="user-dropdown">
+
+            <div class="drop">
+                <a href="home-dashboard.html" target="_self">
+                    Reserve
+                </a>
+                <a href="docs.html" target="_blank">Docs</a>
+                <p id="username-display">User</p>
+            </div>
+
+            <div class="dropdown-menu" id="dropdown-menu">
+
+              <a href="#" id="toggle-dark">Dark Mode</a>
+              <a href="javascript:void(0);" onclick="confirmLogout()"><i class='bx bx-exit'></i>Logout</a>
+
+            </div>
+
+        </div>
+        
+    </div>
+</nav>
+
+
+
+<!-- // If user is not logged in, redirect to sign-in page
+if (!isset($_SESSION['user'])) {
+    header("Location: sign-in.html");
+    exit();
+}
+
+// Prevent page caching
+header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
+header("Pragma: no-cache"); // HTTP 1.0
+header("Expires: 0"); // Proxies -->
+
+
+<script src="script.js"></script>
+
+</body>
+</html>

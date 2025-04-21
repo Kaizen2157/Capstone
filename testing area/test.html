@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="test.css">
+    <title>Testing</title>
+</head>
+<body>
+    
+    <form action="test.php" method="post">
+        <div class="parking-grid">
+            <div id="slot-1" class="slot available"></div>
+            <div id="slot-2" class="slot available"></div>
+            <div id="slot-3" class="slot available"></div>
+            <!-- Additional slots -->
+        </div>
+    </form>
+
+    <div class="btn">
+        <li class="dropdown">
+            <a href="javascript:void(0);" class="dropbtn" onclick="toggleDropdown()">Profile</a>
+            <div class="dropdown-content" id="profileDropdown">
+                <a href="javascript:void(0);" onclick="toggleDarkMode()">Dark Mode</a>
+                <a href="javascript:void(0);" onclick="confirmLogout()">Logout</a>
+            </div>
+        </li>
+    </div>
+
+    <div class="parking-lot">
+        <div class="slot available" id="slot-1" onclick="reserveSlot(1)">1</div>
+        <div class="slot occupied" id="slot-2">2</div>
+        <div class="slot available" id="slot-3" onclick="reserveSlot(3)">3</div>
+    </div>
+    
+    
+    
+    
+
+    <script>
+
+// Polling function to check slot statuses every 5 seconds
+setInterval(fetchSlotStatuses, 5000);
+
+function fetchSlotStatuses() {
+    fetch('getSlotsStatus.php')
+        .then(response => response.json())
+        .then(data => {
+            data.forEach(slot => {
+                const slotElement = document.getElementById(`slot-${slot.slot_id}`);
+                if (slot.status === 'reserved') {
+                    slotElement.classList.remove('available');
+                    slotElement.classList.add('reserved');
+                } else {
+                    slotElement.classList.remove('reserved');
+                    slotElement.classList.add('available');
+                }
+            });
+        })
+        .catch(error => console.error('Error fetching slot statuses:', error));
+}
+
+function confirmLogout() {
+    const confirmAction = confirm("Are you sure you want to log out?");
+    if (confirmAction) {
+        window.location.href = 'test.html'; // Redirect to the logout script
+    }
+}
+
+setInterval(() => {
+    fetch("getSlotStatus.php")
+    .then(response => response.json())
+    .then(data => {
+        data.forEach(slot => {
+            const slotElement = document.getElementById(`slot-${slot.slot_id}`);
+            slotElement.className = slot.status; // Apply 'available' or 'occupied' class
+        });
+    });
+}, 5000);
+
+
+
+    </script>
+
+</body>
+</html>
+

@@ -1,0 +1,278 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+  }
+
+body{
+    user-select: none; /* Disable text selection */
+    -webkit-user-select: none; /* Safari */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /*for hcrome*/
+    cursor: default;
+  }
+
+.all {
+    min-height: 100vh;
+    width: 100%;
+    background-color: black;
+    height: 100vh;
+}
+
+.fade-in{
+    opacity: 1;
+}
+
+  .all::before {
+    content: "";
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: url("pexels-igoroc-842794.jpg"), #000;
+    background-position: center;
+    background-size: cover;
+    filter:grayscale(40%) blur(5px) brightness(50%);
+  }
+
+.all{
+    width: 100%;
+}
+
+
+nav,footer{
+    position: relative;
+}
+
+nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    transition: all 0.5s ease-in-out;
+}
+
+nav .logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+}
+
+nav .logo i, .footer .logo i{
+    font-size: 60px;
+    color: rgb(87, 220, 87);
+}
+
+nav .logo p, .footer .logo p{
+    font-size: 20px;
+}
+
+nav .login a{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+a{
+    text-decoration: none;
+}
+
+nav .login a i{
+    color: #e84949;
+    font-size: 60px;
+}
+
+nav .login a button{
+    padding: 15px 30px;
+    border: none;
+    border-radius: 15px;
+    font-size: 16px;
+    font-weight:800;
+    cursor: pointer;
+    background-color: rgb(235, 200, 62);
+    color: #1d1e1e;
+    transition: all 0.2s ease;
+}
+
+nav .login a button:hover{
+    background-color: #6c6f6f;
+}
+
+.content{
+    position: relative;
+    color: white;
+    margin: 20vh 30px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 60px;
+    transition: all 0.5s ease-in-out;
+    padding: 10px;
+    width: fit-content;
+}
+
+.content h1{
+    color: #57dc57;
+    width: 60vw;
+    font-size: 50px;
+}
+
+.content p{
+    font-size: 17px;
+    width: 50vw;
+}
+
+
+
+.containers .titee{
+    font-size: 40px;
+    text-align: center;
+    margin-top: 40px;
+}
+
+.containers .tite{
+    position: static;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: auto;
+    padding: 30vh 50px;
+    gap: 30px;
+    height: 100vh;
+    background-color: #fff
+}
+
+.containers .third{
+    display: block;
+}
+
+.containers .first,.containers .second, .containers .third{
+    width: 30vw;
+    height: auto;
+    color: #000;
+    background-color: #e84949;
+    border: none;
+    border-radius: 10px;
+}
+
+.containers h2{
+    font-weight: 700;
+    font-size: 30px;
+    text-align: center;
+    background-color: rgb(235, 200, 62);
+    padding: 15px;
+    color: #000;    border: none;
+    border-radius: 10px 10px 0 0;
+}
+
+
+.containers .platenumber,.containers .session, .containers .time{
+    display: flex;
+    align-items: center;
+    gap: 60px;
+    padding: 20px;
+}
+
+.containers .platenumber i,.containers .session i, .containers .time i{
+    font-size: 35px;
+    font-weight: 600;
+    background-color: white;
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+}
+
+.containers .platenumber .details p:nth-child(1),.containers .session p:nth-child(1), .containers .time p:nth-child(1){
+    font-size: 25px;
+    font-weight: 600;
+    color: rgb(232, 232, 232);
+}
+
+.containers .platenumber .details p:nth-child(2),.containers .session p:nth-child(2), .containers .time p:nth-child(2){
+    font-weight: 700;
+    font-size: 15px;
+    border-bottom: 1px solid rgb(173, 173, 173);
+    width: 100%;
+    padding: 10px;
+    color: #000;
+}
+
+.footer{
+    transition: all 0.5s ease-in-out;
+    height: auto;
+    padding: 50px 80px;
+    background-color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20rem;
+}
+
+.footer .logo{
+    display: flex;
+    align-items: center;
+}
+
+.footer .logo p{
+    font-weight: 600;
+    color: white;
+}
+
+.footer .more{
+    display: flex;
+    align-items: center;
+    gap: 130px;
+}
+
+.footer .more .developers, .footer .more .contact{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.footer .more .developers p{
+    color: white;
+}
+
+.footer .more .developers p, .footer .more .contact p{
+    font-size: 20px;
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+
+.footer .more .developers .emails, .footer .more .contact .number{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgb(235, 200, 62);
+    padding: 7px;
+}
+
+.footer .more .developers .emails a, .footer .more .contact .number p{
+    font-size: 16px;
+    color: #000;
+}
+
+.footer .more .developers .emails .bxs-envelope{
+    color: black;
+    font-size: 18px;
+}
+
+.footer .more .contact{
+    display: flex;
+    align-items: center;
+    color: white;
+    flex-direction: column;
+}
+
+a{
+    text-decoration: none;
+}

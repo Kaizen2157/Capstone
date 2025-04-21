@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+  <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
+  <link rel="stylesheet" href="login.css">
+</head>
+<body>
+
+  <nav>
+    <div class="logo">
+      <!-- <a href="/frontend/home/index.html"> -->
+          <img src="logo-removebg-preview.png" alt="loading...">
+          <p>ParkWise</p>
+      </a>
+  </div>
+    <div class="btn">
+        <a href="../sign-in/sign-in.html" target="_self">Register</a> <!--registration page-->
+        <a class="selected" href="login.html">Log in</a>   <!--login page-->
+    </div>
+</nav>
+
+<div class="side-by-side">
+
+  <div class="left">
+
+      <div class="wrapper">
+
+        <form action="login.php" method="POST"> 
+
+          <h2>Login</h2>
+
+          <div class="input-field">
+
+            <input type="text" name="email" required>
+            <label>Username</label>
+
+          </div>
+
+          <div class="input-field">
+
+            <input type="password" name="password" required id="password">
+
+            <label>Password</label>
+
+          </div>
+
+          <div class="forget">
+
+            <label for="remember">
+
+              <span id="togglePassword">👁️</span>
+              <p>Show Password</p>
+
+            </label>
+
+            <a href="forgot.html" target="_self">Forgot password?</a>
+
+          </div>
+
+          <button type="submit">Log In</button>
+
+        </form>
+        
+        
+      </div>
+
+  </div>
+
+  <div class="right">
+
+  </div>
+
+</div>
+
+  
+
+  <script src="script.js"></script>
+</body>
+</html>

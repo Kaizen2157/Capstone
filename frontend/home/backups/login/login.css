@@ -1,0 +1,227 @@
+@import url("https://fonts.googleapis.com/css2?family=Open+Sans:wght@200;300;400;500;600;700&display=swap");
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Open Sans", sans-serif;
+}
+
+body, .side-by-side .left .wrapper form .forget span {
+  user-select: none; /* Disable text selection */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /*for hcrome*/
+}
+
+body {
+  cursor: default; /* Optional: Sets the default cursor */
+}
+
+
+
+nav{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.5s ease-in-out;
+  border-bottom: 2px solid #ccc;
+  box-shadow: 0 0 20px 0 rgb(226, 226, 226);
+  padding: 0 20px 0 20px;
+}
+
+nav .logo{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: black;
+  font-weight: 600;
+  padding: 5px 0 5px 0;
+  cursor: pointer;
+}
+
+nav .logo img{
+  object-fit: cover;
+  width: 8vw;
+  padding: 0;
+  margin: 0;
+  height: 10vh;
+}
+
+nav .logo a{
+  display: flex;
+  align-items: center;
+  color: #19384a;
+  text-decoration: none;
+}
+
+nav .logo p{
+  font-size: 20px;
+}
+
+nav .btn{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+nav .btn i{
+  color: #e84949;
+  font-size: 40px;
+}
+
+nav .btn {
+  gap: 10px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+nav .btn a{
+  text-decoration: none;
+  color: black;
+  font-weight: 600;
+  font-size: 16px;
+  transition: all 0.1s ease-in;
+  padding: 10px 10px 10px 10px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 10vw;
+  border: 1px solid rgb(226, 226, 226);
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+nav .btn a:nth-child(2){
+  background-color: #19384a;
+  color: white;
+}
+
+
+nav .btn a:nth-child(1):hover{
+  border-bottom: 5px solid #19384a;
+  border-radius: 5px;
+}
+
+
+
+.side-by-side{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 50px;
+  min-height: 88.2vh;
+  background-color: #19384a84;
+}
+
+.side-by-side .left .wrapper {
+  width: 400px;
+  border-radius: 8px;
+  padding: 30px;
+  text-align: center;
+  background-color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.side-by-side .left .wrapper form {
+  display: flex;
+  flex-direction: column;
+}
+
+.side-by-side .left .wrapper form h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+  color: #000;
+}
+
+.side-by-side .left .wrapper form .input-field {
+  position: relative;
+  border-bottom: 2px solid #ccc;
+  margin: 15px 0;
+}
+.side-by-side .left .wrapper form .input-field label {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  color: #000;
+  font-size: 16px;
+  pointer-events: none;
+  transition: 0.15s ease;
+}
+
+.side-by-side .left .wrapper form .input-field input {
+  width: 100%;
+  height: 40px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  color: #000;
+}
+
+.side-by-side .left .wrapper form .input-field input:focus~label,
+.side-by-side .left .wrapper form .input-field input:valid~label {
+  font-size: 0.8rem;
+  top: 10px;
+  transform: translateY(-120%);
+}
+
+.side-by-side .left .wrapper form .forget {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 25px 0 35px 0;
+  color: #000;
+}
+
+.side-by-side .left .wrapper form .forget a{
+  color: #000;
+}
+
+.side-by-side .left .wrapper form #remember {
+  accent-color: #000;
+}
+
+.side-by-side .left .wrapper form .forget label {
+  display: flex;
+  align-items: center;
+}
+
+.side-by-side .left .wrapper form .forget label p {
+  margin-left: 8px;
+}
+
+.side-by-side .left .wrapper form .forget span{
+    cursor: pointer;
+}
+
+.wrapper a {
+  color: #efefef;
+  text-decoration: none;
+}
+.wrapper a:hover {
+  text-decoration: underline;
+}
+.side-by-side .left .wrapper form button {
+  background: #ffc62a;
+  color: #000;
+  font-weight: 600;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 16px;
+  border: 2px solid transparent;
+  transition: 0.3s ease;
+}
+.side-by-side .left .wrapper form button:hover {
+  background-color: #19384a;
+  color: #fff;
+}

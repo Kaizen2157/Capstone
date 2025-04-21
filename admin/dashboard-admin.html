@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="dashboard-admin.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="shortcut icon" href="/logo-removebg-preview.png" type="image/x-icon">
+    <title>Dashboard</title>
+</head>
+<body>
+
+<nav>
+    <div class="logo">
+      <a href="../admin/dashboard-admin.html">
+          <img src="/logo-removebg-preview.png" alt="loading...">
+          <p>ParkWise</p>
+      </a>
+    </div>
+
+    <div class="btn">
+
+        <li class="dropdown">
+            <a href="javascript:void(0);" class="dropbtn" onclick="toggleDropdown()">
+                <i class='bx bx-menu dropbtn'></i>
+            </a>
+            <div class="dropdown-content" id="profileDropdown">
+                <a href="javascript:void(0);" onclick="toggleDarkMode()">
+                    <span id="modeIcon" class="light-icon">🌞</span>
+                    <span id="modeIcon" class="dark-icon" style="display: none;">🌜</span>
+                    <span id="modeText">Dark Mode</span>
+                </a>
+                <a href="javascript:void(0);" onclick="confirmLogout()"><i class='bx bx-exit'></i>Logout</a>
+            </div>
+        </li>
+    </div>
+</nav>
+
+<script src="dashboard-script.js"></script>
+
+</body>
+</html>

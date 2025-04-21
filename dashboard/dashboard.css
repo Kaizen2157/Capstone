@@ -1,0 +1,194 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Open Sans", sans-serif;
+  }
+
+  body{
+    background-color: #faf5ef;
+  }
+
+    .user-dropdown a{
+        color: #000;
+        text-decoration: none;
+    }
+
+    .user-dropdown{
+        display: flex;
+        align-items: center;
+    }
+
+    .user-dropdown .drop{
+        display: flex;
+        align-content: center;
+        gap: 25px;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+  .user-dropdown {
+    position: relative;
+    display: inline-block;
+    cursor: pointer;
+    font-weight: bold;
+    color: #333;
+  }
+  
+  #username-display::after {
+    content: " ▼";
+    font-size: 0.8em;
+  }
+  
+  .dropdown-menu {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    min-width: 140px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    z-index: 999;
+  }
+  
+  .dropdown-menu a {
+    display: block;
+    padding: 10px;
+    color: #333;
+    text-decoration: none;
+  }
+  
+  .dropdown-menu a:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .dropdown-menu.show {
+    display: block;
+  }
+  
+
+  nav{
+    display: flex;
+    padding: 0 25px;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.5s ease-in-out;
+    border-bottom: 2px solid #ccc;
+    box-shadow: 0 0 20px 0 rgb(226, 226, 226);
+}
+
+nav .logo{
+    display: flex;
+    align-items: center;
+    padding: 10px 0 10px 15px;
+    cursor: pointer;
+}
+
+nav .logo img{
+    object-fit: cover;
+    width: 8vw;
+    height: 10vh;
+}
+
+nav .logo a{
+    display: flex;
+    align-items: center;
+    color: #19384a;
+    text-decoration: none;
+}
+
+nav .logo p{
+    font-size: 20px;
+    font-weight: 600;
+}
+
+nav .btn{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+}
+
+nav .btn .dropdown{
+    width: 100%;
+}
+
+nav .btn .dropdown-content a{
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.1s ease-in;
+    /* width: 0%;
+    overflow: hidden; */
+    padding: 10px;
+    display: flex;
+    text-align: center;
+    text-decoration: none;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgb(226, 226, 226);
+    border-radius: 5px;
+}
+
+nav .btn .dropdown-content a:hover{
+    background-color: #f1f1f1;
+}
+
+nav .btn .dropdown .dropbtn i{
+    color: black;
+    font-size: 2.5rem;
+    font-weight: 100;
+    cursor: pointer;
+    text-decoration: none;
+    width: max-content;
+    color: black;
+    padding: 10px;
+    margin-right: 80px;
+    width: max-content;
+}
+
+nav .btn .areas a{
+    font-size: 16px;
+    font-weight: 600;
+    color: black;
+}
+
+nav .btn .dropdown .dropdown-content a{
+    display: flex;
+    align-items: center;
+    text-align: center;
+    gap: 5px;
+}
+
+nav .btn .dropdown .dropdown-content a>i{
+    font-size: 16px;
+    font-weight: 500;
+}
+
+nav .btn .dropdown .dropdown-content{
+    display: none; /* Hidden by default */
+    position: absolute;
+    background-color: #fff;
+    color: #000;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+    align-items: center;
+    justify-content: center;
+}
+
+nav .btn .dropdown .dropdown-content a{
+    width: 100%;
+}
+
+nav .btn li{
+    position: relative;
+    list-style-type: none;
+}
+
+/* Show Dropdown on Click */
+nav .btn .dropdown .dropdown-content.show {
+    display: block;
+}

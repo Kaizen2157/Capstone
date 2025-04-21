@@ -1,0 +1,50 @@
+.parking-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 100px);
+    gap: 10px;
+}
+
+.slot {
+    width: 80px;
+    height: 80px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.available {
+    background-color: green;
+}
+
+.reserved {
+    background-color: red;
+}
+
+.parking-lot {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr); /* Adjust based on layout */
+    gap: 10px;
+}
+
+.slot {
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    line-height: 80px;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.available {
+    background-color: green;
+    color: white;
+}
+
+.occupied {
+    background-color: red;
+    color: white;
+    pointer-events: none; /* Prevents clicking */
+}

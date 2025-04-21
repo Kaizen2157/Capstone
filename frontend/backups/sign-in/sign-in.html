@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="sign-in.css">
+    <title>Registration</title>
+</head>
+<body>
+
+    <nav>
+        <div class="logo">
+            <!-- <a href="frontend/home/index.html"> -->
+                <img src="logo-removebg-preview.png" alt="loading...">
+                <p>ParkWise</p>
+            <!-- </a> -->
+        </div>
+        <div class="btn">
+            <a class="selected" href="sign-in.html" >Register</a> <!--registration page-->
+            <a href="../login/login.html" target="_self">Log in</a>   <!--login page-->
+        </div>
+    </nav>
+
+    <div class="side-by-side">
+
+        <div class="left">
+      
+            <div class="wrapper">
+      
+              <form id="registerForm" action="sign-in.php" method="POST"> <!--database for registration-->
+      
+                <h2>Register</h2>
+                <div class="tanginamo">
+                    <div class="input-field">
+                        <input type="text" name="first_name" required>
+                        <label>First name</label>
+                    </div>
+    
+                    <div class="input-field">
+                        <input type="text" name="last_name" required>
+                        <label>Last name</label>
+                    </div>
+                </div>
+      
+                <div class="input-field">
+                  <input autocomplete="off" type="text" name="email" required>
+                  <label >Email Address</label>
+                </div>
+      
+                <div class="input-field">
+                  <input type="password" name="password" required id="password">
+                  <label>Enter password</label>
+                </div>
+
+                <!--look if they are match.-->
+
+                <div class="input-field">
+                    <input type="password" required id="confirmPassword">
+                    <label>Confirm password</label>
+                </div>
+
+                <p id="error" style="color: red; display: none; font-size: 15px; padding: 10px 0;">Passwords do not match.</p>
+      
+                <!-- <button type="submit">Log In</button> -->
+      
+                <input type="submit" value="Register">
+
+              </form>
+              
+            </div>
+      
+        </div>
+      
+        <div class="right">
+      
+        </div>
+      
+      </div>
+
+      <script src="script.js"></script>
+      <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('registered')) {
+          alert('Registration successful! You can now log in.');
+        }
+      </script>
+      
+
+
+</body>
+</html>

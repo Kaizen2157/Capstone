@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="home-dashboard.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
+    
+    <title>Parking</title>
+</head>
+<body>
+
+<nav>
+
+    <div class="logo">
+      <a href="home-dashboard.html">
+          <img src="logo-removebg-preview.png" alt="loading...">
+          <p>ParkWise</p>
+      </a>
+    </div>
+
+    <div class="btn">
+        <div class="user-dropdown">
+
+            <div class="drop">
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+                <a href="docs.html" target="_blank">Docs</a>
+                <p id="username-display">User</p>
+            </div>
+
+            <div class="dropdown-menu" id="dropdown-menu">
+
+              <a href="#" id="toggle-dark">Dark Mode</a>
+              <a href="logout.php"><i class='bx bx-exit'></i>Logout</a>
+
+            </div>
+        </div>
+    </div>
+
+</nav>
+
+
+    <div class="bookslot">
+
+        <div class="head">
+            <p>
+                BOOK YOUR SLOT
+            </p>
+
+            <div class="hint">
+                <div class="hints">
+                    <i class='bx bxs-car green'></i>
+                    <p>Available</p>
+                </div>
+    
+                <div class="hints">
+                    <i class='bx bxs-car red'></i>
+                    <p>Occupied</p>
+                </div>
+    
+                <div class="hints">
+                    <i class='bx bxs-car grey'></i>
+                    <p>Selected</p>
+                </div>
+            </div>
+
+        </div>
+
+        <form id="booking-form" action="home-dashboard.php" method="post">
+            <div class="book">
+                <div class="slots">
+                    <div class="slotone">
+                        <p class="slot available">1</p>
+                        <p class="slot available">2</p>
+                        <p class="slot available">3</p>
+                    </div>
+                    <span>
+                        <p class="line"></p>
+                        <p class="divider">Parking Slots</p>
+                        <p class="line"></p>
+                    </span>
+                    <div class="slotone">
+                        <p class="slot available">4</p>
+                        <p class="slot available">5</p>
+                        <p class="slot available">6</p>
+                    </div>
+                </div>
+        
+                <div id="booking-details">
+                    <h3>Booking Details</h3>
+                    <div class="details">
+                        <div class="info">
+                            <div class="name">
+                                <label for="first-name">First Name:
+                                    <input type="text" name="first_name" autocomplete="off" id="first-name" required oninput="validateNameInput(this)">
+                                </label>
+                                <label for="last-name">Last Name:
+                                    <input type="text" name="last_name" id="last-name" required autocomplete="off" oninput="validateNameInput(this)">
+                                </label>
+                            </div>
+        
+                            <div class="other">
+                                <label for="contact-number">Contact No:
+                                    <input type="text" name="contact_number" autocomplete="off" id="contact-number" maxlength="11" pattern="\d{11}" required oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                                </label>
+                                <label for="car-plate">Plate No:
+                                    <input type="text" name="car_plate" id="car-plate" required autocomplete="off">
+                                </label>
+                            </div>
+                        </div>
+        
+                        <div class="time">
+                            <span>
+                                <label for="booking-date">Start Date:
+                                    <input type="date" name="start_date" id="booking-date" required>
+                                </label>
+                                <label for="start-time">Start Time:
+                                    <input type="time" name="start_time" id="start-time" required>
+                                </label>
+                            </span>
+        
+                            <span>
+                                <label for="end-date">End Date:
+                                    <input type="date" name="end_date" id="end-date" required>
+                                </label>
+                                <label for="end-time">End Time:
+                                    <input type="time" name="end_time" id="end-time" required>
+                                </label>
+                            </span>
+                        </div>
+        
+                        <div class="confirmation">
+                            <span>
+                                <input type="hidden" name="selected_slot" id="hidden-selected-slot">
+                                <input type="hidden" name="total_cost" id="hidden-total-cost">
+                                <p id="selected-slots">Please select a parking slot</p>
+                                <p id="total-cost"></p>
+                            </span>
+                            <button id="proceed-btn">Confirm Booking</button>
+                            <p id="user-info" style="margin-top: 10px; color: #555;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div id="receipt-popup" style="display: none;">
+        <div class="receipt-box">
+            <h3>e-Receipt</h3>
+            <p id="receipt-user"></p>
+            <p id="receipt-contact"></p>
+            <p id="receipt-slot"></p>
+            <p id="receipt-date"></p>
+            <p id="receipt-time"></p>
+            <p id="receipt-total"></p>
+            <p style="margin-top: 1em;"><em>📸 Screenshot this receipt and show it to the parking marshal to pay for your parking.</em></p>
+            <button onclick="closeReceipt()">Close</button>
+        </div>
+    </div>
+    
+
+
+
+<!-- <footer>
+    <p>
+        © 2025 ParkWise by ParkWise. All rights reserved.
+    </p>
+</footer> -->
+
+<script src="script.js"></script>
+<script>
+    // const today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
+  
+    // fetch(`get-reserved-spot.php?date=${today}`)
+    //   .then(res => res.json())
+    //   .then(reservedSlots => {
+    //     reservedSlots.forEach(slotNum => {
+    //       const slotEl = document.querySelector(`.slot[data-slot-number="${slotNum}"]`);
+    //       if (slotEl) {
+    //         slotEl.classList.remove('available');
+    //         slotEl.classList.add('occupied');
+    //         slotEl.style.backgroundColor = 'red';
+    //       }
+    //     });
+    //   })
+    //   .catch(err => console.error('Failed to load reserved slots:', err));
+  </script>
+  
+
+</body>
+</html>
