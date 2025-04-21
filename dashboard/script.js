@@ -7,6 +7,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Show username from storage
     const username = sessionStorage.getItem('username') || localStorage.getItem('username') || 'User';
     usernameDisplay.textContent = username;
+    // console.log("Username from storage:", username);
+    
+    // sessionStorage.clear();
+    // localStorage.clear();
+    // username = "<?php echo $_SESSION['first_name'] ?? 'User'; ?>";
+    // sessionStorage.setItem('username', username);
+    
+
 
     // Dropdown toggle
     usernameDisplay.addEventListener('click', () => dropdownMenu.classList.toggle('show'));
@@ -32,6 +40,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
+    function validateNameInput(inputField) {
+        const value = inputField.value.trim();
+        if (value === "") {
+            inputField.style.borderColor = "red"; // Highlight in red if the input is empty
+        } else {
+            inputField.style.borderColor = ""; // Remove the red border if input is not empty
+        }
+    }
 
     // Slot click logic
     const slotElements = document.querySelectorAll('.slots .slotone > p');
@@ -77,8 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
             : 'Please fill in your name and contact details';
     }
 
-    // Receipt Logic
-    document.getElementById('proceed-btn').addEventListener('click', (e) => {
+    const proceedBtn = document.getElementById('proceed-btn');
+if (proceedBtn) {
+    proceedBtn.addEventListener('click', (e) => {
         e.preventDefault();
 
         const firstName = document.getElementById('first-name').value.trim();
@@ -150,9 +168,19 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('There was an error processing your booking.');
         });
     });
+}
+
+        
 });
 
 function closeReceipt() {
     document.getElementById('receipt-popup').style.display = 'none';
     window.location.href = 'dashboard.html';
+}
+
+
+function confirmLogout() {
+    if (confirm("Are you sure you want to logout?")) {
+        window.location.href = "logout.php";
+    }
 }

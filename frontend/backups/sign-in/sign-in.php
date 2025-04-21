@@ -1,4 +1,6 @@
 <?php
+session_start();
+
 $host = "localhost";
 $username = "root";
 $password = "";
@@ -38,4 +40,15 @@ if ($stmt->execute()) {
 } else {
     echo "Error: " . $stmt->error;
 }
+
+$_SESSION['user_id'] = $row['id'];
+$_SESSION['user_email'] = $row['email']; 
+
+// echo "<script>
+//     sessionStorage.setItem('username', '" . $row['first_name'] . "');
+//     window.location.href = 'home-dashboard.html';
+// </script>";
+
+
+
 ?>

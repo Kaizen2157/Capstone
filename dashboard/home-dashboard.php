@@ -1,4 +1,6 @@
 <?php
+// file_put_contents('debug.log', print_r($_POST, true));
+
 session_start();
 
 // Check if the user is logged in
@@ -36,12 +38,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $end_time = $_POST['end_time'];
     $price = $_POST['total_cost'];
     $receipt_code = 'RCPT-' . strtoupper(uniqid());
+    $car_plate = $_POST['car_plate'];
+
 
     // Insert reservation for each selected slot
     foreach (explode(',', $selected_slots) as $slot_number) {
         $slot_number = trim($slot_number); // Clean up the slot number
-        $stmt = $conn->prepare("INSERT INTO reservations (user_id, slot_number, start_time, end_time, price, receipt_code) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("issdss", $user_id, $slot_number, $start_time, $end_time, $price, $receipt_code);
+        $stmt = $conn->prepare("INSERT INTO reservations (user_id, car_plate, slot_number, start_time, end_time, price, receipt_code) VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("issssds", $user_id, $car_plate, $slot_number, $start_time, $end_time, $price, $receipt_code);
+
 
         if (!$stmt->execute()) {
             echo json_encode(['success' => false, 'message' => 'Error: ' . $stmt->error]);
@@ -53,4 +58,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->close();
     $conn->close();
 }
+
 ?>
+<!-- <script>
+  sessionStorage.setItem('username', '<?php echo $_SESSION["username"]; ?>');
+  // Optionally, store in localStorage too
+  localStorage.setItem('username', '<?php echo $_SESSION["username"]; ?>');
+  window.location.href = "home-dashboard.html";
+</script> -->

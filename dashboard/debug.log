@@ -1,0 +1,13 @@
+Array
+(
+    [first_name] => joebert
+    [last_name] => regencia
+    [contact_number] => 23213123123
+    [car_plate] => 1231232
+    [start_date] => 2025-04-21
+    [start_time] => 18:56
+    [end_date] => 2025-04-21
+    [end_time] => 19:56
+    [selected_slot] => 3
+    [total_cost] => 40
+)
