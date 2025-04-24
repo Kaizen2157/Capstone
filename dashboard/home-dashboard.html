@@ -107,9 +107,9 @@
                                 <label for="contact-number">Contact No:
                                     <input type="text" name="contact_number" autocomplete="off" id="contact-number" maxlength="11" placeholder="ex: 09XX XXX XXXX" pattern="\d{11}" required oninput="this.value=this.value.replace(/[^0-9]/g,'');">
                                 </label>
-                                <label for="car-plate">Plate No:
+                                <label for="car-plate">Plate No:</label>
                                     <input type="text" maxlength="7" name="car_plate" id="car-plate" required autocomplete="off" placeholder="ex: NBC 123">
-                                </label>
+                                
                             </div>
                         </div>
         
@@ -140,7 +140,7 @@
                                 <p id="selected-slots">Please select a parking slot</p>
                                 <p id="total-cost"></p>
                             </span>
-                            <button id="proceed-btn">Confirm Booking</button>
+                            <button id="proceed-btn" type="submit">Confirm Booking</button>
                             <p id="user-info" style="margin-top: 10px; color: #555;"></p>
                         </div>
                     </div>
@@ -154,8 +154,10 @@
             <h3>e-Receipt</h3>
             <p id="receipt-user"></p>
             <p id="receipt-contact"></p>
+            <p id="receipt-plate"></p> <!-- New -->
             <p id="receipt-slot"></p>
             <p id="receipt-date"></p>
+            <p id="receipt-end-date"></p> <!-- New -->
             <p id="receipt-time"></p>
             <p id="receipt-total"></p>
             <p style="margin-top: 1em;"><em>📸 Screenshot this receipt and show it to the parking marshal to pay for your parking.</em></p>
