@@ -44,6 +44,9 @@ if ($stmt->execute()) {
 $_SESSION['user_id'] = $row['id'];
 $_SESSION['user_email'] = $row['email']; 
 
+$_SESSION['email'] = $row['email']; // or 'email' or whatever you want
+
+
 // echo "<script>
 //     sessionStorage.setItem('username', '" . $row['first_name'] . "');
 //     window.location.href = 'home-dashboard.html';

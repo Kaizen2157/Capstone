@@ -12,6 +12,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+$_SESSION['user_id'] = $user_id_from_database;
+$_SESSION['first_name'] = $fetched_first_name;
+
 // Get user input
 $email = $_POST['email'];
 $password = $_POST['password'];
