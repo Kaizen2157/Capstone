@@ -3,40 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
     <link rel="stylesheet" href="dashboard-admin.css">
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
-    <link rel="shortcut icon" href="/logo-removebg-preview.png" type="image/x-icon">
-    <title>Dashboard</title>
 </head>
 <body>
-
-<nav>
-    <div class="logo">
-      <a href="../admin/dashboard-admin.html">
-          <img src="/logo-removebg-preview.png" alt="loading...">
-          <p>ParkWise</p>
-      </a>
-    </div>
-
-    <div class="btn">
-
-        <li class="dropdown">
-            <a href="javascript:void(0);" class="dropbtn" onclick="toggleDropdown()">
-                <i class='bx bx-menu dropbtn'></i>
-            </a>
-            <div class="dropdown-content" id="profileDropdown">
-                <a href="javascript:void(0);" onclick="toggleDarkMode()">
-                    <span id="modeIcon" class="light-icon">🌞</span>
-                    <span id="modeIcon" class="dark-icon" style="display: none;">🌜</span>
-                    <span id="modeText">Dark Mode</span>
-                </a>
-                <a href="javascript:void(0);" onclick="confirmLogout()"><i class='bx bx-exit'></i>Logout</a>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Admin Panel</h2>
             </div>
-        </li>
-    </div>
-</nav>
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="#">Dashboard Overview</a></li>
+                    <li><a href="#">Manage Users</a></li>
+                    <li><a href="#">Manage Reservations</a></li>
+                    <li><a href="#">Slot Cost Management</a></li>
+                    <li><a href="#">Add Balance</a></li>
+                    <li><a href="#">System Analytics</a></li>
+                    <li><a href="#">Logout</a></li>
+                </ul>
+            </nav>
+        </aside>
 
-<script src="dashboard-script.js"></script>
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="dashboard-overview">
+                <h1>Welcome, Admin</h1>
+                <p>Overview of your parking system</p>
+                <div class="quick-stats">
+                    <div class="stat-box">
+                        <h3>Active Users</h3>
+                        <p id="active-users">120</p> <!-- Dynamic content -->
+                    </div>
+                    <div class="stat-box">
+                        <h3>Total Reservations</h3>
+                        <p id="total-reservations">350</p> <!-- Dynamic content -->
+                    </div>
+                    <div class="stat-box">
+                        <h3>Total Earnings</h3>
+                        <p id="total-earnings">₱14,000</p> <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slot Cost Management -->
+            <div class="manage-slot-cost">
+                <h2>Change Parking Slot Cost</h2>
+                <form method="POST" action="update-cost.php">
+                    <label for="cost">New Slot Cost (PHP):</label>
+                    <input type="number" name="cost" id="cost" value="40" required>
+                    <button type="submit">Update Cost</button>
+                </form>
+            </div>
+
+            <!-- Add Balance to User Account -->
+            <div class="add-balance">
+                <h2>Add Balance to User Account</h2>
+                <form method="POST" action="add-balance.php">
+                    <label for="user-search">Search for User (by username or email):</label>
+                    <input type="text" name="user-search" id="user-search" required>
+                    <button type="submit">Search</button>
+                </form>
+
+                <!-- User found, show balance form -->
+                <div id="user-balance-form" style="display:none;">
+                    <label for="balance-amount">Amount to Add:</label>
+                    <input type="number" name="balance-amount" id="balance-amount" required>
+                    <button type="submit">Add Balance</button>
+                </div>
+            </div>
+
+            <!-- System Analytics -->
+            <div class="system-analytics">
+                <h2>System Analytics</h2>
+                <div class="analytics-stats">
+                    <div class="stat-box">
+                        <h3>Users Logged In Today</h3>
+                        <p id="users-logged-in-today">45</p> <!-- Dynamic content -->
+                    </div>
+                    <div class="stat-box">
+                        <h3>Reservations Made Today</h3>
+                        <p id="reservations-today">120</p> <!-- Dynamic content -->
+                    </div>
+                    <div class="stat-box">
+                        <h3>Total Earnings Today</h3>
+                        <p id="earnings-today">₱4,800</p> <!-- Dynamic content -->
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    
+
+
+    <canvas id="earningsChart"></canvas>
+    
+    <script>
+        const ctx = document.getElementById('earningsChart').getContext('2d');
+        const earningsChart = new Chart(ctx, {
+            type: 'line', // Line chart for earnings
+            data: {
+                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'], // Last 7 days
+                datasets: [{
+                    label: 'Earnings (PHP)',
+                    data: [1200, 1500, 1300, 1600, 1800, 1700, 1900], // Fetch this data dynamically
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+    </script>    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
 
 </body>
 </html>

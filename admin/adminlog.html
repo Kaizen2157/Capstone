@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
+    <title>Admin Login</title>
+    <link rel="stylesheet" href="dashboard-admin.css">
+</head>
+<body class="adminlog">
+    
+    <div class="container">
+
+        <div class="left">
+            <img src="logo-removebg-preview.png">
+            <p>ParkWise</p>
+        </div>
+        <div class="right">
+            <div class="login-container">
+                <h2>Admin Login</h2>
+                <p>PLEASE LOG IN TO DASHBOARD.</p>
+                <form action="adminlog.php" method="POST">
+                    <div class="form-group">
+                        <input type="text" id="username" name="username" required placeholder="Username" autocomplete="off">
+
+                        <input type="password" id="pas  sword" name="password" required placeholder="Password" autocomplete="off">
+                    </div>
+                    <button type="submit" id="login-btn">Login</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

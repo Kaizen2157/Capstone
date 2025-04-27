@@ -6,123 +6,258 @@
     box-sizing: border-box;
     font-family: "Open Sans", sans-serif;
   }
-
-  body{
-    user-select: none; /* Disable text selection */
-    -webkit-user-select: none; /* Safari */
-    -moz-user-select: none; /* Firefox */
-    -ms-user-select: none; /* Internet Explorer/Edge */
-    user-select: none; /*for hcrome*/
-    cursor: default;
+  
+  html{
+    font-display: auto;
+    scroll-behavior: smooth;
   }
 
-  nav{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.5s ease-in-out;
-    border-bottom: 2px solid #ccc;
-    box-shadow: 0 0 20px 0 rgb(226, 226, 226);
-}
-
-nav .logo{
-    display: flex;
-    align-items: center;
-    padding: 10px 0 10px 15px;
-    cursor: pointer;
-}
-
-nav .logo img{
+  img{
     object-fit: cover;
-    width: 8vw;
-    height: 10vh;
-}
+  }
 
-nav .logo a{
-    display: flex;
-    align-items: center;
-    color: #19384a;
-    text-decoration: none;
-}
 
-nav .logo p{
-    font-size: 20px;
-}
+  /* adminlog.html */
 
-nav .btn{
+.adminlog{
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px;
+    height: 100vh;
+    background-color: #19384a;
 }
 
-nav .btn .dropdown-content a{
-    text-decoration: none;
-    color: black;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.1s ease-in;
-    padding: 10px;
-    text-align: center;
-    display: block;
-    text-decoration: none;
+.container{
+    display: flex;
     justify-content: center;
     align-items: center;
+    gap: 50px;
+    background-color: #faf5ef;
+    padding: 30px 70px;
+    border-radius: 7px;
+}
+
+.container .left{
+    display: flex;
+    align-items: center;
+    border-right: 1px solid #19384a;
+    border-radius: 100px;
+    padding: 100px 50px 100px 0;
+}
+
+.container .left img{
     width: 10vw;
-    border: 1px solid rgb(226, 226, 226);
-    border-radius: 5px;
 }
 
-nav .btn .dropdown .dropbtn i{
-    color: black;
-    font-size: 50px;
-    font-weight: 100;
-    cursor: pointer;
-    text-decoration: none;
-    color: black;
-    padding: 10px;
-    margin-right: 80px;
+.container .left p{
+    font-size: 2.7rem;
 }
 
-nav .btn .areas a{
-    font-size: 16px;
-    font-weight: 600;
-    color: black;
-}
-
-nav .btn .dropdown .dropdown-content a:nth-child(2){
+.container .right{
     display: flex;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    text-align: center;
-    gap: 10px;
+    padding: 50px 0;
 }
 
-nav .btn .dropdown .dropdown-content a>i{
-    font-size: 16px;
+.container .right .login-container{
+    display: flex;
+    flex-direction: column;
+}
+
+.container .right .login-container h2{
+    font-size: 3rem;
     font-weight: 500;
 }
 
-nav .btn .dropdown .dropdown-content{
-    display: none; /* Hidden by default */
-    position: absolute;
+.container .right .login-container p{
+    font-size: 0.8rem;
+    font-weight: 400;
+    margin-bottom: 35px;
+}
+
+.form-group{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.container .right input{
+    padding: 9px;
+    border-radius: 8px;
+    outline: none !important;
+    border: 1px solid #ccc;
+    transition: all 0.1s;
+}
+
+.container .right input:focus{
+    border-color: #19384a; /* Bright orange border */
+  box-shadow: 0 0 8px #19384a;
+}
+
+form{
+    display: flex;
+    flex-direction: column;
+    gap: 60px;
+}
+
+button{
+    padding: 10px;
+    border-radius: 8px;
+    border: none;
+    background-color: #19384a;
+    color: white;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+/* dasboard-admin.html */
+
+.admin-container {
+    display: flex;
+    width: 80%;
     background-color: #fff;
-    color: #000;
-    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-    z-index: 1;
-    align-items: center;
-    justify-content: center;
+    overflow: hidden;
 }
 
-nav .btn .dropdown .dropdown-content a{
-    display: block;
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    background-color: #19384a   ;
+    padding: 20px;
+    color: #fff;
 }
 
-nav .btn li{
-    position: relative;
+.sidebar-header h2 {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.sidebar-nav ul {
     list-style-type: none;
+    padding: 0;
 }
 
-/* Show Dropdown on Click */
-nav .btn .dropdown .dropdown-content.show {
+.sidebar-nav ul li {
+    margin: 15px 0;
+}
+
+.sidebar-nav ul li a {
+    text-decoration: none;
+    color: #fff;
+    font-size: 18px;
     display: block;
+    padding: 10px;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+.sidebar-nav ul li a:hover {
+    background-color: #34495e;
+}
+
+/* Main Content Area */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.dashboard-overview {
+    margin-bottom: 30px;
+}
+
+.quick-stats {
+    display: flex;
+    justify-content: space-between;
+}
+
+.stat-box {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 20px;
+    border-radius: 8px;
+    width: 30%;
+    text-align: center;
+}
+
+.stat-box h3 {
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+.stat-box p {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.manage-slot-cost, .add-balance, .system-analytics {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.manage-slot-cost h2, .add-balance h2, .system-analytics h2 {
+    font-size: 22px;
+    margin-bottom: 15px;
+}
+
+label {
+    font-size: 16px;
+    margin-bottom: 8px;
+    display: block;
+}
+
+input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+}
+
+button {
+    background-color: #2ecc71;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #27ae60;
+}
+
+button[type="submit"] {
+    width: 100%;
+}
+
+.analytics-stats {
+    display: flex;
+    justify-content: space-between;
+}
+
+.analytics-stats .stat-box {
+    width: 30%;
 }
