@@ -6,71 +6,42 @@
     <link rel="stylesheet" href="home-dashboard.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
-    
     <title>Parking</title>
 </head>
 <body>
-
-<nav>
-
-    <div class="logo">
-      <a href="home-dashboard.html">
-          <img src="logo-removebg-preview.png" alt="loading...">
-          <p>ParkWise</p>
-      </a>
-    </div>
-
-    <div class="btn">
-        <div class="user-dropdown">
-
-            <div class="drop">
-                <a href="dashboard.html">
-                    Dashboard
-                </a>
-                <a href="docs.html" target="_blank">Docs</a>
-                <p id="username-display">User</p>
-            </div>
-
-            <div class="dropdown-menu" id="dropdown-menu">
-
-              <a href="#" id="toggle-dark">Dark Mode</a>
-              <a href="logout.php"><i class='bx bx-exit'></i>Logout</a>
-
+    <nav>
+        <div class="logo">
+            <a href="home-dashboard.html">
+                <img src="logo-removebg-preview.png" alt="loading...">
+                <p>ParkWise</p>
+            </a>
+        </div>
+        <div class="btn">
+            <div class="user-dropdown">
+                <div class="drop">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="docs.html" target="_blank">Docs</a>
+                    <p id="username-display">User</p>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu">
+                    <a href="#" id="toggle-dark">Dark Mode</a>
+                    <a href="logout.php"><i class='bx bx-exit'></i>Logout</a>
+                </div>
             </div>
         </div>
-    </div>
-
-</nav>
-
-
+    </nav>
 
     <div class="bookslot">
-
         <div class="head">
-            <p>
-                BOOK YOUR SLOT
-            </p>
-
+            <p>BOOK YOUR SLOT</p>
             <div class="hint">
-                <div class="hints">
-                    <i class='bx bxs-car green'></i>
-                    <p>Available</p>
-                </div>
-    
-                <div class="hints">
-                    <i class='bx bxs-car red'></i>
-                    <p>Occupied</p>
-                </div>
-    
-                <div class="hints">
-                    <i class='bx bxs-car grey'></i>
-                    <p>Selected</p>
-                </div>
+                <div class="hints"><i class='bx bxs-car green'></i><p>Available</p></div>
+                <div class="hints"><i class='bx bxs-car red'></i><p>Occupied</p></div>
+                <div class="hints"><i class='bx bxs-car grey'></i><p>Selected</p></div>
             </div>
-
         </div>
 
-        <form id="booking-form" action="home-dashboard.php" method="post">
+        <form id="booking-form" action="home-dashboard.php" method="POST">
             <div class="book">
                 <div class="slots">
                     <div class="slotone">
@@ -89,7 +60,7 @@
                         <p class="slot available">6</p>
                     </div>
                 </div>
-        
+
                 <div id="booking-details">
                     <h3>Booking Details</h3>
                     <div class="details">
@@ -108,11 +79,10 @@
                                     <input type="text" name="contact_number" autocomplete="off" id="contact-number" maxlength="11" placeholder="ex: 09XX XXX XXXX" pattern="\d{11}" required oninput="this.value=this.value.replace(/[^0-9]/g,'');">
                                 </label>
                                 <label for="car-plate">Plate No:</label>
-                                    <input type="text" maxlength="7" name="car_plate" id="car-plate" required autocomplete="off" placeholder="ex: NBC 123">
-                                
+                                <input type="text" maxlength="7" name="car_plate" id="car-plate" required autocomplete="off" placeholder="ex: NBC 123">
                             </div>
                         </div>
-        
+
                         <div class="time">
                             <span>
                                 <label for="booking-date">Start Date:
@@ -122,25 +92,20 @@
                                     <input type="time" name="start_time" id="start-time" required>
                                 </label>
                             </span>
-        
                             <span>
-                                <label for="end-date">End Date:
-                                    <input type="date" name="end_date" id="end-date" required>
-                                </label>
-                                <label for="end-time">End Time:
-                                    <input type="time" name="end_time" id="end-time" required>
-                                </label>
+                                <label for="duration">Duration (in hours):</label>
+                                <input type="number" id="duration" name="duration" required min="1" step="1">
                             </span>
                         </div>
-        
+
                         <div class="confirmation">
                             <span>
-                                <input type="hidden" name="selected_slot" id="hidden-selected-slot">
+                                <input type="hidden" name="slot_number" id="hidden-selected-slot">
                                 <input type="hidden" name="total_cost" id="hidden-total-cost">
                                 <p id="selected-slots">Please select a parking slot</p>
                                 <p id="total-cost"></p>
                             </span>
-                            <button id="proceed-btn" type="submit">Confirm Booking</button>
+                            <button id="proceed-btn" type="submit" name="submit">Confirm Booking</button>
                             <p id="user-info" style="margin-top: 10px; color: #555;"></p>
                         </div>
                     </div>
@@ -149,50 +114,21 @@
         </form>
     </div>
 
-    <div id="receipt-popup" class="hidden" style="display: none;">
-        <div class="receipt-box">
-            <h3>e-Receipt</h3>
+    <div id="receipt-popup" style="display: none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 80%; max-width: 500px;" class="receipt-box">
+            <h2>E-Receipt</h2>
             <p id="receipt-user"></p>
             <p id="receipt-contact"></p>
-            <p id="receipt-plate"></p> <!-- New -->
             <p id="receipt-slot"></p>
             <p id="receipt-date"></p>
-            <p id="receipt-end-date"></p> <!-- New -->
-            <p id="receipt-time"></p>
+            <p id="receipt-end-date"></p>
+            <p id="receipt-plate"></p>
             <p id="receipt-total"></p>
-            <p style="margin-top: 1em;"><em>📸 Screenshot this receipt and show it to the parking marshal to pay for your parking.</em></p>
             <button onclick="closeReceipt()">Close</button>
         </div>
     </div>
     
 
-
-
-<!-- <footer>
-    <p>
-        © 2025 ParkWise by ParkWise. All rights reserved.
-    </p>
-</footer> -->
-
-<script src="script.js"></script>
-<script>
-    // const today = new Date().toISOString().split('T')[0]; // yyyy-mm-dd
-  
-    // fetch(`get-reserved-spot.php?date=${today}`)
-    //   .then(res => res.json())
-    //   .then(reservedSlots => {
-    //     reservedSlots.forEach(slotNum => {
-    //       const slotEl = document.querySelector(`.slot[data-slot-number="${slotNum}"]`);
-    //       if (slotEl) {
-    //         slotEl.classList.remove('available');
-    //         slotEl.classList.add('occupied');
-    //         slotEl.style.backgroundColor = 'red';
-    //       }
-    //     });
-    //   })
-    //   .catch(err => console.error('Failed to load reserved slots:', err));
-  </script>
-  
-
+    <script src="script.js"></script>
 </body>
 </html>

@@ -1,17 +1,13 @@
 <?php
-$servername = "localhost";  // Change this if you're using a different server
-$username = "root";         // Default username for XAMPP
-$password = "";             // Default password for XAMPP (leave empty)
-$dbname = "parking_system"; // Your database name
+$servername = "localhost"; // depende kung local or server
+$username = "root";         // user ng database mo
+$password = "";             // password ng database mo (default blank sa XAMPP)
+$dbname = "parking_system"; // database name mo
 
-// Create a connection
 $conn = new mysqli($servername, $username, $password, $dbname);
 
 // Check connection
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
-
-// Optional: Remove this after testing
-echo "Connected successfully";
 ?>
