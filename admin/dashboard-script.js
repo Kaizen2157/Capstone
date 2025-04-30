@@ -1,40 +1,57 @@
-// Toggle dropdown menu visibility
-function toggleDropdown() {
-    document.getElementById("profileDropdown").classList.toggle("show");
+//logout button functionality
+document.getElementById('logout-btn').addEventListener('click', function(e) {
+    e.preventDefault(); // Stop normal link behavior
+
+    // Show the loading modal
+    document.getElementById('logout-modal').style.display = 'flex';
+
+    // After 1.5 seconds, redirect to logout-admin.php
+    setTimeout(function() {
+        window.location.href = 'logout-admin.php'; // Redirect to logout page
+    }, 1500); // 1500 ms = 1.5 seconds
+
+    // Prevent using Back button after logout
+    window.history.pushState(null, "", window.location.href);
+    window.onpopstate = function () {
+        window.location.href = "adminlog.html"; // Force redirect to login page
+    };
+});
+
+// Function to show the loading modal
+const ctx = document.getElementById('earningsChart').getContext('2d');
+        const earningsChart = new Chart(ctx, {
+            type: 'line', // Line chart for earnings
+            data: {
+                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'], // Last 7 days
+                datasets: [{
+                    label: 'Earnings (PHP)',
+                    data: [1200, 1500, 1300, 1600, 1800, 1700, 1900], // Fetch this data dynamically
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message; // Set the message
+    toast.style.opacity = 1;
+    toast.style.pointerEvents = 'auto';
+  
+    setTimeout(() => {
+      toast.style.opacity = 0;
+      toast.style.pointerEvents = 'none';
+    }, 3000); // Hide after 3 seconds
 }
 
-// Close the dropdown menu if the user clicks outside of it
-window.onclick = function(event) {
-    if (!event.target.matches('.dropbtn')) {
-        const dropdowns = document.getElementsByClassName("dropdown-content");
-        for (let i = 0; i < dropdowns.length; i++) {
-            const openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-};
 
-// Toggle Dark/Light Mode
-function toggleDarkMode() {
-    const body = document.body;
-    const darkModeIcon = document.querySelector('.dark-icon');
-    const lightModeIcon = document.querySelector('.light-icon');
-    const modeText = document.getElementById("modeText");
 
-    // Toggle dark mode class on body
-    if (body.classList.toggle('dark-mode')) {
-        darkModeIcon.style.display = 'inline';
-        lightModeIcon.style.display = 'none';
-        modeText.textContent = "Light Mode"; // Change text to Light Mode
-    } else {
-        darkModeIcon.style.display = 'none';
-        lightModeIcon.style.display = 'inline';
-        modeText.textContent = "Dark Mode"; // Change text to Dark Mode
-    }
-}
-
-function confirmLogout() {
-    window.location.href = '../frontend/home/index.html'; // Redirect to the logout page
-}

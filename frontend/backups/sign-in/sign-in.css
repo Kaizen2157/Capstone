@@ -16,89 +16,29 @@ body, .side-by-side .left .wrapper form .forget span {
 
 body {
   cursor: default; /* Optional: Sets the default cursor */
+  background-color: #efefef;
 }
   
-  nav{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: all 0.5s ease-in-out;
-    border-bottom: 2px solid #ccc;
-    box-shadow: 0 0 20px 0 rgb(226, 226, 226);
-    padding: 0 20px 0 20px;
-  }
-  
-  nav .logo{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: black;
-    font-weight: 600;
-    padding: 5px 0 5px 0;
-    cursor: pointer;
-  }
 
-  nav .logo img{
-    object-fit: cover;
-    width: 8vw;
-    padding: 0;
-    margin: 0;
-    height: 10vh;
-}
-
-nav .logo a{
+.logo{
   display: flex;
   align-items: center;
-  color: #19384a;
-  text-decoration: none;
 }
-  
-  nav .logo p{
-    font-size: 20px;
-  }
-  
-  nav .btn{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  nav .btn {
-    gap: 10px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  nav .btn a{
-    text-decoration: none;
-    color: black;
-    font-weight: 600;
-    font-size: 16px;
-    transition: all 0.1s ease-in;
-    padding: 10px 10px 10px 10px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 10vw;
-    border: 1px solid rgb(226, 226, 226);
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  nav .btn a.selected{
-    background-color: #19384a;
-    color: white;
-  }
-  
-  
-  nav .btn a:nth-child(2):hover{
-    border-bottom: 5px solid #19384a;
-    border-radius: 5px;
-  }
+
+.logo img{
+  object-fit: cover;
+  width: 8vw;
+  padding: 0;
+  margin: 0;
+  height: 10vh;
+}
+
+.logo p{
+  font-size: 20px;
+  color: #19384a;
+  font-weight: 600;
+}
+
 
 
   .side-by-side{
@@ -107,7 +47,6 @@ nav .logo a{
     justify-content: center;
     gap: 50px;
     min-height: 88.2vh;
-    background-color: #19384a84;
   }
 
   .side-by-side .left .wrapper form .tanginamo{
@@ -118,11 +57,13 @@ nav .logo a{
   
   
   .side-by-side .left .wrapper {
-    width: 400px;
-    border-radius: 10px;
-    padding: 30px;
-    text-align: center;
+    width: auto;
+    border-radius: 8px;
+    padding: 40px 60px;
     background-color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
   
   .side-by-side .left .wrapper form {
@@ -130,10 +71,23 @@ nav .logo a{
     flex-direction: column;
   }
   
-  .side-by-side .left .wrapper form h2 {
+  .side-by-side .left .wrapper form .head {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .side-by-side .left .wrapper form .head p{
+    font-size: 1rem;
+    font-weight: 600;
+    color: #a5a5a8;
+  }
+
+  .side-by-side .left .wrapper form .head h2 {
     font-size: 2rem;
-    margin-bottom: 20px;
+    font-weight: 700;
     color: #000;
+    margin-bottom: 30px;
   }
   
   .side-by-side .left .wrapper form .input-field {

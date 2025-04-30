@@ -9,18 +9,12 @@
 </head>
 <body>
 
-    <nav>
         <div class="logo">
             <!-- <a href="frontend/home/index.html"> -->
                 <img src="logo-removebg-preview.png" alt="loading...">
                 <p>ParkWise</p>
             <!-- </a> -->
         </div>
-        <div class="btn">
-            <a class="selected" href="sign-in.html" >Register</a> <!--registration page-->
-            <a href="../login/login.html" target="_self">Log in</a>   <!--login page-->
-        </div>
-    </nav>
 
     <div class="side-by-side">
 
@@ -30,7 +24,11 @@
       
               <form id="registerForm" action="sign-in.php" method="POST"> <!--database for registration-->
       
-                <h2>Register</h2>
+                <div class="head">
+                  <p>Please fill up the form</p>
+                  <h2>Login</h2>
+                </div>
+
                 <div class="tanginamo">
                     <div class="input-field">
                         <input type="text" name="first_name" required>

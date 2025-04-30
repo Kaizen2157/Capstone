@@ -1,17 +1,20 @@
 <?php
-session_start();
+session_start(); // Start the session to access session variables
 
-// Unset all session variables
+// Destroy the session to log out the admin
+session_destroy();
+
 $_SESSION = array();
 
-// Destroy session cookie too
 if (ini_get("session.use_cookies")) {
-    setcookie(session_name(), '', time() - 42000, '/');
+    $params = session_get_cookie_params();
+    setcookie(session_name(), '', time() - 42000,
+        $params["path"], $params["domain"],
+        $params["secure"], $params["httponly"]
+    );
 }
 
-echo "You are now logged out. <a href='/capstone/frontend/backups/login/login.html'>Login again</a>";
-
-session_destroy();
-header("Location: /capstone/frontend/backups/login/login.html");
+// Redirect to login page after logout
+header('Location: ../frontend/backups/login/login.html');
 exit;
 ?>

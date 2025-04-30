@@ -27,18 +27,17 @@ if (isset($_GET['get_cost']) && $_GET['get_cost'] == 'true') {
     // Return the cost as JSON
     header('Content-Type: application/json');
     echo json_encode(['cost' => $parkingCost]);
-
     exit; // Exit after returning the cost
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
-    // Your existing booking form data handling logic
+    // Booking form data
     $user_id = $_SESSION['user_id'];
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
     $contact_number = $_POST['contact_number'];
     $car_plate = $_POST['car_plate'];
-    $slot_number = $_POST['slot_number']; // Should be properly set by JS
+    $slot_number = $_POST['slot_number'];
     $start_date = $_POST['start_date'];
     $start_time = $_POST['start_time'];
     $duration_hours = $_POST['duration'];
@@ -49,6 +48,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $end_timestamp = $start_timestamp + ($duration_hours * 3600);
     $end_time = date('H:i:s', $end_timestamp);
 
+    // FIRST: Fetch user's current balance
+    $balance_stmt = $conn->prepare("SELECT balance FROM users WHERE id = ?");
+    $balance_stmt->bind_param("i", $user_id);
+    $balance_stmt->execute();
+    $balance_result = $balance_stmt->get_result();
+    $user = $balance_result->fetch_assoc();
+    $balance_stmt->close();
+
+    if (!$user) {
+        die("User not found.");
+    }
+
+    // SECOND: Check if balance is enough
+    if ($user['balance'] < $total_cost) {
+        echo "Insufficient balance.";
+        $conn->close();
+        exit;
+    }
+
+    // THIRD: Deduct balance
+    $new_balance = $user['balance'] - $total_cost;
+    $update_balance_stmt = $conn->prepare("UPDATE users SET balance = ? WHERE id = ?");
+    $update_balance_stmt->bind_param("di", $new_balance, $user_id);
+    $update_balance_stmt->execute();
+    $update_balance_stmt->close();
+
+    // FOURTH: Proceed to save booking
     $stmt = $conn->prepare("INSERT INTO reservations 
         (user_id, first_name, last_name, contact_number, car_plate, slot_number, start_date, start_time, end_time, duration_hours, total_cost) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");

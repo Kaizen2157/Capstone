@@ -10,18 +10,12 @@
 </head>
 <body>
 
-  <nav>
     <div class="logo">
       <!-- <a href="/frontend/home/index.html"> -->
           <img src="logo-removebg-preview.png" alt="loading...">
           <p>ParkWise</p>
       <!-- </a> -->
-  </div>
-    <div class="btn">
-        <a href="../sign-in/sign-in.html" target="_self">Register</a> <!--registration page-->
-        <a class="selected" href="login.html">Log in</a>   <!--login page-->
     </div>
-</nav>
 
 <div class="side-by-side">
 
@@ -31,7 +25,10 @@
 
         <form action="login.php" method="POST"> 
 
-          <h2>Login</h2>
+          <div class="head">
+            <p>Please enter your details</p>
+            <h2>Login</h2>
+          </div>
 
           <div class="input-field">
 
@@ -62,6 +59,10 @@
           </div>
 
           <button type="submit">Log In</button>
+
+          <p class="last">Don't have an account?
+            <a href="../sign-in/sign-in.html" target="_self">Sign up</a>
+          </p>
 
         </form>
         

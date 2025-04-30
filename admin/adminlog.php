@@ -15,12 +15,30 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check if admin is already logged in, redirect to admin dashboard
-if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] == true) {
-    header('Location: dashboard-admin.html');  // Redirect to admin dashboard
+$admin_username = $_POST['username'];
+$admin_password = $_POST['password'];
+
+$correct_username = "testadmin1";
+$correct_password = "testadmin1";
+
+if ($admin_username === $correct_username && $admin_password === $correct_password) {
+    // Login success, store session
+    $_SESSION['admin_logged_in'] = true;
+
+    // Redirect to dashboard
+    header("Location: dashboard-admin.php");
+    exit();
+} else {
+    // Login failed, maybe redirect back with error
+    header("Location: adminlog.html?error=invalid");
     exit();
 }
 
+// Check if admin is already logged in, redirect to admin dashboard
+if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] == true) {
+    header('Location: dashboard-admin.php');  // Redirect to admin dashboard
+    exit();
+}
 
 // Handle the login form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -45,7 +63,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['admin_id'] = $admin['id']; // Store admin ID
         $_SESSION['admin_username'] = $admin['username'];
 
-        header('Location: dashboard-admin.html');
+        header('Location: dashboard-admin.php');
         exit();
     } else {
         // Invalid login

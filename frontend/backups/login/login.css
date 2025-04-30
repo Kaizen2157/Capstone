@@ -16,31 +16,15 @@ body, .side-by-side .left .wrapper form .forget span {
 
 body {
   cursor: default; /* Optional: Sets the default cursor */
+  background-color: #efefef;
 }
 
-
-
-nav{
+.logo{
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  transition: all 0.5s ease-in-out;
-  border-bottom: 2px solid #ccc;
-  box-shadow: 0 0 20px 0 rgb(226, 226, 226);
-  padding: 0 20px 0 20px;
 }
 
-nav .logo{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: black;
-  font-weight: 600;
-  padding: 5px 0 5px 0;
-  cursor: pointer;
-}
-
-nav .logo img{
+.logo img{
   object-fit: cover;
   width: 8vw;
   padding: 0;
@@ -48,64 +32,12 @@ nav .logo img{
   height: 10vh;
 }
 
-nav .logo a{
-  display: flex;
-  align-items: center;
-  color: #19384a;
-  text-decoration: none;
-}
-
-nav .logo p{
+.logo p{
   font-size: 20px;
-}
-
-nav .btn{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 10px;
-}
-
-nav .btn i{
-  color: #e84949;
-  font-size: 40px;
-}
-
-nav .btn {
-  gap: 10px;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-nav .btn a{
-  text-decoration: none;
-  color: black;
+  color: #19384a;
   font-weight: 600;
-  font-size: 16px;
-  transition: all 0.1s ease-in;
-  padding: 10px 10px 10px 10px;
-  text-align: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 10vw;
-  border: 1px solid rgb(226, 226, 226);
-  border-radius: 5px;
-  cursor: pointer;
 }
 
-nav .btn a:nth-child(2){
-  background-color: #19384a;
-  color: white;
-}
-
-
-nav .btn a:nth-child(1):hover{
-  border-bottom: 5px solid #19384a;
-  border-radius: 5px;
-}
 
 
 
@@ -115,14 +47,12 @@ nav .btn a:nth-child(1):hover{
   justify-content: center;
   gap: 50px;
   min-height: 88.2vh;
-  background-color: #19384a84;
 }
 
 .side-by-side .left .wrapper {
-  width: 400px;
+  width: auto;
   border-radius: 8px;
-  padding: 30px;
-  text-align: center;
+  padding: 40px 60px;
   background-color: #fff;
   border: 1px solid rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(8px);
@@ -134,10 +64,23 @@ nav .btn a:nth-child(1):hover{
   flex-direction: column;
 }
 
-.side-by-side .left .wrapper form h2 {
+.side-by-side .left .wrapper form .head {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.side-by-side .left .wrapper form .head p{
+  font-size: 1rem;
+  font-weight: 600;
+  color: #a5a5a8;
+}
+
+.side-by-side .left .wrapper form .head h2 {
   font-size: 2rem;
-  margin-bottom: 20px;
+  font-weight: 700;
   color: #000;
+  margin-bottom: 30px;
 }
 
 .side-by-side .left .wrapper form .input-field {
@@ -177,29 +120,41 @@ nav .btn a:nth-child(1):hover{
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 80px;
   margin: 25px 0 35px 0;
   color: #000;
 }
 
-.side-by-side .left .wrapper form .forget a{
-  color: #000;
+.side-by-side .left .wrapper form .forget a:nth-child(2){
+  color: #6793d2;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: underline;
 }
 
 .side-by-side .left .wrapper form #remember {
   accent-color: #000;
+  display: flex;
+  align-items: center;
 }
 
 .side-by-side .left .wrapper form .forget label {
   display: flex;
   align-items: center;
+  justify-content: center;
+  font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .side-by-side .left .wrapper form .forget label p {
-  margin-left: 8px;
+  margin: 0 8px;
 }
 
-.side-by-side .left .wrapper form .forget span{
-    cursor: pointer;
+.side-by-side .left .wrapper form .forget span {
+  font-size: 1.1rem; /* ensure the eye icon size matches the text */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .wrapper a {
@@ -224,4 +179,18 @@ nav .btn a:nth-child(1):hover{
 .side-by-side .left .wrapper form button:hover {
   background-color: #19384a;
   color: #fff;
+}
+.last{
+  margin-top: 20px;
+  font-size: 0.9rem;
+  display: flex;
+  align-content: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.last a{
+  color: #6793d2;
+  text-decoration: underline;
+  font-weight: 600;
 }

@@ -121,7 +121,7 @@ button{
 
 
 
-/* dasboard-admin.html */
+/* dasboard-admin.php */
 
 .admin-container {
     display: flex;
@@ -261,3 +261,20 @@ button[type="submit"] {
 .analytics-stats .stat-box {
     width: 30%;
 }
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+      /* Remove arrows in number input (Chrome, Safari, Edge) */
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      
+      /* Remove arrows in Firefox */
+      input[type=number] {
+        -moz-appearance: textfield;
+      }
