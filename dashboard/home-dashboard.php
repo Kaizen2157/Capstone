@@ -1,5 +1,6 @@
 <?php
 session_start();
+date_default_timezone_set('Asia/Manila');
 
 // Database connection
 $host = "localhost";
@@ -100,9 +101,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Error: " . $stmt->error;
     }
 
-    $stmt->close();
-    $conn->close();
+
 } else {
     echo "Invalid request.";
 }
+$user_id = $_SESSION['user_id']; // Make sure this is set on login
+
+$balance = 0.00;
+$sql = "SELECT balance FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$stmt->bind_result($balance);
+$stmt->fetch();
+$stmt->close();
+$conn->close();
+
+
 ?>

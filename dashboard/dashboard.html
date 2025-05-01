@@ -20,6 +20,7 @@
 
     <div class="btn">
 
+
         <div class="user-dropdown">
 
             <div class="drop">
@@ -43,6 +44,50 @@
 </nav>
 
 
+<div class="all">
+
+    
+    <div class="top-align">
+    
+        <section class="balance">
+            <i class='bx bx-wallet'></i>
+            <p id="balance-display">Balance: Loading...</p>
+            <h2>Account Balance</h2>
+        </section>
+    
+        
+    
+    </div>
+    
+    <section class="reservation-history">
+        <h2>Reservation History</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Slot</th>
+                    <th>Date & Time</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Content will be dynamically filled by JavaScript -->
+            </tbody>
+        </table>
+    </section>
+    
+    
+    
+    <div class="transaction-history">
+        <h3>Transaction History</h3>
+        <ul id="transaction-history">
+            <!-- Transaction history will be populated dynamically -->
+        </ul>
+    </div>
+
+
+</div>
+
+
 
 <!-- // If user is not logged in, redirect to sign-in page
 if (!isset($_SESSION['user'])) {
@@ -55,7 +100,24 @@ header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
 header("Pragma: no-cache"); // HTTP 1.0
 header("Expires: 0"); // Proxies -->
 
-
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        fetch('get-balance.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.balance) {
+                    document.getElementById('balance-display').textContent = "₱" + data.balance;
+                } else {
+                    document.getElementById('balance-display').textContent = "Balance: Error";
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+                document.getElementById('balance-display').textContent = "Balance: Error";
+            });
+    });
+</script>
+    
 <script src="script.js"></script>
 
 </body>

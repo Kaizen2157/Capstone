@@ -8,80 +8,53 @@
 </head>
 <body>
     
-    <form action="test.php" method="post">
-        <div class="parking-grid">
-            <div id="slot-1" class="slot available"></div>
-            <div id="slot-2" class="slot available"></div>
-            <div id="slot-3" class="slot available"></div>
-            <!-- Additional slots -->
-        </div>
-    </form>
-
-    <div class="btn">
-        <li class="dropdown">
-            <a href="javascript:void(0);" class="dropbtn" onclick="toggleDropdown()">Profile</a>
-            <div class="dropdown-content" id="profileDropdown">
-                <a href="javascript:void(0);" onclick="toggleDarkMode()">Dark Mode</a>
-                <a href="javascript:void(0);" onclick="confirmLogout()">Logout</a>
-            </div>
-        </li>
-    </div>
-
-    <div class="parking-lot">
-        <div class="slot available" id="slot-1" onclick="reserveSlot(1)">1</div>
-        <div class="slot occupied" id="slot-2">2</div>
-        <div class="slot available" id="slot-3" onclick="reserveSlot(3)">3</div>
-    </div>
-    
-    
-    
-    
-
-    <script>
-
-// Polling function to check slot statuses every 5 seconds
-setInterval(fetchSlotStatuses, 5000);
-
-function fetchSlotStatuses() {
-    fetch('getSlotsStatus.php')
-        .then(response => response.json())
-        .then(data => {
-            data.forEach(slot => {
-                const slotElement = document.getElementById(`slot-${slot.slot_id}`);
-                if (slot.status === 'reserved') {
-                    slotElement.classList.remove('available');
-                    slotElement.classList.add('reserved');
-                } else {
-                    slotElement.classList.remove('reserved');
-                    slotElement.classList.add('available');
-                }
-            });
-        })
-        .catch(error => console.error('Error fetching slot statuses:', error));
-}
-
-function confirmLogout() {
-    const confirmAction = confirm("Are you sure you want to log out?");
-    if (confirmAction) {
-        window.location.href = 'test.html'; // Redirect to the logout script
-    }
-}
-
-setInterval(() => {
-    fetch("getSlotStatus.php")
-    .then(response => response.json())
-    .then(data => {
-        data.forEach(slot => {
-            const slotElement = document.getElementById(`slot-${slot.slot_id}`);
-            slotElement.className = slot.status; // Apply 'available' or 'occupied' class
-        });
-    });
-}, 5000);
-
-
-
-    </script>
-
+    <!-- Main Dashboard Body -->
+<main>
+    <!-- Recent Reservation Section -->
+    <section class="recent-reservation">
+      <h2>Recent Reservation</h2>
+      <div class="reservation-card">
+        <p><strong>Slot Number:</strong> 5</p>
+        <p><strong>Start Time:</strong> 10:00 AM</p>
+        <p><strong>End Time:</strong> 12:00 PM</p>
+        <p><strong>Status:</strong> Confirmed</p>
+      </div>
+    </section>
+  
+    <!-- Reservation History Section -->
+    <section class="reservation-history">
+      <h2>Reservation History</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Slot</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Repeat rows with real data -->
+          <tr>
+            <td>3</td>
+            <td>April 28, 2025</td>
+            <td>Completed</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  
+    <!-- Balance and Transaction History -->
+    <section class="balance">
+      <h2>Account Balance</h2>
+      <p><strong>Balance:</strong> ₱200.00</p>
+      <h3>Transaction History</h3>
+      <ul>
+        <li>+₱100 - Balance Loaded on April 25, 2025</li>
+        <li>-₱40 - Reservation on April 28, 2025</li>
+      </ul>
+    </section>
+  </main>
+  
 </body>
 </html>
 

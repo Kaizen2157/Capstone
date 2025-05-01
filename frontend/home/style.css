@@ -159,113 +159,6 @@ nav .links a>button:hover{
 
 
 
-/* 
-.banner{
-    width: 100%;
-    background-color: #19384a;
-    padding: 0 2px;
-}
-
-.banner p{
-    color: #fff;
-    font-weight: 400;
-    word-spacing: 5px;
-    font-size: 13px;
-    text-align: center;
-    display: flex;
-    justify-content: center;
-    align-self: center;
-    text-decoration: none;
-    padding: 2px 0;
-}
-
-
-
-
-.first-content{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 0 100px;
-    min-height: 100vh;
-    color: #e8ebec;
-    gap: 30px;
-} */
-
-/* .first-content .content{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-} */
-
-
-/* .first-content .content h1{
-    font-size: 75px;
-    font-weight: 700;
-    margin-bottom: 30px;
-    width: 45vw;
-    text-transform: capitalize;
-    font-style: italic;
-    display: flex;
-    align-items: center;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-}
-
-.first-content .content h1>span{
-    color: transparent;
-    -webkit-text-stroke: 1px white;
-    -webkit-background-clip: text;
-    background-clip: text;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-
-.first-content .img img{
-    object-fit: contain;
-    height: 80vh auto;
-    width: auto;
-    border-radius: 10px;
-}
-
-.first-content .content-right{
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.first-content .content-right p{
-    font-size: 18px;
-    width: 40vw;
-}
-
-.first-content .content-right a{
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-}
-
-.first-content .content-right a>button{
-    padding: 10px 15px;
-    border: none;
-    outline: none;
-    border-radius: 6px;
-    background-color: #ffc62a;
-    color: #19384a;
-    font-weight: 600;
-    font-size: 15px;
-    transition: all 0.2s;
-    cursor: pointer;
-} */
-
-/* .first-content .content-right a>button:hover{
-    box-shadow: 0 10px 10px 10px rgba(0, 0, 0, 0.35);
-} */
-
 
 
 .first-content{
@@ -337,54 +230,9 @@ nav .links a>button:hover{
 
 
 
-/* .second-content{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    height: auto;
-    padding: 30vh 20px 40vh 20px;
-    border-bottom: 1px solid #ccc;
-}
 
-.second-content .images{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 30px;
-}
 
-.second-content .bg{
-    position: absolute;
-    background-color: #ffc62a;
-    padding: 350px 500px;
-    max-width: 50vw;
-}
 
-.second-content .images{
-    display: flex;
-    gap: 60px;
-    align-items: center;
-}
-
-.second-content .imgone, .second-content .imgtwo{
-    position: relative;
-}
-
-.second-content .imgone img, .second-content .imgtwo img{
-    width: 40vw;
-    height: 60vh;
-    border-radius: 10px;
-    object-fit: cover;
-    box-shadow: 0 30px 30px 0 rgba(0, 0, 0, 0.35);
-}
-
-.second-content .images .imgone.visible, 
-.second-content .images .imgtwo.visible{
-    opacity: 1;
-    transform: translateY(50px);
-    transition: all 1s ease-out, all 2s ease-out;
-} */
 
 
 .second-content{
@@ -453,6 +301,7 @@ nav .links a>button:hover{
 .footer{
     border-top: 1px solid rgb(226, 226, 226);
     width: 100%;
+    background-color: #efebe6;
 }
 
 .footer img{

@@ -100,7 +100,7 @@ header("Pragma: no-cache");
             <!-- Slot Cost Management -->
             <div class="manage-slot-cost">
                 <h2>Change Parking Slot Cost</h2>
-                <form id="costForm">
+                <form id="costForm" method="POST" action="update-cost.php">
                 <label for="cost">New Slot Cost (PHP):</label>
                 <input type="number" name="cost" id="cost" value="<?php echo $current_cost; ?>" required>
                 <button type="submit">Update Cost</button>
@@ -113,10 +113,11 @@ header("Pragma: no-cache");
             <!-- Add Balance to User Account -->
             <div class="add-balance">
                 <h2>Add Balance to User Account</h2>
-                <form method="POST" id="user-search-form" action="add-balance.php">
+                <form method="POST" id="user-search-form" action="search-user.php">
                     <label for="user-search">Search for User (by username or email):</label>
                     <input type="text" name="user_search" id="user-search" autocomplete="off" placeholder="Search user by email..." required>
                     <button type="submit">Search</button>
+                    <p id="user-not-found-message" style="color: red; display: none;">User not found.</p>
                 </form>
 
                 <!-- Modal Popup for Add Balance -->
@@ -177,78 +178,66 @@ header("Pragma: no-cache");
     <script>
 
 // Handle Search Form Submit
-document.getElementById('user-search-form').addEventListener('submit', function(e) {
+document.getElementById("user-search-form").addEventListener("submit", function(e) {
     e.preventDefault();
 
-    const userSearch = document.getElementById('user-search').value;
+    const searchInput = document.getElementById("user-search").value.trim();
+    const userNotFoundMsg = document.getElementById("user-not-found-message");
 
     fetch('search-user.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'user_search=' + encodeURIComponent(userSearch)
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ user_search: searchInput })
     })
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Populate the modal with user info
-            document.getElementById('user-info').innerHTML = `Name: ${data.first_name} ${data.last_name}<br>Email: ${data.email}<br>Current Balance: ₱${data.balance}`;
-            document.getElementById('user-id').value = data.id;
+            userNotFoundMsg.style.display = "none";
 
-            // Show the modal
-            document.getElementById('balance-modal').style.display = 'block';
+            // Fill modal with user info
+            document.getElementById("user-info").innerText = `${data.user.name} (${data.user.email})`;
+            document.getElementById("user-id").value = data.user.id;
 
-            // Hide the error message if user found
-            document.getElementById('user-not-found-message').style.display = 'none';
+            // Show modal
+            document.getElementById("balance-modal").style.display = "block";
         } else {
-            // Show user not found error message
-            const errorMessage = document.getElementById('user-not-found-message');
-            errorMessage.style.display = 'block';
-
-            // Hide the error message after 3 seconds
-            setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 3000);
+            userNotFoundMsg.style.display = "block";
         }
     })
     .catch(error => {
-        console.error('Error:', error);
+        console.error("Error:", error);
     });
 });
 
-
-// Handle Modal Close
-document.querySelector('.close-btn').addEventListener('click', function() {
-    document.getElementById('balance-modal').style.display = 'none';
+// Close modal
+document.querySelector(".close-btn").addEventListener("click", function() {
+    document.getElementById("balance-modal").style.display = "none";
 });
 
-// Handle Add Balance Form Submit
-document.getElementById('add-balance-form').addEventListener('submit', function(e) {
+// Handle Add Balance Form
+document.getElementById("add-balance-form").addEventListener("submit", function(e) {
     e.preventDefault();
 
-    const userId = document.getElementById('user-id').value;
-    const balanceAmount = document.getElementById('balance-amount').value;
+    const userId = document.getElementById("user-id").value;
+    const amount = document.getElementById("balance-amount").value;
 
     fetch('add-balance.php', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: 'user_id=' + encodeURIComponent(userId) + '&balance_amount=' + encodeURIComponent(balanceAmount)
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({ user_id: userId, balance_amount: amount })
     })
-    .then(response => response.text())
+    .then(response => response.json())
     .then(data => {
-        // alert(data); // Show success or error message
-        document.getElementById('balance-modal').style.display = 'none';
-        document.getElementById('user-search-form').reset();
-        showToast("Balance successfully added!");
+        alert(data.message);
+        if (data.success) {
+            document.getElementById("balance-modal").style.display = "none";
+        }
     })
     .catch(error => {
-        console.error('Error:', error);
-        showToast("Failed to add balance.");
+        console.error("Error:", error);
     });
 });
+
 </script>
 
 <div id="toast" style="
@@ -288,25 +277,34 @@ document.getElementById('add-balance-form').addEventListener('submit', function(
 
 <script>
 document.getElementById('costForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const costValue = document.getElementById('cost').value;
+    e.preventDefault(); // prevent default form submission
 
-    fetch('add-balance.php', {
+    const cost = document.getElementById('cost').value;
+
+    fetch('update-cost.php', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: 'cost=' + encodeURIComponent(costValue)
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: 'cost=' + encodeURIComponent(cost)
     })
-    .then(res => res.json())
+    .then(response => response.json())
     .then(data => {
         const popup = document.getElementById('popup-msg');
         popup.textContent = data.message;
-        popup.style.background = data.success ? '#4CAF50' : '#f44336'; // green or red
+        popup.style.backgroundColor = data.success ? '#4CAF50' : '#f44336'; // green or red
         popup.style.display = 'block';
-        setTimeout(() => popup.style.display = 'none', 3000);
+
+        setTimeout(() => {
+            popup.style.display = 'none';
+        }, 3000);
     })
-    .catch(() => alert('Something went wrong.'));
+    .catch(error => {
+        console.error('Error:', error);
+    });
 });
 </script>
+
 
 
 </body>

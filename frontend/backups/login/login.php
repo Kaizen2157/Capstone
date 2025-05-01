@@ -19,6 +19,8 @@ $_SESSION['first_name'] = $fetched_first_name;
 $email = $_POST['email'];
 $password = $_POST['password'];
 
+$_SESSION['user_id'] = $userId;
+
 // Prepare statement to fetch user by email
 $sql = "SELECT * FROM users WHERE email = ?";
 $stmt = $conn->prepare($sql);

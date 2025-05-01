@@ -110,6 +110,10 @@ nav .btn{
     gap: 20px;
 }
 
+nav .btn p{
+    font-weight: 500;
+}
+
 nav .btn .dropdown{
     width: 100%;
 }
@@ -564,4 +568,10 @@ footer{
     color: white;
     font-size: 0.9rem;
     margin-top: 4rem;
+}
+
+#balance-display{
+    font-size: 1rem;
+    font-weight: 600;
+    color: #19384a;
 }

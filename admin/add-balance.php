@@ -1,12 +1,4 @@
 <?php
-session_start();
-header('Content-Type: application/json');
-
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    echo json_encode(['success' => false, 'message' => 'Unauthorized']);
-    exit();
-}
-
 $host = "localhost";
 $username = "root";
 $password = "";
@@ -14,22 +6,32 @@ $database = "parking_system";
 
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
-    echo json_encode(['success' => false, 'message' => 'DB connection error']);
-    exit();
+    die("Connection failed: " . $conn->connect_error);
 }
 
-if (isset($_POST['cost'])) {
-    $cost = $_POST['cost'];
-    $stmt = $conn->prepare("UPDATE settings SET parking_cost  = ?"); // make sure this table exists
-    $stmt->bind_param("d", $cost);
-    $stmt->execute();
+// Only run if form is submitted with user_id and balance_amount
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['user_id'], $_POST['balance_amount'])) {
+    $user_id = intval($_POST['user_id']);
+    $amount = floatval($_POST['balance_amount']);
 
-    if ($stmt->affected_rows > 0) {
-        echo json_encode(['success' => true, 'message' => 'Parking slot cost updated!']);
+    if ($amount > 0) {
+        // Update user balance
+        $stmt = $conn->prepare("UPDATE users SET balance = balance + ? WHERE id = ?");
+        $stmt->bind_param("di", $amount, $user_id);
+
+        if ($stmt->execute()) {
+            echo json_encode(['success' => true, 'message' => 'Balance added successfully.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to add balance.']);
+        }
+
+        $stmt->close();
     } else {
-        echo json_encode(['success' => false, 'message' => 'No changes made.']);
+        echo json_encode(['success' => false, 'message' => 'Invalid amount.']);
     }
 } else {
-    echo json_encode(['success' => false, 'message' => 'Invalid input']);
+    echo json_encode(['success' => false, 'message' => 'Invalid request.']);
 }
+
+$conn->close();
 ?>

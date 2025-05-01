@@ -172,3 +172,98 @@ function confirmLogout() {
         window.location.href = "logout.php";
     }
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    fetch('get-recent-reservation.php')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.querySelector('.reservation-history tbody');
+            tableBody.innerHTML = ''; // clear existing content
+
+            if (data.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = `<td colspan="3">No reservations yet.</td>`;
+                tableBody.appendChild(row);
+                return;
+            }
+
+            data.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.slot}</td>
+                    <td>${item.start_time} - ${item.end_time}</td>
+                    <td>${item.status}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching reservations:', error);
+        });
+});
+// // Fetch reservation history and populate the table
+
+
+// // Call the function when the page is loaded
+// document.addEventListener('DOMContentLoaded', fetchReservationHistory);
+
+fetch('get-reservation-history.php')
+.then(response => response.json())
+.then(data => {
+  const historyTableBody = document.querySelector(".reservation-history tbody");
+  historyTableBody.innerHTML = "";
+
+  data.forEach(reservation => {
+    const start = new Date(reservation.start_time);
+    const end = new Date(reservation.end_time);
+
+    if (isNaN(start) || isNaN(end)) {
+      console.error("Invalid date format", reservation.start_time, reservation.end_time);
+      return;
+    }
+
+    const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
+    const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
+
+    const date = start.toLocaleDateString(undefined, dateOptions);
+    const startTime = start.toLocaleTimeString(undefined, timeOptions);
+    const endTime = end.toLocaleTimeString(undefined, timeOptions);
+
+    const row = `
+      <tr>
+        <td>${reservation.slot_number}</td>
+        <td>${date}<br>${startTime} - ${endTime}</td>
+        <td>${reservation.status ?? '—'}</td>
+      </tr>
+    `;
+    historyTableBody.innerHTML += row;
+  });
+})
+.catch(err => {
+  console.error("Error fetching reservation data", err);
+});
+
+
+
+function fetchBalance() {
+    fetch('get-balance.php')
+        .then(response => response.json())
+        .then(data => {
+            // Update the balance
+            document.getElementById('balance').innerText = '₱' + data.balance.toFixed(2);
+
+            // Update the transaction history
+            const transactionList = document.getElementById('transaction-history');
+            transactionList.innerHTML = ''; // Clear existing history
+            data.transactions.forEach(transaction => {
+                const li = document.createElement('li');
+                // Format transaction data (e.g., show amount, description, and date)
+                li.innerText = `${transaction.amount > 0 ? '+' : ''}₱${transaction.amount} - ${transaction.description} on ${transaction.created_at}`;
+                transactionList.appendChild(li);
+            });
+        })
+        .catch(error => console.error('Error fetching balance:', error));
+}
+
+// // Call the function to load data on page load
+// window.onload = fetchBalance;

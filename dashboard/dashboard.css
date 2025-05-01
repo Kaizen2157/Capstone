@@ -111,6 +111,10 @@ nav .btn{
     gap: 20px;
 }
 
+nav .btn p{
+    font-weight: 500;
+}
+
 nav .btn .dropdown{
     width: 100%;
 }
@@ -191,4 +195,51 @@ nav .btn li{
 /* Show Dropdown on Click */
 nav .btn .dropdown .dropdown-content.show {
     display: block;
+}
+
+
+
+
+
+
+
+
+.all{
+    padding: 25px 50px;
+    width: 100%;
+    max-width: auto;
+}
+
+
+
+
+
+
+.top-align .balance{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    border: 1px solid #ccc;
+    width: fit-content;
+    padding: 25px 75px;
+}
+
+.top-align .balance i{
+    font-size: 1.5rem;
+    border: none;
+    border-radius: 50%;
+    background-color: #19384a;
+    padding: 15px;
+    color: #fff;
+}
+
+.top-align .balance p{
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #19384a;
+}
+
+.top-align .balance h2{
+    font-size: 1rem;
 }

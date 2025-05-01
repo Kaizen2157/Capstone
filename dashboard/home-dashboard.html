@@ -17,6 +17,9 @@
             </a>
         </div>
         <div class="btn">
+
+            <p id="balance-display">Balance: Loading...</p>
+
             <div class="user-dropdown">
                 <div class="drop">
                     <a href="dashboard.html">Dashboard</a>
@@ -49,7 +52,7 @@
                         <p class="slot available">2</p>
                         <p class="slot available">3</p>
                     </div>
-                    <span>
+                    <!-- <span>
                         <p class="line"></p>
                         <p class="divider">Parking Slots</p>
                         <p class="line"></p>
@@ -58,7 +61,7 @@
                         <p class="slot available">4</p>
                         <p class="slot available">5</p>
                         <p class="slot available">6</p>
-                    </div>
+                    </div> -->
                 </div>
 
                 <div id="booking-details">
@@ -128,6 +131,24 @@
         </div>
     </div>
     
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('get-balance.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.balance) {
+                        document.getElementById('balance-display').textContent = "Balance: ₱" + data.balance;
+                    } else {
+                        document.getElementById('balance-display').textContent = "Balance: Error";
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    document.getElementById('balance-display').textContent = "Balance: Error";
+                });
+        });
+    </script>
 
     <script src="script.js"></script>
 </body>

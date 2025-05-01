@@ -28,12 +28,12 @@ if (isset($_POST['user_search'])) {
 
     if ($user) {
         echo json_encode([
-            'success' => true,
-            'id' => $user['id'],
-            'first_name' => $user['first_name'],
-            'last_name' => $user['last_name'],
-            'email' => $user['email'],
-            'balance' => number_format($user['balance'], 2)
+            "success" => true,
+            "user" => [
+                "id" => $user['id'],
+                "name" => $user['first_name'] . ' ' . $user['last_name'],
+                "email" => $user['email']
+            ]
         ]);
     } else {
         echo json_encode(['success' => false]);
