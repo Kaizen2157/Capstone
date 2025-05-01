@@ -195,7 +195,10 @@ document.getElementById("user-search-form").addEventListener("submit", function(
             userNotFoundMsg.style.display = "none";
 
             // Fill modal with user info
-            document.getElementById("user-info").innerText = `${data.user.name} (${data.user.email})`;
+            document.getElementById("user-info").innerHTML = `
+            <strong>${data.user.name}</strong> (${data.user.email})<br>
+            Current Balance: <strong>₱${parseFloat(data.user.balance).toFixed(2)}</strong>`;
+
             document.getElementById("user-id").value = data.user.id;
 
             // Show modal

@@ -32,7 +32,8 @@ if (isset($_POST['user_search'])) {
             "user" => [
                 "id" => $user['id'],
                 "name" => $user['first_name'] . ' ' . $user['last_name'],
-                "email" => $user['email']
+                "email" => $user['email'],
+                "balance" => $user['balance']  // ✅ Add this line
             ]
         ]);
     } else {
