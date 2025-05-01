@@ -22,14 +22,21 @@ $result = $stmt->get_result();
 
 $reservations = [];
 while ($row = $result->fetch_assoc()) {
-    // Convert datetime to ISO 8601
-    date_default_timezone_set('Asia/Manila'); // Set timezone to GMT+8
+    date_default_timezone_set('Asia/Manila'); // GMT+8
 
-    $row['start_time'] = date('c', strtotime($row['start_time']));
-    $row['end_time'] = date('c', strtotime($row['end_time']));
+    $start_datetime_str = $row['start_date'] . ' ' . $row['start_time'];
+    $start_datetime = new DateTime($start_datetime_str);
+
+    // Add duration_hours to get end datetime
+    $end_datetime = clone $start_datetime;
+    $end_datetime->modify("+{$row['duration_hours']} hours");
+
+    $row['start_time'] = $start_datetime->format(DATE_ATOM); // ISO 8601
+    $row['end_time'] = $end_datetime->format(DATE_ATOM);     // ISO 8601
 
     $reservations[] = $row;
 }
+
 
 echo json_encode($reservations);
 $stmt->close();

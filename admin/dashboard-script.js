@@ -52,9 +52,3 @@ function showToast(message) {
       toast.style.pointerEvents = 'none';
     }, 3000); // Hide after 3 seconds
 }
-
-
-
-        setTimeout(function() {
-            window.location.href = "adminlog.html"; // Redirect to login page after 3 seconds
-        }, 3000);

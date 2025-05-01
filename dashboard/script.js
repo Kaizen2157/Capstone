@@ -13,6 +13,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Function to fetch and display balance
+// Update balance display
+fetch('get-balance.php')
+    .then(response => response.json())
+    .then(data => {
+        // Format and show balance
+        const formattedBalance = Number(data.balance).toLocaleString('en-PH', {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2
+        });
+        
+        // Change this to balance-display (from balance)
+        document.getElementById('balance-display').innerText = '₱' + formattedBalance;
+
+        // Update transaction history
+        const transactionList = document.getElementById('transaction-history');
+        transactionList.innerHTML = '';
+        data.transactions.forEach(transaction => {
+            const formattedAmount = Number(transaction.amount).toLocaleString('en-PH', {
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
+            });
+            const li = document.createElement('li');
+            li.innerText = `${transaction.amount > 0 ? '-' : ''}₱${formattedAmount} - ${transaction.description} on ${transaction.created_at}`;
+            transactionList.appendChild(li);
+        });
+    })
+    .catch(error => console.error('Error fetching balance:', error));
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+        fetchBalance();
+    });
+
     fetch('get-user.php')
         .then(response => response.json())
         .then(data => {
@@ -173,9 +207,9 @@ function confirmLogout() {
     }
 }
 
-setTimeout(function() {
-    window.location.href = "../frontend/backups/login/login.html"; // Redirect to login page after 3 seconds
-}, 3000);
+// setTimeout(function() {
+//     window.location.href = "../frontend/backups/login/login.html"; // Redirect to login page after 3 seconds
+// }, 3000);
 
 // // Fetch recent reservation data and populate the table
 document.addEventListener("DOMContentLoaded", function () {
@@ -230,17 +264,17 @@ fetch('get-reservation-history.php')
     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
     const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
 
-    const date = start.toLocaleDateString(undefined, dateOptions);
-    const startTime = start.toLocaleTimeString(undefined, timeOptions);
-    const endTime = end.toLocaleTimeString(undefined, timeOptions);
+    const startDateTimeStr = `${start.toLocaleDateString(undefined, dateOptions)}, ${start.toLocaleTimeString(undefined, timeOptions)}`;
+const endDateTimeStr = `${end.toLocaleDateString(undefined, dateOptions)}, ${end.toLocaleTimeString(undefined, timeOptions)}`;
 
-    const row = `
-      <tr>
-        <td>${reservation.slot_number}</td>
-        <td>${date}<br>${startTime} - ${endTime}</td>
-        <td>${reservation.status ?? '—'}</td>
-      </tr>
-    `;
+const row = `
+  <tr>
+    <td>${reservation.slot_number}</td>
+    <td>${startDateTimeStr} – ${endDateTimeStr}</td>
+    <td>${reservation.status ?? '—'}</td>
+  </tr>
+`;
+
     historyTableBody.innerHTML += row;
   });
 })
@@ -250,25 +284,7 @@ fetch('get-reservation-history.php')
 
 
 
-function fetchBalance() {
-    fetch('get-balance.php')
-        .then(response => response.json())
-        .then(data => {
-            // Update the balance
-            document.getElementById('balance').innerText = '₱' + data.balance.toFixed(2);
-
-            // Update the transaction history
-            const transactionList = document.getElementById('transaction-history');
-            transactionList.innerHTML = ''; // Clear existing history
-            data.transactions.forEach(transaction => {
-                const li = document.createElement('li');
-                // Format transaction data (e.g., show amount, description, and date)
-                li.innerText = `${transaction.amount > 0 ? '+' : ''}₱${transaction.amount} - ${transaction.description} on ${transaction.created_at}`;
-                transactionList.appendChild(li);
-            });
-        })
-        .catch(error => console.error('Error fetching balance:', error));
-}
 
 // // Call the function to load data on page load
 // window.onload = fetchBalance;
+
