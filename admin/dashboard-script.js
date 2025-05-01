@@ -55,3 +55,6 @@ function showToast(message) {
 
 
 
+        setTimeout(function() {
+            window.location.href = "adminlog.html"; // Redirect to login page after 3 seconds
+        }, 3000);

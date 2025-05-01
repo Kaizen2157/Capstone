@@ -173,6 +173,11 @@ function confirmLogout() {
     }
 }
 
+setTimeout(function() {
+    window.location.href = "../frontend/backups/login/login.html"; // Redirect to login page after 3 seconds
+}, 3000);
+
+// // Fetch recent reservation data and populate the table
 document.addEventListener("DOMContentLoaded", function () {
     fetch('get-recent-reservation.php')
         .then(response => response.json())

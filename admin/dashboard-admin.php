@@ -231,11 +231,25 @@ document.getElementById("add-balance-form").addEventListener("submit", function(
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message);
-        if (data.success) {
-            document.getElementById("balance-modal").style.display = "none";
-        }
-    })
+    if (data.success) {
+        // Hide modal
+        document.getElementById("balance-modal").style.display = "none";
+
+        // Update and show toast message
+        const toast = document.getElementById("toast");
+        toast.textContent = "Balance successfully added!";
+        toast.style.opacity = 1;
+        toast.style.pointerEvents = "auto";
+
+        setTimeout(() => {
+            toast.style.opacity = 0;
+            toast.style.pointerEvents = "none";
+        }, 3000); // Hide after 3 seconds
+    } else {
+        alert(data.message); // fallback alert on failure
+    }
+})
+
     .catch(error => {
         console.error("Error:", error);
     });

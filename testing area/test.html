@@ -1,60 +1,51 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="test.css">
-    <title>Testing</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style>
+    .duration-stepper {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.stepper-control {
+    display: flex;
+    align-items: center;
+}
+.stepper-control button {
+    padding: 5px 10px;
+    font-size: 1.2rem;
+    cursor: pointer;
+}
+.stepper-control input {
+    width: 50px;
+    text-align: center;
+    margin: 0 5px;
+}
+
+  </style>
 </head>
 <body>
-    
-    <!-- Main Dashboard Body -->
-<main>
-    <!-- Recent Reservation Section -->
-    <section class="recent-reservation">
-      <h2>Recent Reservation</h2>
-      <div class="reservation-card">
-        <p><strong>Slot Number:</strong> 5</p>
-        <p><strong>Start Time:</strong> 10:00 AM</p>
-        <p><strong>End Time:</strong> 12:00 PM</p>
-        <p><strong>Status:</strong> Confirmed</p>
-      </div>
-    </section>
-  
-    <!-- Reservation History Section -->
-    <section class="reservation-history">
-      <h2>Reservation History</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Slot</th>
-            <th>Date</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          <!-- Repeat rows with real data -->
-          <tr>
-            <td>3</td>
-            <td>April 28, 2025</td>
-            <td>Completed</td>
-          </tr>
-        </tbody>
-      </table>
-    </section>
-  
-    <!-- Balance and Transaction History -->
-    <section class="balance">
-      <h2>Account Balance</h2>
-      <p><strong>Balance:</strong> ₱200.00</p>
-      <h3>Transaction History</h3>
-      <ul>
-        <li>+₱100 - Balance Loaded on April 25, 2025</li>
-        <li>-₱40 - Reservation on April 28, 2025</li>
-      </ul>
-    </section>
-  </main>
-  
+
+  <div class="duration-stepper">
+    <label for="duration">Duration (in hours):</label>
+    <div class="stepper-control">
+        <button type="button" onclick="changeDuration(-1)">−</button>
+        <input type="number" id="duration" name="duration" value="1" min="1" max="24" step="1" readonly>
+        <button type="button" onclick="changeDuration(1)">+</button>
+    </div>
+</div>
+
+  <script>
+    function changeDuration(change) {
+    const durationInput = document.getElementById('duration');
+    let current = parseInt(durationInput.value, 10);
+    current = isNaN(current) ? 1 : current;
+    const newValue = Math.max(1, Math.min(current + change, 24));
+    durationInput.value = newValue;
+}
+  </script>
 </body>
 </html>
-
