@@ -23,8 +23,11 @@ $result = $stmt->get_result();
 $reservations = [];
 while ($row = $result->fetch_assoc()) {
     // Convert datetime to ISO 8601
-    $row['start_time'] = date('c', strtotime($row['start_time'])); // e.g. 2025-04-30T14:00:00+00:00
+    date_default_timezone_set('Asia/Manila'); // Set timezone to GMT+8
+
+    $row['start_time'] = date('c', strtotime($row['start_time']));
     $row['end_time'] = date('c', strtotime($row['end_time']));
+
     $reservations[] = $row;
 }
 
