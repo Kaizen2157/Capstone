@@ -205,7 +205,7 @@ nav .btn .dropdown .dropdown-content.show {
 
 
 .all{
-    padding: 25px 50px;
+    padding: 35px 70px;
     width: 100%;
     max-width: auto;
 }
@@ -242,4 +242,97 @@ nav .btn .dropdown .dropdown-content.show {
 
 .top-align .balance h2{
     font-size: 1rem;
+}
+
+
+/* Reservation History Table Styling */
+
+.reservation-history h2{
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    margin-top: 30px;
+}
+
+.reservation-history table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 14px;
+    background-color: #fff;
+}
+
+.reservation-history th,
+.reservation-history td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.reservation-history th {
+    background-color: #19384a;
+    color: #fff;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.reservation-history td {
+    background-color: #f9f9f9;
+    color: #333;
+}
+
+.reservation-history tr:hover {
+    background-color: #f1f1f1;
+}
+
+.reservation-history .status {
+    font-weight: bold;
+    color: #ff9800; /* Or use different color based on status */
+}
+
+/* Transaction History */
+.transaction-history {
+    margin-top: 40px;
+}
+
+.transaction-history h3 {
+    font-size: 18px;
+    font-weight: bold;
+    color: #19384a;
+}
+
+.transaction-history ul {
+    list-style: none;
+    padding: 0;
+}
+
+.transaction-history li {
+    background-color: #fff;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid #ddd;
+}
+
+.transaction-history li:hover {
+    background-color: #f1f1f1;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .top-align .balance {
+        padding: 20px 40px;
+    }
+    
+    .reservation-history table {
+        font-size: 12px;
+    }
+    
+    .reservation-history th, .reservation-history td {
+        padding: 10px 12px;
+    }
+    
+    .transaction-history li {
+        font-size: 14px;
+        padding: 10px;
+    }
 }

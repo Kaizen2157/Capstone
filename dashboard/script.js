@@ -265,15 +265,15 @@ fetch('get-reservation-history.php')
     const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
 
     const startDateTimeStr = `${start.toLocaleDateString(undefined, dateOptions)}, ${start.toLocaleTimeString(undefined, timeOptions)}`;
-const endDateTimeStr = `${end.toLocaleDateString(undefined, dateOptions)}, ${end.toLocaleTimeString(undefined, timeOptions)}`;
+    const endDateTimeStr = `${end.toLocaleDateString(undefined, dateOptions)}, ${end.toLocaleTimeString(undefined, timeOptions)}`;
 
-const row = `
-  <tr>
-    <td>${reservation.slot_number}</td>
-    <td>${startDateTimeStr} – ${endDateTimeStr}</td>
-    <td>${reservation.status ?? '—'}</td>
-  </tr>
-`;
+    const row = `
+      <tr>
+        <td>${reservation.slot_number}</td>
+        <td>${startDateTimeStr} – ${endDateTimeStr}</td>
+        <td>₱${reservation.total_cost}</td>
+      </tr>
+    `;
 
     historyTableBody.innerHTML += row;
   });
@@ -281,6 +281,7 @@ const row = `
 .catch(err => {
   console.error("Error fetching reservation data", err);
 });
+
 
 
 
