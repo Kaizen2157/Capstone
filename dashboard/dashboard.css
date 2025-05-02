@@ -378,3 +378,29 @@ nav .btnn .dropdown .dropdown-content.show {
     color: #19384a;
     font-weight: 600;
 }
+
+#message-box {
+    position: fixed;
+    top: 90px; /* adjust as needed to appear under navbar */
+    right: 20px;
+    z-index: 1050;
+    width: auto;
+    max-width: 300px;
+}
+
+#message-box .alert {
+    animation: fadeSlideIn 0.5s ease;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Optional animation */
+@keyframes fadeSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

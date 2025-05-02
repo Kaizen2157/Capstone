@@ -409,19 +409,22 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Hide cancel button if reservation time has passed
                 const isPastReservation = currentTime >= endDateTime;
 
+                let buttonsHTML = '';
+                if (!isPastReservation) {
+                    buttonsHTML += `<button id="cancel-reservation-btn" class="btn btn-danger me-2">Cancel Reservation</button>`;
+                    buttonsHTML += `<button id="start-now-btn" class="btn btn-success">Start Now</button>`;
+                }
+                
                 section.innerHTML = `
-                    <div class="reservation-info">
-                        <h3 class="activereservation">Active Reservation</h3>
-                        <p><strong>Slot:</strong> ${r.slot_number}</p>
-                        <p><strong>Start Date & Time:</strong> ${formattedStart}</p>
-                        <p><strong>Total Cost:</strong> PHP ${parseFloat(r.total_cost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                        ${
-                            isPastReservation ? 
-                            `<p class="text-danger">This reservation has already ended.</p>` : 
-                            `<button id="cancel-reservation-btn" class="btn btn-danger">Cancel Reservation</button>`
-                        }
-                    </div>
+                  <div class="reservation-info">
+                      <h3 class="activereservation">Active Reservation</h3>
+                      <p><strong>Slot:</strong> ${r.slot_number}</p>
+                      <p><strong>Start Date & Time:</strong> ${formattedStart}</p>
+                      <p><strong>Total Cost:</strong> PHP ${parseFloat(r.total_cost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                      ${isPastReservation ? `<p class="text-danger">This reservation has already ended.</p>` : buttonsHTML}
+                  </div>
                 `;
+
 
                 if (!isPastReservation) {
                     document.getElementById('cancel-reservation-btn').addEventListener('click', function () {
@@ -453,7 +456,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 if (result.success) {
                                     setTimeout(() => {
                                         window.location.reload();
-                                    }, 1000);
+                                    }, 3000);
                                 }
                             })
                             .catch(error => {
