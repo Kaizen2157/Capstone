@@ -76,24 +76,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $update_balance_stmt->close();
 
     // FOURTH: Proceed to save booking
-    $stmt = $conn->prepare("INSERT INTO reservations 
-        (user_id, first_name, last_name, contact_number, car_plate, slot_number, start_date, start_time, end_time, duration_hours, total_cost) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $status = 'reserved'; // Set status explicitly
 
-    $stmt->bind_param(
-        "isssssssssd",
-        $user_id,
-        $first_name,
-        $last_name,
-        $contact_number,
-        $car_plate,
-        $slot_number,
-        $start_date,
-        $start_time,
-        $end_time,
-        $duration_hours,
-        $total_cost
-    );
+    $stmt = $conn->prepare("INSERT INTO reservations 
+        (user_id, first_name, last_name, contact_number, car_plate, slot_number, start_date, start_time, end_time, duration_hours, total_cost, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+
+        $stmt->bind_param(
+            "issssssssdds",
+            $user_id,
+            $first_name,
+            $last_name,
+            $contact_number,
+            $car_plate,
+            $slot_number,
+            $start_date,
+            $start_time,
+            $end_time,
+            $duration_hours,
+            $total_cost,
+            $status
+        );
+
 
     if ($stmt->execute()) {
         echo "Booking saved successfully.";

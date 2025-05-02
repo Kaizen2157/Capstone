@@ -104,22 +104,22 @@ nav .logo p{
     font-weight: 600;
 }
 
-nav .btn{
+nav .btnn{
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 20px;
 }
 
-nav .btn p{
+nav .btnn p{
     font-weight: 500;
 }
 
-nav .btn .dropdown{
+nav .btnn .dropdown{
     width: 100%;
 }
 
-nav .btn .dropdown-content a{
+nav .btnn .dropdown-content a{
     text-decoration: none;
     color: black;
     font-weight: 600;
@@ -137,11 +137,8 @@ nav .btn .dropdown-content a{
     border-radius: 5px;
 }
 
-nav .btn .dropdown-content a:hover{
-    background-color: #f1f1f1;
-}
 
-nav .btn .dropdown .dropbtn i{
+nav .btnn .dropdown .dropbtn i{
     color: black;
     font-size: 2.5rem;
     font-weight: 100;
@@ -154,25 +151,25 @@ nav .btn .dropdown .dropbtn i{
     width: max-content;
 }
 
-nav .btn .areas a{
+nav .btnn .areas a{
     font-size: 16px;
     font-weight: 600;
     color: black;
 }
 
-nav .btn .dropdown .dropdown-content a{
+nav .btnn .dropdown .dropdown-content a{
     display: flex;
     align-items: center;
     text-align: center;
     gap: 5px;
 }
 
-nav .btn .dropdown .dropdown-content a>i{
+nav .btnn .dropdown .dropdown-content a>i{
     font-size: 16px;
     font-weight: 500;
 }
 
-nav .btn .dropdown .dropdown-content{
+nav .btnn .dropdown .dropdown-content{
     display: none; /* Hidden by default */
     position: absolute;
     background-color: #fff;
@@ -183,17 +180,17 @@ nav .btn .dropdown .dropdown-content{
     justify-content: center;
 }
 
-nav .btn .dropdown .dropdown-content a{
+nav .btnn .dropdown .dropdown-content a{
     width: 100%;
 }
 
-nav .btn li{
+nav .btnn li{
     position: relative;
     list-style-type: none;
 }
 
 /* Show Dropdown on Click */
-nav .btn .dropdown .dropdown-content.show {
+nav .btnn .dropdown .dropdown-content.show {
     display: block;
 }
 
@@ -214,6 +211,11 @@ nav .btn .dropdown .dropdown-content.show {
 
 
 
+.top-align{
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
 
 .top-align .balance{
     display: flex;
@@ -222,7 +224,7 @@ nav .btn .dropdown .dropdown-content.show {
     gap: 15px;
     border: 1px solid #ccc;
     width: fit-content;
-    padding: 25px 75px;
+    padding: 43px 85px;
 }
 
 .top-align .balance i{
@@ -242,6 +244,7 @@ nav .btn .dropdown .dropdown-content.show {
 
 .top-align .balance h2{
     font-size: 1rem;
+    font-weight: 600;
 }
 
 
@@ -335,4 +338,43 @@ nav .btn .dropdown .dropdown-content.show {
         font-size: 14px;
         padding: 10px;
     }
+}
+
+
+
+
+.reservation-info {
+    border: 1px solid #ccc;
+    width: fit-content;
+    padding: 27px 45px;
+}
+
+#message-box {
+    margin-top: 20px;
+}
+
+.alert {
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+/* You can add this to your existing CSS file */
+.modal-dialog {
+    max-width: 500px;
+    margin: 100px auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+.modal-content {
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.activereservation{
+    font-size: 1.5rem;
+    color: #19384a;
+    font-weight: 600;
 }

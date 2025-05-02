@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="dashboard.css">
     <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap JS and Popper.js (required for modal) -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+
+    </style>
     <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
     <title>Dashboard</title>
 </head>
@@ -18,7 +25,7 @@
       </a>
     </div>
 
-    <div class="btn">
+    <div class="btnn">
 
 
         <div class="user-dropdown">
@@ -55,9 +62,45 @@
             <h2>Account Balance</h2>
         </section>
     
-        
+        <div id="reservation-section">
+            <!-- The cancel button will be inserted here by JavaScript if the user has an active reservation -->
+        </div>
+
+        <div id="message-box"></div>
+
+    
+        <!-- Confirmation Modal -->
+        <div class="modal" id="cancelConfirmationModal" tabindex="-1" aria-labelledby="cancelConfirmationModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="cancelConfirmationModalLabel">Cancel Reservation</h5>
+                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                  Are you sure you want to cancel this reservation?
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                  <button type="button" class="btn btn-danger" id="confirm-cancel-btn">Cancel Reservation</button>
+                </div>
+              </div>
+            </div>
+          </div>
     
     </div>
+
+    
+
+
+  
+    <!-- <section class="active-reservation">
+        <h2>Active Reservation</h2>
+        <div id="activeReservationContainer">
+            <p>Loading active reservation...</p>
+        </div>
+    </section> -->
+
     
     <section class="reservation-history">
         <h2>Reservation History</h2>
@@ -88,17 +131,6 @@
 </div>
 
 
-
-<!-- // If user is not logged in, redirect to sign-in page
-if (!isset($_SESSION['user'])) {
-    header("Location: sign-in.html");
-    exit();
-}
-
-// Prevent page caching
-header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
-header("Pragma: no-cache"); // HTTP 1.0
-header("Expires: 0"); // Proxies -->
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
