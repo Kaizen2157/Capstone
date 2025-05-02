@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const usernameDisplay = document.getElementById('username-display');
     const dropdownMenu = document.getElementById('dropdown-menu');
 
+    const bookingDateInput = document.getElementById("booking-date");
+    const today = new Date();
+    const tomorrow = new Date();
+    const dayAfterTomorrow = new Date();
+
     const startNowBtn = document.getElementById('start-now-btn');
     if (startNowBtn) {
         startNowBtn.addEventListener('click', function () {
@@ -67,7 +72,6 @@ fetch('get-balance.php')
         
         // Change this to balance-display (from balance)
         document.getElementById('balance-display').innerText = '₱' + formattedBalance;
-
         // Update transaction history
         const transactionList = document.getElementById('transaction-history');
         transactionList.innerHTML = '';
@@ -80,9 +84,11 @@ fetch('get-balance.php')
             li.innerText = `${transaction.amount > 0 ? '-' : ''}₱${formattedAmount} - ${transaction.description} on ${transaction.created_at}`;
             transactionList.appendChild(li);
         });
+
     })
     .catch(error => console.error('Error fetching balance:', error));
 
+    
     
 
     fetch('get-user.php')
@@ -139,6 +145,8 @@ fetch('get-balance.php')
         }
     });
 
+    
+
     // Update booking details
     function updateBookingDetails() {
         const details = document.getElementById('selected-slots');
@@ -155,121 +163,154 @@ fetch('get-balance.php')
     }
 
     // Handle Proceed Button Click for E-Receipt
-    document.getElementById('proceed-btn').addEventListener('click', function (e) {
-        e.preventDefault();
+document.getElementById('proceed-btn').addEventListener('click', function (e) {
+    e.preventDefault();
 
-        const firstName = document.getElementById('first-name').value.trim();
-        const lastName = document.getElementById('last-name').value.trim();
-        const contact = document.getElementById('contact-number').value.trim();
-        const plateNumber = document.getElementById('car-plate').value.trim();
+    const firstName = document.getElementById('first-name').value.trim();
+    const lastName = document.getElementById('last-name').value.trim();
+    const contact = document.getElementById('contact-number').value.trim();
+    const plateNumber = document.getElementById('car-plate').value.trim();
+    const bookingDate = document.getElementById("booking-date").value;
+    const startTime = document.getElementById("start-time").value;
+    const durationHours = parseInt(document.getElementById("duration").value, 10);
+    const selectedArray = selectedSlot ? [selectedSlot] : [];
+
+    // Update End Date and Time (UI)
+    function updateEndDateTime() {
         const bookingDate = document.getElementById("booking-date").value;
         const startTime = document.getElementById("start-time").value;
         const durationHours = parseInt(document.getElementById("duration").value, 10);
-        const selectedArray = selectedSlot ? [selectedSlot] : []; // Convert the selected slot to an array
 
-        function updateEndDateTime() {
-            const bookingDate = document.getElementById("booking-date").value;
-            const startTime = document.getElementById("start-time").value;
-            const durationHours = parseInt(document.getElementById("duration").value, 10);
-        
-            if (!bookingDate || !startTime || isNaN(durationHours)) return;
-        
-            const startDateTime = new Date(`${bookingDate}T${startTime}`);
-            const endDateTime = new Date(startDateTime.getTime() + durationHours * 60 * 60 * 1000);
-        
-            const endDate = endDateTime.toISOString().slice(0, 10);
-            const endHours = String(endDateTime.getHours()).padStart(2, '0');
-            const endMinutes = String(endDateTime.getMinutes()).padStart(2, '0');
-            const endTime = `${endHours}:${endMinutes}`;
-        
-            // Optional: update UI if you have elements showing this
-            const endDateInput = document.getElementById("end-date");
-            const endTimeInput = document.getElementById("end-time");
-        
-            if (endDateInput) endDateInput.value = endDate;
-            if (endTimeInput) endTimeInput.value = endTime;
-        }
+        if (!bookingDate || !startTime || isNaN(durationHours)) return;
 
-        document.getElementById("booking-date").addEventListener("change", updateEndDateTime);
-        document.getElementById("start-time").addEventListener("change", updateEndDateTime);
-        document.getElementById("duration").addEventListener("change", updateEndDateTime);
+        const startDateTime = new Date(`${bookingDate}T${startTime}`);
+        const endDateTime = new Date(startDateTime.getTime() + durationHours * 60 * 60 * 1000);
 
-        
-    
-        // Validation
-        if (!firstName || !lastName || !contact || selectedArray.length === 0 || !bookingDate || !startTime || !durationHours) {
-            alert('Please fill in all required fields and select at least one slot.');
-            return;
-        }
-    
-        const nameRegex = /^[a-zA-Z\s\-]+$/;
-        if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
-            alert('Name can only contain letters, spaces, and hyphens.');
-            return;
-        }
-    
-        // Calculate End Time
-        const [startHour, startMinute] = startTime.split(':').map(Number);
-        const startDateObj = new Date(`${bookingDate}T${startTime}`);
-        const endDateObj = new Date(startDateObj.getTime() + durationHours * 60 * 60 * 1000); // Add hours in ms
+        const endDate = endDateTime.toISOString().slice(0, 10);
+        const endHours = String(endDateTime.getHours()).padStart(2, '0');
+        const endMinutes = String(endDateTime.getMinutes()).padStart(2, '0');
+        const endTime = `${endHours}:${endMinutes}`;
 
-        // Format end time and date (local format)
-        const endDate = endDateObj.toISOString().slice(0, 10); // YYYY-MM-DD
-        let endTime = endDateObj.toTimeString().slice(0, 5); // HH:MM
+        const endDateInput = document.getElementById("end-date");
+        const endTimeInput = document.getElementById("end-time");
 
-    
-        const endHours = String(endDateObj.getHours()).padStart(2, '0');
-        const endMinutes = String(endDateObj.getMinutes()).padStart(2, '0');
-        endTime = `${endHours}:${endMinutes}`; // ✅ Now it's reassigned, not redeclared
-    
-        // Calculate Total Cost
-        const ratePerHour = SLOT_COST; // Dynamic cost fetched from the server
-        const totalCost = selectedArray.length * ratePerHour * durationHours;
-    
-        // Update hidden inputs
-        document.getElementById('hidden-selected-slot').value = selectedArray.join(', ');
-        document.getElementById('hidden-total-cost').value = totalCost.toFixed(2);
-    
-        // Update Receipt
-        document.getElementById('receipt-user').textContent = `Name: ${firstName} ${lastName}`;
-        document.getElementById('receipt-contact').textContent = `Contact: ${contact}`;
-        document.getElementById('receipt-plate').textContent = `Plate Number: ${plateNumber}`;
-        document.getElementById('receipt-slot').textContent = `Slot: ${selectedArray.join(', ')}`;
-        document.getElementById('receipt-date').textContent = `Start Date & Time: ${bookingDate} ${startTime}`;
-        document.getElementById('receipt-end-date').textContent = `End Date & Time: ${endDate} ${endTime}`;
-        document.getElementById('receipt-total').textContent = `Total Cost: ₱${totalCost}`;
-    
-        // Show Receipt Popup
-        document.getElementById('receipt-popup').style.display = 'flex';
+        if (endDateInput) endDateInput.value = endDate;
+        if (endTimeInput) endTimeInput.value = endTime;
+    }
 
-        // Make AJAX Request to save booking details
-        const formData = new FormData();
-        formData.append('first_name', firstName);
-        formData.append('last_name', lastName);
-        formData.append('contact_number', contact);
-        formData.append('car_plate', plateNumber);
-        formData.append('slot_number', selectedArray.join(', '));
-        formData.append('start_date', bookingDate);
-        formData.append('end_date', endDate);
-        formData.append('end_time', endTime);
-        formData.append('start_time', startTime);
-        formData.append('duration', durationHours);
-        formData.append('total_cost', totalCost);
+    document.getElementById("booking-date").addEventListener("change", updateEndDateTime);
+    document.getElementById("start-time").addEventListener("change", updateEndDateTime);
+    document.getElementById("duration").addEventListener("change", updateEndDateTime);
 
-        fetch('home-dashboard.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => response.text())
-        .then(data => {
-            console.log('Booking successful:', data);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
+    // Validation
+    if (!firstName || !lastName || !contact || selectedArray.length === 0 || !bookingDate || !startTime || !durationHours) {
+        alert('Please fill in all required fields and select at least one slot.');
+        return;
+    }
+
+    const nameRegex = /^[a-zA-Z\s\-]+$/;
+    if (!nameRegex.test(firstName) || !nameRegex.test(lastName)) {
+        alert('Name can only contain letters, spaces, and hyphens.');
+        return;
+    }
+
+    // Calculate End Time
+    const [startHour, startMinute] = startTime.split(':').map(Number);
+    const startDateObj = new Date(`${bookingDate}T${startTime}`);
+    const endDateObj = new Date(startDateObj.getTime() + durationHours * 60 * 60 * 1000);
+
+    const endDate = endDateObj.toISOString().slice(0, 10);
+    const endHours = String(endDateObj.getHours()).padStart(2, '0');
+    const endMinutes = String(endDateObj.getMinutes()).padStart(2, '0');
+    const endTime = `${endHours}:${endMinutes}`;
+
+    // Calculate Total Cost
+    const ratePerHour = SLOT_COST;
+    const totalCost = selectedArray.length * ratePerHour * durationHours;
+
+    // Update hidden inputs
+    document.getElementById('hidden-selected-slot').value = selectedArray.join(', ');
+    document.getElementById('hidden-total-cost').value = totalCost.toFixed(2);
+
+    // Update Receipt
+    document.getElementById('receipt-user').textContent = `Name: ${firstName} ${lastName}`;
+    document.getElementById('receipt-contact').textContent = `Contact: ${contact}`;
+    document.getElementById('receipt-plate').textContent = `Plate Number: ${plateNumber}`;
+    document.getElementById('receipt-slot').textContent = `Slot: ${selectedArray.join(', ')}`;
+    document.getElementById('receipt-date').textContent = `Start Date & Time: ${bookingDate} ${startTime}`;
+    document.getElementById('receipt-end-date').textContent = `End Date & Time: ${endDate} ${endTime}`;
+    document.getElementById('receipt-total').textContent = `Total Cost: ₱${totalCost}`;
+
+    // Show Receipt Popup
+    document.getElementById('receipt-popup').style.display = 'flex';
+
+    // AJAX to save booking
+    const formData = new FormData();
+    formData.append('first_name', firstName);
+    formData.append('last_name', lastName);
+    formData.append('contact_number', contact);
+    formData.append('car_plate', plateNumber);
+    formData.append('slot_number', selectedArray.join(', '));
+    formData.append('start_date', bookingDate);
+    formData.append('end_date', endDate);
+    formData.append('end_time', endTime);
+    formData.append('start_time', startTime);
+    formData.append('duration', durationHours);
+    formData.append('total_cost', totalCost);
+
+    fetch('home-dashboard.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log('Booking successful:', data);
+    })
+    .catch(error => {
+        console.error('Error:', error);
     });
-
+});
     
+tomorrow.setDate(today.getDate() + 1);
+dayAfterTomorrow.setDate(today.getDate() + 2);
+
+const toDateInputFormat = (date) => date.toISOString().split("T")[0];
+
+bookingDateInput.min = toDateInputFormat(today);
+bookingDateInput.max = toDateInputFormat(dayAfterTomorrow);
+
+// Limit duration between 1 and 8 hours
+const durationInput = document.getElementById("duration");
+durationInput.min = 1;
+durationInput.max = 8;
+
+// Calculate cost when the user selects duration
+durationInput.addEventListener('input', () => {
+    const duration = durationInput.value;
+
+    if (duration > 0) {
+        const totalCost = duration * SLOT_COST;
+        document.getElementById("total-cost").textContent = "Total Cost: ₱" + totalCost.toFixed(2);
+    }
+});
+
+// Check if duration is more than 8 hours
+durationInput.addEventListener('change', () => {
+    const duration = durationInput.value;
+
+    if (duration > 8) {
+        alert('The duration cannot more than 8 hours.');
+        durationInput.value = 8; // Optionally set the duration back to 8 if it's above
+    }else if (duration < 1) {
+        alert('The duration cannot be less than 1 hour.');
+        durationInput.value = 1; // Optionally set the duration back to 1 if it's below
+    }
+
+    if (duration > 0) {
+        const totalCost = duration * SLOT_COST;
+        document.getElementById("total-cost").textContent = "Total Cost: ₱" + totalCost.toFixed(2);
+    }
+});
 
 
 });

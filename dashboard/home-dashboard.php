@@ -17,21 +17,19 @@ if (!isset($_SESSION['user_id'])) {
     die('User not logged in.');
 }
 
-// Check if we are fetching the cost
+// Fetch cost if requested
 if (isset($_GET['get_cost']) && $_GET['get_cost'] == 'true') {
-    // Fetch the parking cost from the database (from the settings table or wherever you store it)
-    $query = "SELECT parking_cost FROM settings WHERE id = 1"; // Adjust your query as needed
+    $query = "SELECT parking_cost FROM settings WHERE id = 1";
     $result = $conn->query($query);
     $row = $result->fetch_assoc();
-    $parkingCost = $row['parking_cost']; // e.g. 40
+    $parkingCost = $row['parking_cost'];
 
-    // Return the cost as JSON
     header('Content-Type: application/json');
     echo json_encode(['cost' => $parkingCost]);
-    exit; // Exit after returning the cost
+    exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') { 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Booking form data
     $user_id = $_SESSION['user_id'];
     $first_name = $_POST['first_name'];
@@ -41,10 +39,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $slot_number = $_POST['slot_number'];
     $start_date = $_POST['start_date'];
     $start_time = $_POST['start_time'];
-    $duration_hours = $_POST['duration'];
-    $total_cost = $_POST['total_cost'];
+    $duration_hours = intval($_POST['duration']);
+    $total_cost = floatval($_POST['total_cost']);
 
-    // Calculate end time
+    // ✅ Validate duration (1 to 8 hours)
+    if ($duration_hours < 1 || $duration_hours > 8) {
+        echo "Invalid duration. Please select between 1 and 8 hours.";
+        $conn->close();
+        exit;
+    }
+
+    // ✅ Validate booking date (today to 2 days ahead)
+    $today = new DateTime('today');
+    $maxDate = (new DateTime('today'))->modify('+2 days');
+    $inputDate = DateTime::createFromFormat('Y-m-d', $start_date);
+
+    if (!$inputDate || $inputDate < $today || $inputDate > $maxDate) {
+        echo "Invalid booking date. You can only book from today up to 2 days ahead.";
+        $conn->close();
+        exit;
+    }
+
+    // ✅ Calculate end time
     $start_timestamp = strtotime("$start_date $start_time");
     $end_timestamp = $start_timestamp + ($duration_hours * 3600);
     $end_time = date('H:i:s', $end_timestamp);
@@ -82,23 +98,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         (user_id, first_name, last_name, contact_number, car_plate, slot_number, start_date, start_time, end_time, duration_hours, total_cost, status) 
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-
-        $stmt->bind_param(
-            "issssssssdds",
-            $user_id,
-            $first_name,
-            $last_name,
-            $contact_number,
-            $car_plate,
-            $slot_number,
-            $start_date,
-            $start_time,
-            $end_time,
-            $duration_hours,
-            $total_cost,
-            $status
-        );
-
+    $stmt->bind_param(
+        "issssssssdds",
+        $user_id,
+        $first_name,
+        $last_name,
+        $contact_number,
+        $car_plate,
+        $slot_number,
+        $start_date,
+        $start_time,
+        $end_time,
+        $duration_hours,
+        $total_cost,
+        $status
+    );
 
     if ($stmt->execute()) {
         echo "Booking saved successfully.";
@@ -106,12 +120,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "Error: " . $stmt->error;
     }
 
-
 } else {
     echo "Invalid request.";
 }
-$user_id = $_SESSION['user_id']; // Make sure this is set on login
 
+// Fetch user balance to display
+$user_id = $_SESSION['user_id'];
 $balance = 0.00;
 $sql = "SELECT balance FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
@@ -121,6 +135,4 @@ $stmt->bind_result($balance);
 $stmt->fetch();
 $stmt->close();
 $conn->close();
-
-
 ?>

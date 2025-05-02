@@ -43,7 +43,7 @@
                 <div class="hints"><i class='bx bxs-car grey'></i><p>Selected</p></div>
             </div>
         </div>
-
+    
         <form id="booking-form" action="home-dashboard.php" method="POST">
             <div class="book">
                 <div class="slots">
@@ -52,18 +52,8 @@
                         <p class="slot reserved" id="slot-2">2</p>  <!-- Example of a reserved slot -->
                         <p class="slot available" id="slot-3">3</p>
                     </div>
-                    <!-- <span>
-                        <p class="line"></p>
-                        <p class="divider">Parking Slots</p>
-                        <p class="line"></p>
-                    </span>
-                    <div class="slotone">
-                        <p class="slot available">4</p>
-                        <p class="slot available">5</p>
-                        <p class="slot available">6</p>
-                    </div> -->
                 </div>
-
+    
                 <div id="booking-details">
                     <h3>Booking Details</h3>
                     <div class="details">
@@ -76,7 +66,7 @@
                                     <input type="text" name="last_name" id="last-name" required autocomplete="off">
                                 </label>
                             </div>
-        
+    
                             <div class="other">
                                 <label for="contact-number">Contact No:
                                     <input type="text" name="contact_number" autocomplete="off" id="contact-number" maxlength="11" placeholder="ex: 09XX XXX XXXX" pattern="\d{11}" required oninput="this.value=this.value.replace(/[^0-9]/g,'');">
@@ -85,7 +75,7 @@
                                 <input type="text" maxlength="7" name="car_plate" id="car-plate" required autocomplete="off" placeholder="ex: NBC 123">
                             </div>
                         </div>
-
+    
                         <div class="time">
                             <span>
                                 <label for="booking-date">Start Date:
@@ -97,10 +87,10 @@
                             </span>
                             <span>
                                 <label for="duration">Duration (in hours):</label>
-                                <input type="number" id="duration" name="duration" required min="1" step="1">
+                                <input type="number" id="duration" name="duration" min="1" max="8" required>
                             </span>
                         </div>
-
+    
                         <div class="confirmation">
                             <span>
                                 <input type="hidden" name="slot_number" id="hidden-selected-slot">
@@ -116,7 +106,7 @@
             </div>
         </form>
     </div>
-
+    
     <div id="receipt-popup" style="display: none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
         <div style="background: white; padding: 20px; border-radius: 8px; width: 80%; max-width: 500px;" class="receipt-box">
             <h2>E-Receipt</h2>
@@ -131,7 +121,6 @@
         </div>
     </div>
     
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             fetch('get-balance.php')
