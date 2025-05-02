@@ -113,37 +113,59 @@ fetch('get-balance.php')
         });
 
     // Handle slot selection
-    const slotElements = document.querySelectorAll('.slots .slotone > p');
-    slotElements.forEach(slot => {
-        if (!slot.classList.contains('occupied')) {
-            slot.classList.add('available');
-            slot.addEventListener('click', () => {
-                const slotNumber = slot.textContent;
 
-                // Deselect previously selected slot if any
-                if (selectedSlot !== null) {
-                    const previousSlot = document.querySelector(`.slots .slotone > p.selected`);
-                    if (previousSlot) {
-                        previousSlot.classList.remove('selected');
-                        previousSlot.classList.add('available');
-                    }
-                }
+fetch('check-active-reservation.php')
+    .then(response => response.json())
+    .then(data => {
+        const hasActive = data.hasActiveReservation;
+        const slotElements = document.querySelectorAll('.slots .slotone > p');
 
-                // Select the clicked slot
-                if (selectedSlot === slotNumber) {
-                    selectedSlot = null; // Deselect if the same slot is clicked
-                    slot.classList.remove('selected');
-                    slot.classList.add('available');
+        slotElements.forEach(slot => {
+            if (!slot.classList.contains('occupied')) {
+                if (hasActive) {
+                    // Only disable the slots if the user has an active reservation
+                    slot.classList.add('disabled');
+                    slot.style.cursor = "not-allowed";
                 } else {
-                    selectedSlot = slotNumber; // Update the selected slot
-                    slot.classList.add('selected');
-                    slot.classList.remove('available');
-                }
+                    // Allow click if there's no active reservation
+                    slot.classList.add('available');
+                    slot.addEventListener('click', () => {
+                        const slotNumber = slot.textContent;
 
-                updateBookingDetails();
-            });
+                        const previouslySelected = document.querySelector('.slots .slotone > p.selected');
+                        if (previouslySelected) {
+                            previouslySelected.classList.remove('selected');
+                            previouslySelected.classList.add('available');
+                        }
+
+                        if (selectedSlot === slotNumber) {
+                            selectedSlot = null;
+                            slot.classList.remove('selected');
+                            slot.classList.add('available');
+                        } else {
+                            selectedSlot = slotNumber;
+                            slot.classList.add('selected');
+                            slot.classList.remove('available');
+                        }
+
+                        updateBookingDetails();  // Update the booking details (make sure this function exists)
+                    });
+                }
+            }
+        });
+
+        if (hasActive) {
+            const msg = document.createElement('div');
+            msg.textContent = "❗ You already have an active reservation. You can only reserve one slot at a time.";
+            msg.style.color = "red";
+            msg.style.marginBottom = "10px";
+            document.querySelector(".slots").prepend(msg);
         }
+    })
+    .catch(error => {
+        console.error('Error checking active reservation:', error);
     });
+
 
     
 
