@@ -377,7 +377,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .then(res => res.json())
         .then(data => {
             const section = document.getElementById('reservation-section');
-            const messageBox = document.getElementById('message-box'); // A container for success/error messages
+            const messageBox = document.getElementById('message-box');
 
             if (data.hasReservation && data.reservation) {
                 const r = data.reservation;
@@ -414,7 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     buttonsHTML += `<button id="cancel-reservation-btn" class="btn btn-danger me-2">Cancel Reservation</button>`;
                     buttonsHTML += `<button id="start-now-btn" class="btn btn-success">Start Now</button>`;
                 }
-                
+
                 section.innerHTML = `
                   <div class="reservation-info">
                       <h3 class="activereservation">Active Reservation</h3>
@@ -425,21 +425,18 @@ document.addEventListener('DOMContentLoaded', function () {
                   </div>
                 `;
 
-
                 if (!isPastReservation) {
                     document.getElementById('cancel-reservation-btn').addEventListener('click', function () {
-                        // Show the modal when the cancel button is clicked
                         const cancelModal = new bootstrap.Modal(document.getElementById('cancelConfirmationModal'));
                         cancelModal.show();
 
-                        // Add event listener for the actual cancellation inside the modal
                         document.getElementById('confirm-cancel-btn').addEventListener('click', function () {
                             fetch('cancel-reservation.php', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
-                                body: JSON.stringify({ reservationId: r.id }) // Send the reservation ID directly from the fetched data
+                                body: JSON.stringify({ reservationId: r.id })
                             })
                             .then(response => response.json())
                             .then(result => {
@@ -467,6 +464,12 @@ document.addEventListener('DOMContentLoaded', function () {
                             cancelModal.hide();
                         });
                     });
+
+                    // Add "Start Now" button functionality
+                    document.getElementById('start-now-btn').addEventListener('click', function () {
+                        this.style.display = 'none';  // Hide "Start Now" button
+                        startCountdown(endDateTime);  // Start countdown after button click
+                    });
                 }
             } else {
                 section.innerHTML = '<p class="activealert">No active reservation found.</p>';
@@ -475,7 +478,32 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Error fetching reservation data:', error);
         });
+
+    function startCountdown(endDateTime) {
+        const countdownDisplay = document.createElement('p');
+        countdownDisplay.setAttribute('id', 'countdown-display');
+        document.querySelector('.reservation-info').appendChild(countdownDisplay);
+
+        const interval = setInterval(function () {
+            const now = new Date();
+            const remainingTime = endDateTime - now;
+
+            if (remainingTime <= 0) {
+                clearInterval(interval);
+                countdownDisplay.innerHTML = 'Reservation has ended.';
+            } else {
+                const days = Math.floor(remainingTime / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
+
+                countdownDisplay.innerHTML = `Remaining Time: ${days} day(s), ${hours} hour(s), ${minutes} minute(s), ${seconds} second(s)`;
+            }
+        }, 1000);
+    }
 });
+
+
 
 
 
