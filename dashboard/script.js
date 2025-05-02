@@ -1,8 +1,49 @@
+let activeReservation = null; // global variable to store reservation data
+
 document.addEventListener('DOMContentLoaded', () => {
     let SLOT_COST = 0; // Initialize cost variable
     let selectedSlot = null; // Store only one selected slot
+
     const usernameDisplay = document.getElementById('username-display');
     const dropdownMenu = document.getElementById('dropdown-menu');
+
+    const startNowBtn = document.getElementById('start-now-btn');
+    if (startNowBtn) {
+        startNowBtn.addEventListener('click', function () {
+        if (!activeReservation) {
+            alert('No active reservation found.');
+            return;
+        }
+
+        if (!activeReservation || !activeReservation.id) {
+            alert('No active reservation found.');
+            return;
+        }
+        const reservationId = activeReservation.id;
+        
+
+        fetch('start-reservation-now.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ reservationId: reservationId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Reservation started immediately');
+                window.location.reload(); // optionally refresh to show new time
+            } else {
+                alert('Failed to start reservation');
+            }
+        })
+        .catch(error => {
+            console.error('Error starting reservation:', error);
+        });
+    });
+}
+    
     
     // Fetch username logic (if applicable)
     const username = sessionStorage.getItem('username') || localStorage.getItem('username') || 'User';
@@ -42,10 +83,7 @@ fetch('get-balance.php')
     })
     .catch(error => console.error('Error fetching balance:', error));
 
-
-    document.addEventListener('DOMContentLoaded', function () {
-        fetchBalance();
-    });
+    
 
     fetch('get-user.php')
         .then(response => response.json())
@@ -230,7 +268,13 @@ fetch('get-balance.php')
             console.error('Error:', error);
         });
     });
+
+    
+
+
 });
+
+
 
 function closeReceipt() {
     document.getElementById('receipt-popup').style.display = 'none';
@@ -320,10 +364,13 @@ fetch('get-reservation-history.php')
 
 
 
-
+document.addEventListener('DOMContentLoaded', function () {
+    fetchBalance();
+});
 
 // // Call the function to load data on page load
 // window.onload = fetchBalance;
+
 
 document.addEventListener('DOMContentLoaded', function () {
     fetch('check-reservation.php')
@@ -367,9 +414,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         <h3 class="activereservation">Active Reservation</h3>
                         <p><strong>Slot:</strong> ${r.slot_number}</p>
                         <p><strong>Start Date & Time:</strong> ${formattedStart}</p>
-                        <!--<p><strong>End Date & Time:</strong> ${formattedEnd}</p>-->
                         <p><strong>Total Cost:</strong> PHP ${parseFloat(r.total_cost).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                        <!--<p><strong>Status:</strong> ${r.status}</p>-->
                         ${
                             isPastReservation ? 
                             `<p class="text-danger">This reservation has already ended.</p>` : 
@@ -389,33 +434,33 @@ document.addEventListener('DOMContentLoaded', function () {
                             fetch('cancel-reservation.php', {
                                 method: 'POST',
                                 headers: {
-                                    'Content-Type': 'application/x-www-form-urlencoded'
+                                    'Content-Type': 'application/json',
                                 },
-                                body: 'cancel=true'
+                                body: JSON.stringify({ reservationId: r.id }) // Send the reservation ID directly from the fetched data
                             })
                             .then(response => response.json())
                             .then(result => {
-                                // Show success or error message
                                 if (result.success) {
                                     messageBox.innerHTML = `<div class="alert alert-success">Reservation successfully canceled.</div>`;
                                 } else {
                                     messageBox.innerHTML = `<div class="alert alert-danger">An error occurred while canceling your reservation.</div>`;
                                 }
 
-                                // Hide the message after a few seconds
                                 setTimeout(() => {
                                     messageBox.innerHTML = '';
-                                }, 5000); // 5 seconds
+                                }, 5000);
 
-                                // Reload the page if successful
                                 if (result.success) {
                                     setTimeout(() => {
                                         window.location.reload();
-                                    }, 1000); // 1 second delay
+                                    }, 1000);
                                 }
+                            })
+                            .catch(error => {
+                                console.error('Error canceling reservation:', error);
+                                messageBox.innerHTML = `<div class="alert alert-danger">An error occurred while canceling your reservation.</div>`;
                             });
 
-                            // Close the modal after confirmation
                             cancelModal.hide();
                         });
                     });
@@ -423,8 +468,12 @@ document.addEventListener('DOMContentLoaded', function () {
             } else {
                 section.innerHTML = '<p class="activealert">No active reservation found.</p>';
             }
+        })
+        .catch(error => {
+            console.error('Error fetching reservation data:', error);
         });
 });
+
 
 
 
@@ -465,3 +514,73 @@ document.addEventListener('DOMContentLoaded', function () {
 
 
 
+document.addEventListener("DOMContentLoaded", function () {
+    // Fetch slot reservation status from the backend
+    fetch('get-slot-status.php')
+        .then(response => response.json())
+        .then(data => {
+            // Loop through the slot data and update the slot status
+            data.slots.forEach(slot => {
+                const slotElement = document.getElementById(`slot-${slot.id}`);
+                if (slot.status === 'reserved') {
+                    slotElement.classList.remove('available');
+                    slotElement.classList.add('reserved');
+                    slotElement.style.pointerEvents = 'none'; // Disable clicking
+                }
+            });
+        })
+});
+
+fetch('get-active-reservation.php') // or whatever your endpoint is
+    .then(response => response.json())
+    .then(data => {
+        if (data && data.id) {
+            activeReservation = data; // Store it globally
+        } else {
+            console.log('No active reservation found.');
+        }
+    })
+    .catch(error => {
+        console.error('Failed to fetch active reservation:', error);
+    });
+
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const cancelReservationBtn = document.getElementById('cancel-reservation-btn');
+        
+        if (cancelReservationBtn) {
+            cancelReservationBtn.addEventListener('click', function () {
+                if (!activeReservation || !activeReservation.id) {
+                    alert('No active reservation found.');
+                    return;
+                }
+    
+                // Show confirmation before canceling
+                const confirmCancel = confirm('Are you sure you want to cancel your reservation?');
+                if (confirmCancel) {
+                    // Send cancellation request to the server
+                    fetch('cancel-reservation.php', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ reservationId: activeReservation.id })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Your reservation has been canceled successfully.');
+                            window.location.reload(); // Optionally reload to reflect changes
+                        } else {
+                            alert('Failed to cancel reservation. Please try again later.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error canceling reservation:', error);
+                        alert('An error occurred while canceling your reservation.');
+                    });
+                }
+            });
+        }
+    });
+    

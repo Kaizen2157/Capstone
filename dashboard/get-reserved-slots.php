@@ -10,20 +10,20 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$date = $_GET['date'] ?? date('Y-m-d');
+date_default_timezone_set('Asia/Manila');
+$now = date('Y-m-d H:i:s');
 
-// 💡 Get slot numbers where the start_time is on the same date and the status is active
 $sql = "SELECT slot_number FROM reservations 
-        WHERE DATE(start_time) = ? AND status = 'active'";
+        WHERE status = 'reserved' AND end_time >= ?";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $date);
+$stmt->bind_param("s", $now);
 $stmt->execute();
 $result = $stmt->get_result();
 
-$reservedSlots = [];
+$slots = [];
 while ($row = $result->fetch_assoc()) {
-    $reservedSlots[] = $row['slot_number'];
+    $slots[] = $row['slot_number'];
 }
 
-echo json_encode($reservedSlots);
+echo json_encode(['reservedSlots' => $slots]);
 ?>

@@ -10,16 +10,16 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$response = ['slots' => []];
-
-// Fetch slot statuses (including "reserved", "cancelled", etc.)
-$query = "SELECT slot_number, status FROM reservations";  // Change to 'reservations' if you're storing statuses there
+$query = "SELECT slot_number, status FROM reservations WHERE DATE(start_time) = CURDATE()";
 $result = $conn->query($query);
 
+$slots = [];
 while ($row = $result->fetch_assoc()) {
-    $response['slots'][] = $row;
+    $slots[] = [
+        'id' => $row['slot_number'],
+        'status' => $row['status']
+    ];
 }
 
-header('Content-Type: application/json');
-echo json_encode($response);
+echo json_encode(['slots' => $slots]);
 ?>
