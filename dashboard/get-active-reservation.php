@@ -18,7 +18,6 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    $reservation = $result->fetch_assoc();
     echo json_encode(['reservation' => $reservation]);
 } else {
     echo json_encode(['reservation' => null]);

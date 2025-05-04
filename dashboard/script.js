@@ -156,7 +156,7 @@ fetch('check-active-reservation.php')
 
         if (hasActive) {
             const msg = document.createElement('div');
-            msg.textContent = "❗ You already have an active reservation. You can only reserve one slot at a time.";
+            msg.textContent = "You already have an active reservation. You can only reserve one slot at a time.";
             msg.style.color = "red";
             msg.style.marginBottom = "10px";
             document.querySelector(".slots").prepend(msg);
@@ -504,7 +504,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             .then(response => response.json())
                             .then(result => {
                                 if (result.success) {
-                                    messageBox.innerHTML = `<div class="alert alert-success">Reservation successfully canceled.</div>`;
+                                    messageBox.innerHTML = `<div class="alert alert-success">Reservation successfully canceled. <br>Refreshing in 3s...</div>`;
                                 } else {
                                     messageBox.innerHTML = `<div class="alert alert-danger">An error occurred while canceling your reservation.</div>`;
                                 }
