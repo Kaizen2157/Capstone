@@ -18,8 +18,9 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
-    echo json_encode(['reservation' => $reservation]);
+    echo json_encode(['hasActiveReservation' => true]);
 } else {
-    echo json_encode(['reservation' => null]);
+    echo json_encode(['hasActiveReservation' => false]);
 }
+
 ?>

@@ -113,11 +113,10 @@ fetch('get-balance.php')
         });
 
     // Handle slot selection
-
 fetch('check-active-reservation.php')
     .then(response => response.json())
     .then(data => {
-        const hasActive = data.hasActiveReservation;
+        const hasActive = data.reservation !== null;
         const slotElements = document.querySelectorAll('.slots .slotone > p');
 
         slotElements.forEach(slot => {
@@ -166,8 +165,6 @@ fetch('check-active-reservation.php')
         console.error('Error checking active reservation:', error);
     });
 
-
-    
 
     // Update booking details
     function updateBookingDetails() {
@@ -389,6 +386,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // // Call the function when the page is loaded
 // document.addEventListener('DOMContentLoaded', fetchReservationHistory);
 
+// Fetch reservation history data and populate the table
 fetch('get-reservation-history.php')
 .then(response => response.json())
 .then(data => {
@@ -434,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function () {
 // // Call the function to load data on page load
 // window.onload = fetchBalance;
 
-
+// Function to fetch balance and transaction history
 document.addEventListener('DOMContentLoaded', function () {
     fetch('check-reservation.php')
         .then(res => res.json())
@@ -625,7 +623,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
 });
 
-fetch('get-active-reservation.php') // or whatever your endpoint is
+fetch('get-active-reservation.php') // Fetch active reservation data
     .then(response => response.json())
     .then(data => {
         if (data && data.id) {
