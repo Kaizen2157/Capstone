@@ -116,7 +116,8 @@ fetch('get-balance.php')
 fetch('check-active-reservation.php')
     .then(response => response.json())
     .then(data => {
-        const hasActive = data.reservation !== null;
+        const hasActive = data.hasActiveReservation; 
+        // const hasActive = data.reservation !== null;
         const slotElements = document.querySelectorAll('.slots .slotone > p');
 
         slotElements.forEach(slot => {
@@ -558,7 +559,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((remainingTime % (1000 * 60)) / 1000);
 
-                countdownDisplay.innerHTML = `Remaining Time: ${days} day(s), ${hours} hour(s), ${minutes} minute(s), ${seconds} second(s)`;
+                //${days} day(s), 
+                countdownDisplay.innerHTML = `Remaining Time: ${hours} hour(s), ${minutes} minute(s), ${seconds} second(s)`;
             }
         }, 1000);
     }
