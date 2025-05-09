@@ -79,10 +79,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // SECOND: Check if balance is enough
     if ($user['balance'] < $total_cost) {
-        echo "Insufficient balance.";
+        echo json_encode(['success' => false, 'message' => 'Insufficient balance.']);
         $conn->close();
         exit;
     }
+    
 
     // THIRD: Deduct balance
     $new_balance = $user['balance'] - $total_cost;

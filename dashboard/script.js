@@ -157,9 +157,18 @@ fetch('check-active-reservation.php')
 
         if (hasActive) {
             const msg = document.createElement('div');
-            msg.textContent = "You already have an active reservation. You can only reserve one slot at a time.";
-            msg.style.color = "red";
-            msg.style.marginBottom = "10px";
+            msg.textContent = "⚠️ You already have an active reservation. You can only reserve one slot at a time.";
+            
+            // Add styling
+            msg.style.backgroundColor = "#ffe0e0";
+            msg.style.color = "#a94442";
+            msg.style.border = "1px solid #f5c6cb";
+            msg.style.padding = "12px";
+            msg.style.borderRadius = "5px";
+            msg.style.marginBottom = "15px";
+            msg.style.fontWeight = "bold";
+            msg.style.textAlign = "center";
+            
             document.querySelector(".slots").prepend(msg);
         }
     })
@@ -279,17 +288,28 @@ document.getElementById('proceed-btn').addEventListener('click', function (e) {
     formData.append('duration', durationHours);
     formData.append('total_cost', totalCost);
 
+    function showToast(message) {
+        const toastMessage = document.getElementById("toastMessage");
+        toastMessage.textContent = message;
+    
+        const toastElement = new bootstrap.Toast(document.getElementById("errorToast"));
+        toastElement.show();
+    }
+    
+    // Example fetch
     fetch('home-dashboard.php', {
         method: 'POST',
-        body: formData
+        body: formData // assuming you’re using FormData
     })
-    .then(response => response.text())
+    .then(res => res.json())
     .then(data => {
-        console.log('Booking successful:', data);
-    })
-    .catch(error => {
-        console.error('Error:', error);
+        if (!data.success) {
+            showToast(data.message);
+        } else {
+            // proceed with success logic
+        }
     });
+    
 });
     
 tomorrow.setDate(today.getDate() + 1);
