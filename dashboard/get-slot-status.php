@@ -10,10 +10,9 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-$query = "SELECT slot_number, status FROM reservations WHERE DATE(start_time) = CURDATE()";
+// Only fetch slots that are reserved today
+$query = "SELECT slot_number, status FROM reservations WHERE DATE(start_time) = CURDATE() AND status = 'reserved'";
 $result = $conn->query($query);
-// Get all slots and their statuses
-$query = "SELECT slot_number, status FROM slots";  // Assuming you have a 'slots' table
 
 $slots = [];
 while ($row = $result->fetch_assoc()) {

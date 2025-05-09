@@ -286,7 +286,6 @@ document.getElementById('proceed-btn').addEventListener('click', function (e) {
     .then(response => response.text())
     .then(data => {
         console.log('Booking successful:', data);
-        alert(data);  // Show PHP message like "Reservation successful" or "Insufficient balance"
     })
     .catch(error => {
         console.error('Error:', error);

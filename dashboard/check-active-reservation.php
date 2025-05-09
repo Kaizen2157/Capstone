@@ -20,21 +20,13 @@ if (!isset($_SESSION['user_id'])) {
 
 $userId = $_SESSION['user_id'];
 
-// Create DATETIME from start_date + end_time
-$query = "
-    SELECT COUNT(*) AS count 
-    FROM reservations 
-    WHERE user_id = ? 
-      AND status = 'reserved' 
-      AND TIMESTAMP(start_date, end_time) > NOW()
-";
+$query = "SELECT COUNT(*) AS count FROM reservations WHERE user_id = ? AND status = 'reserved' AND end_time > NOW()";
 
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $userId);
 $stmt->execute();
-$result = $stmt->get_result();
-$row = $result->fetch_assoc();
+$result = $stmt->get_result()->fetch_assoc();
 
 // Return the result
-echo json_encode(['hasActiveReservation' => $row['count'] > 0]);
+echo json_encode(['hasActiveReservation' => $result['count'] > 0]);
 ?>
