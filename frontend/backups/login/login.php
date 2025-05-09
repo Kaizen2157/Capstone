@@ -41,10 +41,12 @@ if ($result->num_rows === 1) {
     exit();
 
     } else {
-        echo "<script>alert('Incorrect password.'); window.history.back();</script>";
+        header("Location: login.html?error=Incorrect+password");
+        exit();
     }
 } else {
-    echo "<script>alert('No account found with that email.'); window.history.back();</script>";
+        header("Location: login.html?error=No+account+found+with+that+email");
+        exit();
 }
 
 $conn->close();

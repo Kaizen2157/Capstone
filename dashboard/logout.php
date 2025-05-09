@@ -5,6 +5,6 @@ session_start(); // Start the session to access session variables
 session_destroy();
 
 // Redirect to login page after logout
-header('Location: ../frontend/backups/login/login.html');
+header('Location: ../frontend/backups/login/login.html?logout=success');
 exit;
 ?>
