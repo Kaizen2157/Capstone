@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $duration_hours = intval($_POST['duration']);
     $total_cost = floatval($_POST['total_cost']);
 
-    // ✅ Validate duration (1 to 8 hours)
+    // ✅ Validate duration (1 to 12 hours)
     if ($duration_hours < 1 || $duration_hours > 12) {
         echo "Invalid duration. Please select between 1 and 12 hours.";
         $conn->close();
