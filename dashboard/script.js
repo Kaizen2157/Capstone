@@ -175,7 +175,7 @@ fetch('check-active-reservation.php')
         const lastName = document.getElementById('last-name').value;
         const contactNumber = document.getElementById('contact-number').value;
 
-        details.textContent = selectedSlot ? `Selected Slot: ${selectedSlot}` : 'No Selected Slot';
+        details.textContent = selectedSlot ? `Selected Slot: ${selectedSlot}` : 'Please select a parking slot';
         total.textContent = selectedSlot ? `Total Cost: ₱${SLOT_COST}` : '';
 
         const userInfo = document.getElementById('user-info');
@@ -299,10 +299,10 @@ const toDateInputFormat = (date) => date.toISOString().split("T")[0];
 bookingDateInput.min = toDateInputFormat(today);
 bookingDateInput.max = toDateInputFormat(dayAfterTomorrow);
 
-// Limit duration between 1 and 8 hours
+// Limit duration between 1 and 12 hours
 const durationInput = document.getElementById("duration");
 durationInput.min = 1;
-durationInput.max = 8;
+durationInput.max = 12;
 
 // Calculate cost when the user selects duration
 durationInput.addEventListener('input', () => {
@@ -318,9 +318,9 @@ durationInput.addEventListener('input', () => {
 durationInput.addEventListener('change', () => {
     const duration = durationInput.value;
 
-    if (duration > 8) {
-        alert('The duration cannot more than 8 hours.');
-        durationInput.value = 8; // Optionally set the duration back to 8 if it's above
+    if (duration > 12) {
+        alert('The duration cannot more than 12 hours.');
+        durationInput.value = 12; // Optionally set the duration back to 12 if it's above
     }else if (duration < 1) {
         alert('The duration cannot be less than 1 hour.');
         durationInput.value = 1; // Optionally set the duration back to 1 if it's below
@@ -566,48 +566,6 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
-
-
-
-
-
-// === Fetch Active Reservation === (perfect calculation of time and date for active reservation but not used in the dashboard)
-// Fetch active reservation data and display it in the dashboard
-// fetch('get-active-reservation.php')
-//   .then(response => response.json())
-//   .then(data => {
-//     const container = document.getElementById("activeReservationContainer");
-
-//     if (!data) {
-//       container.innerHTML = "<p>No active reservation found.</p>";
-//       return;
-//     }
-
-//     const start = new Date(data.start_time);
-//     const end = new Date(data.end_time);
-
-//     const dateOptions = { year: 'numeric', month: 'short', day: 'numeric' };
-//     const timeOptions = { hour: 'numeric', minute: '2-digit', hour12: true };
-
-//     const formattedStart = `${start.toLocaleDateString(undefined, dateOptions)}, ${start.toLocaleTimeString(undefined, timeOptions)}`;
-//     const formattedEnd = `${end.toLocaleDateString(undefined, dateOptions)}, ${end.toLocaleTimeString(undefined, timeOptions)}`;
-
-//     container.innerHTML = `
-//       <div class="reservation-card">
-//         <p><strong>Slot:</strong> ${data.slot_number}</p>
-//         <p><strong>Start:</strong> ${formattedStart}</p>
-//         <p><strong>End:</strong> ${formattedEnd}</p>
-//         <p><strong>Total Cost:</strong> ₱${data.total_cost}</p>
-//       </div>
-//     `;
-//   })
-//   .catch(error => {
-//     console.error("Error fetching active reservation:", error);
-//     document.getElementById("activeReservationContainer").innerHTML = "<p>Error loading active reservation.</p>";
-//   });
-
-
-
 document.addEventListener("DOMContentLoaded", function () {
     // Fetch slot reservation status from the backend
     fetch('get-slot-status.php')
@@ -616,13 +574,23 @@ document.addEventListener("DOMContentLoaded", function () {
             // Loop through the slot data and update the slot status
             data.slots.forEach(slot => {
                 const slotElement = document.getElementById(`slot-${slot.id}`);
+                
+                // If the slot is reserved, turn it red
                 if (slot.status === 'reserved') {
                     slotElement.classList.remove('available');
                     slotElement.classList.add('reserved');
                     slotElement.style.pointerEvents = 'none'; // Disable clicking
+                } else {
+                    // If the slot is available, make it green
+                    slotElement.classList.remove('reserved');
+                    slotElement.classList.add('available');
+                    slotElement.style.pointerEvents = 'auto'; // Enable clicking
                 }
             });
         })
+        .catch(error => {
+            console.error('Error fetching slot status:', error);
+        });
 });
 
 fetch('get-active-reservation.php') // Fetch active reservation data

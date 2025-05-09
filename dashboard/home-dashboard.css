@@ -278,13 +278,6 @@ nav .btn .dropdown .dropdown-content.show {
     border-radius: 10px;
 }
 
-/* .available {
-     background-color: #899197; color: white; 
-    }
-.selected {
-     background-color: #899197; color: white; 
-    } */
-
 
 
 .bookslot .book .slots .slotone{
@@ -304,13 +297,8 @@ nav .btn .dropdown .dropdown-content.show {
     width: 11vw;
     flex-wrap: wrap;
     transition: all 0.2s ease-in-out;
-    background-color: #7ad75d;
     cursor: pointer;
 }
-/* 
-.available { background-color: #899197; color: white; }
-.occupied { background-color: #899197; color: white; cursor: not-allowed; }
-.selected { background-color: #899197; color: white; } */
 
 #user-info{
     display: none;
@@ -320,8 +308,32 @@ nav .btn .dropdown .dropdown-content.show {
     background-color: gray !important;
     color: white !important;
   }
-  
-  
+
+/* Style for available slots (default) */
+.slot.available {
+    background-color: #7ad75d; /* Green for available slots */
+    color: white;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Style for reserved slots */
+.slot.reserved {
+    background-color: #ff3f50; /* Red for reserved slots */
+    color: white;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: not-allowed; /* Disable pointer events */
+}
+
+/* Optional: Hover effect for available slots */
+.slot.available:hover {
+    background-color: #45a049;
+}
+
 
 
 
@@ -427,12 +439,6 @@ nav .btn .dropdown .dropdown-content.show {
     border-radius: 4px;
     font-size: 0.9rem;
 }
-
-/* p slot.selected {
-    background-color: #899197; 
-    color: black;
-    font-weight: bold;
-} */
 
 #booking-details .details .info .name, .other{
     display: flex;

@@ -28,7 +28,7 @@ if (!isset($data['reservationId'])) {
 $reservationId = $data['reservationId'];
 
 // Step 1: Get reservation details for refund
-$stmt = $conn->prepare("SELECT user_id, total_cost FROM reservations WHERE id = ? AND status = 'reserved'");
+$stmt = $conn->prepare("SELECT user_id, total_cost, slot_number FROM reservations WHERE id = ? AND status = 'reserved'");
 $stmt->bind_param("i", $reservationId);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -41,6 +41,7 @@ if ($result->num_rows === 0) {
 $reservation = $result->fetch_assoc();
 $userId = $reservation['user_id'];
 $refundAmount = $reservation['total_cost']; // decimal(10,2)
+$slotNumber = $reservation['slot_number']; // The slot number associated with the reservation
 
 // Step 2: Begin transaction
 $conn->begin_transaction();
@@ -56,10 +57,15 @@ try {
     $refundStmt->bind_param("di", $refundAmount, $userId);
     $refundStmt->execute();
 
-    // Step 5: Commit transaction
+    // Step 5: Reset the slot to available in the slots table
+    $resetSlotStmt = $conn->prepare("UPDATE slots SET status = 'available', reserved_by = NULL, reservation_start = NULL, reservation_end = NULL WHERE slot_number = ?");
+    $resetSlotStmt->bind_param("s", $slotNumber);
+    $resetSlotStmt->execute();
+
+    // Step 6: Commit transaction
     $conn->commit();
 
-    echo json_encode(['success' => true, 'message' => 'Reservation cancelled and amount refunded.']);
+    echo json_encode(['success' => true, 'message' => 'Reservation cancelled and amount refunded. Slot is now available.']);
 } catch (Exception $e) {
     $conn->rollback();
     error_log("Transaction failed: " . $e->getMessage());

@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $total_cost = floatval($_POST['total_cost']);
 
     // ✅ Validate duration (1 to 8 hours)
-    if ($duration_hours < 1 || $duration_hours > 8) {
-        echo "Invalid duration. Please select between 1 and 8 hours.";
+    if ($duration_hours < 1 || $duration_hours > 12) {
+        echo "Invalid duration. Please select between 1 and 12 hours.";
         $conn->close();
         exit;
     }
@@ -91,34 +91,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $update_balance_stmt->execute();
     $update_balance_stmt->close();
 
-    // FOURTH: Proceed to save booking
-    $status = 'reserved'; // Set status explicitly
+    // Check for overlapping reservations on the same slot
+    $start_datetime = "$start_date $start_time";
+    $end_datetime = date('Y-m-d H:i:s', $end_timestamp);
 
-    $stmt = $conn->prepare("INSERT INTO reservations 
-        (user_id, first_name, last_name, contact_number, car_plate, slot_number, start_date, start_time, end_time, duration_hours, total_cost, status) 
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $overlap_query = "SELECT * FROM reservations 
+                      WHERE slot_number = ? 
+                      AND status = 'reserved' 
+                      AND (
+                          (start_date = ? AND start_time < ? AND end_time > ?) OR
+                          (start_date = ? AND start_time < ? AND end_time > ?)
+                      )";
 
-    $stmt->bind_param(
-        "issssssssdds",
-        $user_id,
-        $first_name,
-        $last_name,
-        $contact_number,
-        $car_plate,
+    $check_stmt = $conn->prepare($overlap_query);
+    $check_stmt->bind_param("sssssss", 
         $slot_number,
-        $start_date,
-        $start_time,
-        $end_time,
-        $duration_hours,
-        $total_cost,
-        $status
+        $start_date, $end_time, $start_time,
+        $start_date, $end_time, $start_time
     );
+    $check_stmt->execute();
+    $overlap_result = $check_stmt->get_result();
 
-    if ($stmt->execute()) {
-        echo "Booking saved successfully.";
-    } else {
-        echo "Error: " . $stmt->error;
+    if ($overlap_result->num_rows > 0) {
+        echo "Slot is already reserved for the selected time.";
+        $conn->close();
+        exit;
     }
+    $check_stmt->close();
+
+
+    // FOURTH: Proceed to save booking
+$status = 'reserved'; // Set status explicitly
+
+$stmt = $conn->prepare("INSERT INTO reservations 
+    (user_id, first_name, last_name, contact_number, car_plate, slot_number, start_date, start_time, end_time, duration_hours, total_cost, status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+$stmt->bind_param(
+    "issssssssdds",
+    $user_id,
+    $first_name,
+    $last_name,
+    $contact_number,
+    $car_plate,
+    $slot_number,
+    $start_date,
+    $start_time,
+    $end_time,
+    $duration_hours,
+    $total_cost,
+    $status
+);
+
+if ($stmt->execute()) {
+    echo "Booking saved successfully.";
+    
+    // AFTER INSERTING THE BOOKING, UPDATE THE SLOT STATUS IN THE 'slots' TABLE
+    $slot_update_stmt = $conn->prepare("UPDATE slots SET status = 'reserved', reserved_by = ?, reservation_start = ?, reservation_end = ? WHERE slot_number = ?");
+    $slot_update_stmt->bind_param("ssss", $user_id, $start_datetime, $end_datetime, $slot_number);
+    
+    if ($slot_update_stmt->execute()) {
+        echo "Slot updated successfully.";
+    } else {
+        echo "Error updating slot: " . $slot_update_stmt->error;
+    }
+
+    $slot_update_stmt->close();
+    
+} else {
+    echo "Error: " . $stmt->error;
+}
 
 } else {
     echo "Invalid request.";
