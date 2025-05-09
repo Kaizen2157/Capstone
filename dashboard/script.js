@@ -429,8 +429,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.hasReservation && data.reservation) {
                 const r = data.reservation;
-                
-                // Combine and format the dates
+
                 const startDateTime = new Date(`${r.start_date}T${r.start_time}`);
                 const endDateTime = new Date(`${r.start_date}T${r.end_time}`);
 
@@ -451,10 +450,11 @@ document.addEventListener('DOMContentLoaded', function () {
                 const formattedEnd = endDateTime.toLocaleString('en-US', formatOptions);
 
                 const currentTime = new Date();
+
                 const isPastReservation = currentTime >= endDateTime;
 
                 let buttonsHTML = '';
-                if (!isPastReservation) {
+                if (!isPastReservation && r.start_button_clicked !== 1) {
                     buttonsHTML += `<button id="cancel-reservation-btn" class="btn btn-danger me-2">Cancel Reservation</button>`;
                     buttonsHTML += `<button id="start-now-btn" class="btn btn-success">Start Now</button>`;
                 }
@@ -469,7 +469,7 @@ document.addEventListener('DOMContentLoaded', function () {
                   </div>
                 `;
 
-                if (!isPastReservation) {
+                if (!isPastReservation && r.start_button_clicked !== 1) {
                     document.getElementById('cancel-reservation-btn').addEventListener('click', function () {
                         const cancelModal = new bootstrap.Modal(document.getElementById('cancelConfirmationModal'));
                         cancelModal.show();
@@ -509,11 +509,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         });
                     });
 
-                    // Add "Start Now" button functionality
                     document.getElementById('start-now-btn').addEventListener('click', function () {
                         this.style.display = 'none';  // Hide "Start Now" button
-                        
-                        // Ensure we send the correct reservation ID to the server
+                        startCountdown(endDateTime);  // Start countdown after button click
+
+                        // Send the request to update the reservation
                         fetch('start-reservation-now.php', {
                             method: 'POST',
                             headers: {
@@ -525,7 +525,8 @@ document.addEventListener('DOMContentLoaded', function () {
                         .then(data => {
                             if (data.success) {
                                 // alert('Reservation started immediately');
-                                window.location.reload(); // refresh the page to reflect the new start time
+                                window.location.reload();  // Refresh to hide the button permanently
+                                document.getElementById('start-now-btn').style.display = 'none';
                             } else {
                                 alert('Failed to start reservation');
                             }

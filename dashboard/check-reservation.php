@@ -27,11 +27,11 @@ $response = ['hasReservation' => false];
 if (isset($_SESSION['user_id'])) {
     $user_id = $_SESSION['user_id'];
 
-    $sql = "SELECT id, slot_number, start_date, start_time, end_time, total_cost, status 
-            FROM reservations 
-            WHERE user_id = ? AND status IN ('active', 'reserved') 
-            ORDER BY created_at DESC 
-            LIMIT 1";
+    $sql = "SELECT id, slot_number, start_date, start_time, end_time, total_cost, status, start_button_clicked 
+        FROM reservations 
+        WHERE user_id = ? AND status IN ('active', 'reserved') 
+        ORDER BY created_at DESC 
+        LIMIT 1";
 
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("i", $user_id);
