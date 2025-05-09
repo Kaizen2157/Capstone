@@ -454,10 +454,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 const isPastReservation = currentTime >= endDateTime;
 
                 let buttonsHTML = '';
-                if (!isPastReservation && r.start_button_clicked !== 1) {
-                    buttonsHTML += `<button id="cancel-reservation-btn" class="btn btn-danger me-2">Cancel Reservation</button>`;
-                    buttonsHTML += `<button id="start-now-btn" class="btn btn-success">Start Now</button>`;
-                }
+                const isTooLateToStart = currentTime >= startDateTime;
+
+if (!isPastReservation && !isTooLateToStart && r.start_button_clicked !== 1) {
+    buttonsHTML += `<button id="cancel-reservation-btn" class="btn btn-danger me-2">Cancel Reservation</button>`;
+    buttonsHTML += `<button id="start-now-btn" class="btn btn-success">Start Now</button>`;
+}
+
 
                 section.innerHTML = `
                   <div class="reservation-info">
@@ -510,31 +513,38 @@ document.addEventListener('DOMContentLoaded', function () {
                     });
 
                     document.getElementById('start-now-btn').addEventListener('click', function () {
-                        this.style.display = 'none';  // Hide "Start Now" button
-                        startCountdown(endDateTime);  // Start countdown after button click
-
-                        // Send the request to update the reservation
-                        fetch('start-reservation-now.php', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({ reservationId: r.id })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.success) {
-                                // alert('Reservation started immediately');
-                                window.location.reload();  // Refresh to hide the button permanently
-                                document.getElementById('start-now-btn').style.display = 'none';
-                            } else {
-                                alert('Failed to start reservation');
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error starting reservation:', error);
+                        const startModal = new bootstrap.Modal(document.getElementById('startConfirmationModal'));
+                        startModal.show();
+                    
+                        // Remove any previously bound handler to avoid duplicates
+                        const confirmBtn = document.getElementById('confirm-start-btn');
+                        const newBtn = confirmBtn.cloneNode(true); // clone to remove old listeners
+                        confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+                    
+                        newBtn.addEventListener('click', function () {
+                            startModal.hide();
+                    
+                            fetch('start-reservation-now.php', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ reservationId: r.id })
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    document.getElementById('start-now-btn').style.display = 'none';
+                                    startCountdown(endDateTime); // ⬅️ Start countdown only after confirmed and DB update succeeded
+                                } else {
+                                    alert('Failed to start reservation');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error starting reservation:', error);
+                            });
                         });
-                    });
+                    });                    
                 }
             } else {
                 section.innerHTML = '<p class="activealert">No active reservation found.</p>';
@@ -648,4 +658,34 @@ fetch('get-active-reservation.php') // Fetch active reservation data
             });
         }
     });
+    
+
+    function startCountdown(endDateTime) {
+        const countdownContainer = document.createElement('div');
+        countdownContainer.id = 'countdown-timer';
+        countdownContainer.style.fontWeight = 'bold';
+        countdownContainer.style.marginTop = '10px';
+        document.querySelector('.reservation-info').appendChild(countdownContainer);
+    
+        function updateCountdown() {
+            const now = new Date();
+            const timeLeft = endDateTime - now;
+    
+            if (timeLeft <= 0) {
+                countdownContainer.textContent = "Reservation time has ended.";
+                clearInterval(timerInterval);
+                return;
+            }
+    
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    
+            countdownContainer.textContent = `Time Remaining: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+        }
+    
+        updateCountdown();
+        const timerInterval = setInterval(updateCountdown, 1000);
+    }
     
