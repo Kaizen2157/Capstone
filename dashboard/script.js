@@ -12,42 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const tomorrow = new Date();
     const dayAfterTomorrow = new Date();
 
-    const startNowBtn = document.getElementById('start-now-btn');
-    if (startNowBtn) {
-        startNowBtn.addEventListener('click', function () {
-        if (!activeReservation) {
-            alert('No active reservation found.');
-            return;
-        }
-
-        if (!activeReservation || !activeReservation.id) {
-            alert('No active reservation found.');
-            return;
-        }
-        const reservationId = activeReservation.id;
-        
-
-        fetch('start-reservation-now.php', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ reservationId: reservationId })
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                alert('Reservation started immediately');
-                window.location.reload(); // optionally refresh to show new time
-            } else {
-                alert('Failed to start reservation');
-            }
-        })
-        .catch(error => {
-            console.error('Error starting reservation:', error);
-        });
-    });
-}
+    
     
     
     // Fetch username logic (if applicable)
@@ -464,12 +429,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
             if (data.hasReservation && data.reservation) {
                 const r = data.reservation;
-
+                
                 // Combine and format the dates
                 const startDateTime = new Date(`${r.start_date}T${r.start_time}`);
                 const endDateTime = new Date(`${r.start_date}T${r.end_time}`);
 
-                // If end time is past midnight, assume end date is next day
                 if (endDateTime <= startDateTime) {
                     endDateTime.setDate(endDateTime.getDate() + 1);
                 }
@@ -486,10 +450,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const formattedStart = startDateTime.toLocaleString('en-US', formatOptions);
                 const formattedEnd = endDateTime.toLocaleString('en-US', formatOptions);
 
-                // Check if the reservation time has already passed
                 const currentTime = new Date();
-
-                // Hide cancel button if reservation time has passed
                 const isPastReservation = currentTime >= endDateTime;
 
                 let buttonsHTML = '';
@@ -551,7 +512,27 @@ document.addEventListener('DOMContentLoaded', function () {
                     // Add "Start Now" button functionality
                     document.getElementById('start-now-btn').addEventListener('click', function () {
                         this.style.display = 'none';  // Hide "Start Now" button
-                        startCountdown(endDateTime);  // Start countdown after button click
+                        
+                        // Ensure we send the correct reservation ID to the server
+                        fetch('start-reservation-now.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({ reservationId: r.id })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                // alert('Reservation started immediately');
+                                window.location.reload(); // refresh the page to reflect the new start time
+                            } else {
+                                alert('Failed to start reservation');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error starting reservation:', error);
+                        });
                     });
                 }
             } else {
@@ -561,6 +542,7 @@ document.addEventListener('DOMContentLoaded', function () {
         .catch(error => {
             console.error('Error fetching reservation data:', error);
         });
+});
 
     function startCountdown(endDateTime) {
         const countdownDisplay = document.createElement('p');
@@ -585,7 +567,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }, 1000);
     }
-});
 
 document.addEventListener("DOMContentLoaded", function () {
     // Fetch slot reservation status from the backend
