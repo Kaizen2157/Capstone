@@ -1,6 +1,7 @@
 <?php
 session_start();
-// Database connection
+
+// DB Connection
 $host = "localhost";
 $username = "root";
 $password = "";
@@ -11,17 +12,29 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// Check session
 if (!isset($_SESSION['user_id'])) {
-    die('User not logged in.');
+    echo json_encode(['error' => 'User not logged in']);
+    exit;
 }
 
 $userId = $_SESSION['user_id'];
 
-$query = "SELECT COUNT(*) AS count FROM reservations WHERE user_id = ? AND status = 'reserved' AND end_time > NOW()";
+// Create DATETIME from start_date + end_time
+$query = "
+    SELECT COUNT(*) AS count 
+    FROM reservations 
+    WHERE user_id = ? 
+      AND status = 'reserved' 
+      AND TIMESTAMP(start_date, end_time) > NOW()
+";
+
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $userId);
 $stmt->execute();
-$result = $stmt->get_result()->fetch_assoc();
+$result = $stmt->get_result();
+$row = $result->fetch_assoc();
 
-echo json_encode(['hasActiveReservation' => $result['count'] > 0]);
+// Return the result
+echo json_encode(['hasActiveReservation' => $row['count'] > 0]);
 ?>

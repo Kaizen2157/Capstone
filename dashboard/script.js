@@ -116,7 +116,8 @@ fetch('get-balance.php')
 fetch('check-active-reservation.php')
     .then(response => response.json())
     .then(data => {
-        const hasActive = data.hasActiveReservation; 
+        console.log("Active reservation check:", data); // <-- Add this
+        const hasActive = data.hasActiveReservation;
         // const hasActive = data.reservation !== null;
         const slotElements = document.querySelectorAll('.slots .slotone > p');
 

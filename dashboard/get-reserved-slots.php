@@ -16,7 +16,7 @@ $now = date('H:i:s');
 $today = date('Y-m-d');
 
 $conn->query("UPDATE reservations 
-              SET status = 'done' 
+              SET status = 'reserved' 
               WHERE status = 'reserved' 
               AND start_date <= '$today' 
               AND end_time <= '$now'");

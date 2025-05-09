@@ -1,39 +1,277 @@
-/* Main section layout */
-main {
-    display: grid;
-    gap: 20px;
-    grid-template-columns: repeat(2, 1fr); /* Two columns layout */
-    padding: 20px;
-  }
-  
-  section {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Balance section */
-  .balance {
-    grid-column: span 2; /* Span full width */
-  }
-  
-  .recent-reservation, .reservation-history {
-    grid-column: span 1;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-  }
-  
-  .reservation-card, .reservation-history table {
-    border: 1px solid #ddd;
-    padding: 10px;
-  }
-  
-  table th, table td {
-    padding: 10px;
-    text-align: left;
-  }
-  
+.bookslot{
+  padding: 35px;
+  width: 100%;
+}
+
+.bookslot .head{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.bookslot .head > p{
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.bookslot .hint{
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.bookslot .hint .hints{
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.bookslot .hint .hints p{
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.bookslot .hint .hints i.green{
+ color: #7ad75d; 
+}
+
+.bookslot .hint .hints i.red{
+  color: #ff3f50;
+}
+
+
+.bookslot .hint .hints i.grey{
+  color: #899197;
+}
+
+
+
+
+
+
+
+
+
+
+
+.bookslot .book{
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.bookslot .book .slots{
+  width: auto;
+  display: flex;
+  justify-content: center;
+  background-color: white;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  padding: 20px 25px;
+  border-radius: 10px;
+}
+
+.bookslot .book .slots .slotone{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 30px;
+  color: #faf5ef;
+  font-size: 1.3rem;
+}
+
+.bookslot .book .slots .slotone > p{
+  border: none;
+  border-radius: 7px;
+  padding: 8px 10px;
+  height: 30vh;
+  width: 11vw;
+  flex-wrap: wrap;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+#user-info{
+  display: none;
+}
+
+.slots .slotone p.selected {
+  background-color: gray !important;
+  color: white !important;
+}
+
+/* Style for available slots (default) */
+.slot.available {
+  background-color: #7ad75d; /* Green for available slots */
+  color: white;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Style for reserved slots */
+.slot.reserved {
+  background-color: #ff3f50; /* Red for reserved slots */
+  color: white;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 5px;
+  cursor: not-allowed; /* Disable pointer events */
+}
+
+/* Optional: Hover effect for available slots */
+.slot.available:hover {
+  background-color: #45a049;
+}
+
+
+
+
+
+.bookslot .book .slots span{
+  display: flex;
+  justify-content: center;
+  padding: 10px 0;
+  align-items: center;
+  text-align: center;
+}
+
+.bookslot .book .slots span .divider{
+  display: flex;
+  text-wrap: nowrap;
+  justify-content: center;
+  padding: 0 10px;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.bookslot .book .slots span p.line{
+  width: 100%;
+  height: 1px;
+  background-color: #ccc;
+}
+
+
+
+
+
+
+
+
+
+
+
+#booking-details{
+  display: flex;
+  flex-direction: column;
+  width: 30vw auto;
+  gap: 35px;
+  background-color: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  padding: 25px;
+  border-radius: 10px;
+  opacity: 0;
+  transform: translateX(30px);
+  transition: all 0.3s ease;
+  pointer-events: none; /* Prevent interaction when hidden */
+}
+
+#booking-details h3{
+  font-size: 1.7rem;
+  font-weight: 700;
+  border-bottom: 1px dashed black;
+  padding-bottom: 35px;
+  width: 25vw;
+}
+
+/* When visible */
+#booking-details.show {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+}
+
+.details{
+  display: flex;
+  flex-direction: column;
+  gap: 20px; /* Adjusted gap for better spacing */
+}
+
+#booking-details .details .info, .details .time{
+  display: flex;
+  flex-direction: column;
+  gap: 20px;/* Adjusted gap for better spacing */
+}
+
+.details .info, .details .time{
+  display: flex;
+  flex-direction: column;
+}
+
+.time span{
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.details .info label, .details .time label{
+  display: flex;
+  align-items: center;
+  font-size: 0.9rem;
+  text-wrap: nowrap;
+}
+
+.details .info label{
+  gap: 8px;
+}
+
+.details .time label{
+  gap: 20px;
+  align-items: center;
+  display: flex;
+  width: 100%;
+}
+
+.details .info input, .details .time input{
+  padding: 6px 10px;
+  width: 13vw;
+  border: 1px solid #d4d4d4;
+  outline: none;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+#booking-details .details .info .name, .other{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+
+
+/* ⬇️ ADDED: Style for time inputs */
+#booking-details input[type="time"] {
+  padding: 10px;
+  width: 13vw;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+#booking-details input[type="date"] {
+  padding: 10px;
+  border: 1px solid #d4d4d4;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}

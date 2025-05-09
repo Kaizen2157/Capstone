@@ -1,51 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <style>
-    .duration-stepper {
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-}
-.stepper-control {
-    display: flex;
-    align-items: center;
-}
-.stepper-control button {
-    padding: 5px 10px;
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-.stepper-control input {
-    width: 50px;
-    text-align: center;
-    margin: 0 5px;
-}
-
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="home-dashboard.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
+    <title>Parking</title>
 </head>
 <body>
+    <nav>
+        <div class="logo">
+            <a href="home-dashboard.html">
+                <img src="logo-removebg-preview.png" alt="loading...">
+                <p>ParkWise</p>
+            </a>
+        </div>
+        <div class="btn">
 
-  <div class="duration-stepper">
-    <label for="duration">Duration (in hours):</label>
-    <div class="stepper-control">
-        <button type="button" onclick="changeDuration(-1)">−</button>
-        <input type="number" id="duration" name="duration" value="1" min="1" max="24" step="1" readonly>
-        <button type="button" onclick="changeDuration(1)">+</button>
+            <p id="balance-display">Balance: Loading...</p>
+
+            <div class="user-dropdown">
+                <div class="drop">
+                    <a href="dashboard.html">Dashboard</a>
+                    <a href="docs.html" target="_blank">Docs</a>
+                    <p id="username-display">User</p>
+                </div>
+                <div class="dropdown-menu" id="dropdown-menu">
+                    <a href="#" id="toggle-dark">Dark Mode</a>
+                    <a href="javascript:void(0);" onclick="confirmLogout()"><i class='bx bx-exit'></i>Logout</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="bookslot">
+        <div class="head">
+            <p>BOOK YOUR SLOT</p>
+            <div class="hint">
+                <div class="hints"><i class='bx bxs-car green'></i><p>Available</p></div>
+                <div class="hints"><i class='bx bxs-car red'></i><p>Occupied</p></div>
+                <div class="hints"><i class='bx bxs-car grey'></i><p>Selected</p></div>
+            </div>
+        </div>
+    
+        <form id="booking-form" action="home-dashboard.php" method="POST">
+            <div class="book">
+                <div class="slots">
+                    <div class="slotone">
+                        <p class="slot available" id="slot-1">1</p>
+                        <p class="slot available" id="slot-2">2</p>
+                        <p class="slot available" id="slot-3">3</p>
+                    </div>
+                </div>
+    
+                <div id="booking-details">
+                    <h3>Booking Details</h3>
+                    <div class="details">
+                        <div class="info">
+                            <div class="name">
+                                <label for="first-name">First Name:
+                                    <input type="text" name="first_name" autocomplete="off" id="first-name" required>
+                                </label>
+                                <label for="last-name">Last Name:
+                                    <input type="text" name="last_name" id="last-name" required autocomplete="off">
+                                </label>
+                            </div>
+    
+                            <div class="other">
+                                <label for="contact-number">Contact No:
+                                    <input type="text" name="contact_number" autocomplete="off" id="contact-number" maxlength="11" placeholder="ex: 09XX XXX XXXX" pattern="\d{11}" required oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                                </label>
+                                <label for="car-plate">Plate No:</label>
+                                <input type="text" maxlength="7" name="car_plate" id="car-plate" required autocomplete="off" placeholder="ex: NBC 123">
+                            </div>
+                        </div>
+    
+                        <div class="time">
+                            <span>
+                                <label for="booking-date">Start Date:
+                                    <input type="date" name="start_date" id="booking-date" required>
+                                </label>
+                                <label for="start-time">Start Time:
+                                    <input type="time" name="start_time" id="start-time" required>
+                                </label>
+                            </span>
+                            <span>
+                                <label for="duration">Duration (in hours):</label>
+                                <input type="number" id="duration" name="duration" min="1" max="12" required placeholder="1 to 12 hours only" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                            </span>
+                        </div>
+    
+                        <div class="confirmation">
+                            <span>
+                                <input type="hidden" name="slot_number" id="hidden-selected-slot">
+                                <input type="hidden" name="total_cost" id="hidden-total-cost">
+                                <p id="selected-slots">Please select a parking slot</p>
+                                <p id="total-cost"></p>
+                            </span>
+                            <button id="proceed-btn" type="submit" name="submit">Confirm Booking</button>
+                            <p id="user-info" style="margin-top: 10px; color: #555;"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
     </div>
-</div>
+    
+    <div id="receipt-popup" style="display: none; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5);">
+        <div style="background: white; padding: 20px; border-radius: 8px; width: 80%; max-width: 500px;" class="receipt-box">
+            <h2>E-Receipt</h2>
+            <p id="receipt-user"></p>
+            <p id="receipt-contact"></p>
+            <p id="receipt-slot"></p>
+            <p id="receipt-date"></p>
+            <p id="receipt-end-date"></p>
+            <p id="receipt-plate"></p>
+            <p id="receipt-total"></p>
+            <button onclick="closeReceipt()">Close</button>
+        </div>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            fetch('get-balance.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.balance) {
+                        document.getElementById('balance-display').textContent = "Balance: ₱" + data.balance;
+                    } else {
+                        document.getElementById('balance-display').textContent = "Balance: Error";
+                    }
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    document.getElementById('balance-display').textContent = "Balance: Error";
+                });
+        });
+    </script>
 
-  <script>
-    function changeDuration(change) {
-    const durationInput = document.getElementById('duration');
-    let current = parseInt(durationInput.value, 10);
-    current = isNaN(current) ? 1 : current;
-    const newValue = Math.max(1, Math.min(current + change, 24));
-    durationInput.value = newValue;
-}
-  </script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const slots = document.querySelectorAll(".slot.available");
+        const bookingDetails = document.getElementById("booking-details");
+        const bookContainer = document.querySelector(".bookslot .book");
+        const hiddenSlotInput = document.getElementById("hidden-selected-slot");
+        const selectedSlotText = document.getElementById("selected-slots");
+    
+        let selectedSlot = null;
+    
+        slots.forEach(slot => {
+            slot.addEventListener("click", function () {
+                const slotNumber = this.textContent.trim();
+    
+                if (selectedSlot === slotNumber) {
+                    // Unselect current slot
+                    this.classList.remove("selected");
+                    this.classList.add("available"); // restore style
+                    selectedSlot = null;
+    
+                    // Hide form
+                    bookingDetails.classList.remove("show");
+                    bookContainer.classList.remove("active");
+    
+                    hiddenSlotInput.value = "";
+                    selectedSlotText.textContent = "Please select a parking slot";
+                } else {
+                    // Deselect all slots
+                    slots.forEach(s => {
+                        s.classList.remove("selected");
+                        if (!s.classList.contains("reserved")) {
+                            s.classList.add("available");
+                        }
+                    });
+    
+                    // Select current slot
+                    this.classList.remove("available");
+                    this.classList.add("selected");
+                    selectedSlot = slotNumber;
+    
+                    // Show form
+                    bookingDetails.classList.add("show");
+                    bookContainer.classList.add("active");
+    
+                    hiddenSlotInput.value = slotNumber;
+                    selectedSlotText.textContent = `Selected Slot: ${slotNumber}`;
+                }
+            });
+        });
+    });
+    </script>
+
+    <script src="script.js"></script>
 </body>
 </html>
