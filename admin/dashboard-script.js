@@ -17,28 +17,6 @@ document.getElementById('logout-btn').addEventListener('click', function(e) {
     };
 });
 
-// Function to show the loading modal
-const ctx = document.getElementById('earningsChart').getContext('2d');
-        const earningsChart = new Chart(ctx, {
-            type: 'line', // Line chart for earnings
-            data: {
-                labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'], // Last 7 days
-                datasets: [{
-                    label: 'Earnings (PHP)',
-                    data: [1200, 1500, 1300, 1600, 1800, 1700, 1900], // Fetch this data dynamically
-                    fill: false,
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
 
 
 function showToast(message) {
@@ -52,3 +30,13 @@ function showToast(message) {
       toast.style.pointerEvents = 'none';
     }, 3000); // Hide after 3 seconds
 }
+
+
+document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});

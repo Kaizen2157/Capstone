@@ -185,3 +185,154 @@ body {
   text-align: center;
   text-decoration: underline;
 }
+
+/* TEMPORARY - FOR DEBUGGING */
+#securityQuestionsContainer {
+    max-height: 500px !important;
+    opacity: 1 !important;
+    padding: 20px !important;
+    border: 1px solid #ccc !important; /* This will help us see the container */
+    display: block !important;
+}
+
+/* Security Questions Container */
+#securityQuestionsContainer {
+    margin: 25px 0 15px;
+    overflow: hidden;
+    transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    max-height: 0;
+    opacity: 0;
+    transform: translateY(-10px);
+    border-radius: 8px;
+    background: rgba(25, 56, 74, 0.03);
+    border: 1px solid transparent;
+}
+
+#securityQuestionsContainer.active {
+    max-height: 500px;
+    opacity: 1;
+    transform: translateY(0);
+    padding: 20px;
+    border: 1px solid rgba(25, 56, 74, 0.1);
+    margin-bottom: 30px;
+}
+
+.security-toggle {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    cursor: pointer;
+    padding: 8px 0;
+    transition: all 0.3s ease;
+}
+
+.security-toggle:hover {
+    transform: translateX(3px);
+}
+
+.security-toggle input {
+    margin-right: 12px;
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: #19384a;
+}
+
+.security-toggle label {
+    cursor: pointer;
+    color: #19384a;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.security-toggle i {
+    font-size: 1.2rem;
+}
+
+.questions-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding-top: 15px;
+}
+
+.question-group {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Custom Select Styling */
+.custom-select {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 6px;
+    border: 1px solid #d1d5db;
+    background-color: #f9fafb;
+    font-size: 15px;
+    color: #19384a;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.custom-select select:focus {
+    outline: none;
+    border-color: #19384a;
+    box-shadow: 0 0 0 2px rgba(25, 56, 74, 0.2);
+}
+
+.custom-select select:disabled {
+    background-color: #f3f4f6;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.custom-arrow {
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    transform: translateY(-50%);
+    pointer-events: none;
+    color: #6b7280;
+    transition: all 0.3s ease;
+}
+
+.custom-select select:focus ~ .custom-arrow {
+    color: #19384a;
+    transform: translateY(-50%) rotate(180deg);
+}
+
+/* Animation for when questions appear */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.question-group {
+    animation: fadeInUp 0.5s ease forwards;
+    opacity: 0;
+}
+
+.question-group:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.question-group:nth-child(2) {
+    animation-delay: 0.2s;
+}

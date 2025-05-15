@@ -14,7 +14,12 @@ if ($conn->connect_error) {
 }
 
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['success' => false, 'message' => 'Not logged in.']);
+    // Clear any remaining session data
+    session_unset();
+    session_destroy();
+    
+    // Redirect to login
+    header('Location: ../frontend/backups/login/login.html?session_expired=1');
     exit;
 }
 

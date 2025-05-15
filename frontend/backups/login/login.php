@@ -2,10 +2,7 @@
 session_start();
 
 // Database connection
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "parking_system";
+include '../../../db_connect.php';
 
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
@@ -19,7 +16,7 @@ $_SESSION['first_name'] = $fetched_first_name;
 $email = $_POST['email'];
 $password = $_POST['password'];
 
-$_SESSION['user_id'] = $userId;
+$_SESSION['user_id'] = $user['id'];
 
 // Prepare statement to fetch user by email
 $sql = "SELECT * FROM users WHERE email = ?";
@@ -38,6 +35,11 @@ if ($result->num_rows === 1) {
         $_SESSION['user_name'] = $user['first_name'];
         // echo "<script>window.location.href='/./capstone/dashboard/home-dashboard.html';</script>";
         header("Location: /capstone/dashboard/dashboard.html");
+        // After successful login validation:
+        $update = "UPDATE users SET last_login = NOW() WHERE id = ?";
+        $stmt = $conn->prepare($update);
+        $stmt->bind_param("i", $user_id); // $user_id should be the logged-in user's ID
+        $stmt->execute();
     exit();
 
     } else {

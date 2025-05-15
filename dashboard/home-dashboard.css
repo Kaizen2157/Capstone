@@ -132,12 +132,6 @@ nav .btn .dropdown-content a{
     text-decoration: none;
     justify-content: center;
     align-items: center;
-    border: 1px solid rgb(226, 226, 226);
-    border-radius: 5px;
-}
-
-nav .btn .dropdown-content a:hover{
-    background-color: #f1f1f1;
 }
 
 nav .btn .dropdown .dropbtn i{
@@ -147,7 +141,6 @@ nav .btn .dropdown .dropbtn i{
     cursor: pointer;
     text-decoration: none;
     width: max-content;
-    color: black;
     padding: 10px;
     margin-right: 80px;
     width: max-content;
@@ -327,7 +320,11 @@ nav .btn .dropdown .dropdown-content.show {
   
   /* Optional: Hover effect for available slots */
   .slot.available:hover {
-    background-color: #45a049;
+    background-color: #808080;
+  }
+
+  .bg-custom{
+    color: #808080;
   }
   
   
@@ -587,4 +584,54 @@ footer{
     font-size: 1rem;
     font-weight: 600;
     color: #19384a;
+}
+
+/* Logout Modal Styling */
+#logoutModal .modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+#logoutModal .modal-header {
+    border-bottom: none;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+#logoutModal .modal-title {
+    font-weight: 600;
+    color: #19384a;
+}
+
+#logoutModal .modal-body {
+    padding: 1.5rem;
+    font-size: 1.05rem;
+}
+
+#logoutModal .modal-footer {
+    border-top: none;
+    padding: 1rem 1.5rem;
+    gap: 10px;
+}
+
+#logoutModal .btn-secondary {
+    background-color: #f1f1f1;
+    border: none;
+    color: #333;
+    padding: 8px 20px;
+    border-radius: 8px;
+}
+
+#logoutModal .btn-danger {
+    background-color: #e74c3c;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+#logoutModal .btn-danger:hover {
+    background-color: #c0392b;
 }

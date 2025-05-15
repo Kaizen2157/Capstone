@@ -69,6 +69,7 @@ nav{
     top: 0;
     position: sticky;
     background-color: white;
+    z-index: 1000000;
 }
 
 nav .logo{
@@ -286,6 +287,25 @@ nav .links a>button:hover{
     display: flex;
     justify-content: center;
     margin: 50px 0;
+}
+
+.description {
+    opacity: 0;
+    transform: translateX(0);
+    transition: all 0.8s ease;
+}
+
+.description.from-left {
+    transform: translateX(-100px);
+}
+
+.description.from-right {
+    transform: translateX(100px);
+}
+
+.description.animate {
+    opacity: 1;
+    transform: translateX(0);
 }
 
 

@@ -1,6 +1,10 @@
 <?php
 session_start();
+// Original password
+$password = 'testadmin1';
 
+// Hash the password using PASSWORD_DEFAULT
+$hashed_password = password_hash($password, PASSWORD_DEFAULT);
 // Database connection
 $host = "localhost";
 $username = "root";
@@ -65,15 +69,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         header('Location: dashboard-admin.php');
         exit();
-    } else {
-        // Invalid login
-        $error = "Invalid username or password!";
     }
-
-    // Close the statement
-    $stmt->close();
 }
 
 // Close the connection
 $conn->close();
 ?>
+

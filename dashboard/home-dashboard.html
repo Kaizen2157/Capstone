@@ -33,7 +33,7 @@
                     <p id="username-display">User</p>
                 </div>
                 <div class="dropdown-menu" id="dropdown-menu">
-                    <a href="javascript:void(0);" onclick="confirmLogout()"><i class='bx bx-exit'></i>Logout</a>
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class='bx bx-exit'></i> Logout</a>
                 </div>
             </div>
         </div>
@@ -52,7 +52,7 @@
                     <p class="mb-0">Occupied</p>
                 </div>
                 <div class="hints d-flex align-items-center gap-2">
-                    <i class='bx bxs-car grey fs-4'></i>
+                    <i class='bx bxs-car bg-custom fs-4'></i>
                     <p class="mb-0">Selected</p>
                 </div>
             </div>
@@ -82,11 +82,14 @@
                             </div>
     
                             <div class="other">
-                                <label for="contact-number">Contact No:
-                                    <input type="text" name="contact_number" autocomplete="off" id="contact-number" maxlength="11" placeholder="ex: 09XX XXX XXXX" pattern="\d{11}" required oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                                <div class="contact-number-wrapper">
+                                    <label for="contact-number">Contact No:
+                                        <input type="text" name="contact_number" autocomplete="off" id="contact-number" maxlength="11" placeholder="ex: 0912 345 6789" pattern="\d{11}" required oninput="this.value=this.value.replace(/[^0-9]/g,'');">
+                                    </label>
+                                </div>
+                                <label for="car-plate">Plate No:
+                                    <input type="text" maxlength="7" name="car_plate" id="car-plate" required autocomplete="off" placeholder="ex: NBC 123">
                                 </label>
-                                <label for="car-plate">Plate No:</label>
-                                <input type="text" maxlength="7" name="car_plate" id="car-plate" required autocomplete="off" placeholder="ex: NBC 123">
                             </div>
                         </div>
     
@@ -101,7 +104,7 @@
                             </span>
                             <span>
                                 <label for="duration">Duration (in hours):</label>
-                                <input type="number" id="duration" name="duration" min="1" max="12" required>
+                                <input type="number" id="duration" name="duration" min="1" max="12" required placeholder="ex: 1-12" oninput="this.value=this.value.replace(/[^0-9]/g,'');">
                             </span>
                         </div>
     
@@ -146,24 +149,58 @@
     </div>
   </div>
 </div>
+
+  <!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to logout?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+      </div>
+    </div>
+  </div>
+</div>
     
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            fetch('get-balance.php')
-                .then(response => response.json())
-                .then(data => {
-                    if (data.balance) {
-                        document.getElementById('balance-display').textContent = "Balance: ₱" + data.balance;
-                    } else {
-                        document.getElementById('balance-display').textContent = "Balance: Error";
-                    }
-                })
-                .catch(error => {
-                    console.error('Fetch error:', error);
-                    document.getElementById('balance-display').textContent = "Balance: Error";
-                });
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('get-balance.php')
+        .then(response => response.json())
+        .then(data => {
+            const balanceDisplay = document.getElementById('balance-display');
+            if (data.balance) {
+                // Format with commas and 2 decimal places
+                const formatted = new Intl.NumberFormat('en-PH', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(data.balance);
+                
+                // For home-dashboard (has "Balance:" text)
+                if (balanceDisplay.textContent.includes("Balance:")) {
+                    balanceDisplay.textContent = `Balance: ₱ ${formatted}`;
+                } 
+                // For dashboard (just the amount)
+                else {
+                    balanceDisplay.textContent = `Balance: ₱ ${formatted}`;
+                }
+            } else {
+                balanceDisplay.textContent = "Balance: Error";
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('balance-display').textContent = "Balance: Error";
         });
-    </script>
+});
+</script>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {

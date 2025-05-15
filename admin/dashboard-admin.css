@@ -16,6 +16,10 @@
     object-fit: cover;
   }
 
+  body{
+    width: 100%;
+  }
+
 
   /* adminlog.html */
 
@@ -112,6 +116,11 @@ button{
     cursor: pointer;
 }
 
+.align{
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+}
 
 
 
@@ -125,23 +134,67 @@ button{
 
 .admin-container {
     display: flex;
-    width: 80%;
+    width: 100%;
     background-color: #fff;
     overflow: hidden;
 }
 
 /* Sidebar */
 .sidebar {
-    width: 250px;
-    background-color: #19384a   ;
+    width: auto;
+    background-color: #19384a;
     padding: 20px;
     color: #fff;
+    position: fixed; /* Makes it stick */
+    height: 100vh; /* Full viewport height */
+    overflow-y: auto; /* Allows scrolling if content exceeds height */
+    top: 0;
+    left: 0;
+    z-index: 100; /* Ensures it stays above other content */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Main Content Adjustment */
+.main-content {
+    margin-left: 290px; /* Sidebar width + padding */
+    padding: 20px;
+    width: calc(100% - 290px); /* Prevents horizontal overflow */
 }
 
 .sidebar-header h2 {
     text-align: center;
     font-size: 24px;
     margin-bottom: 20px;
+}
+
+/* Navigation Links Container */
+.sidebar-nav {
+    flex-grow: 1; /* Takes up all available space */
+    padding: 20px;
+    overflow-y: auto; /* Scrollable if content overflows */
+}
+
+/* Logout Link Styling */
+#logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #ff6b6b; /* Distinct color for logout */
+    transition: color 0.3s;
+}
+
+#logout-btn:hover {
+    color: #ff5252;
+}
+
+.sidebar-footer > a{
+    text-decoration: none;
+}
+
+/* Icon Styling (if using Boxicons) */
+.bx {
+    font-size: 1.2em;
 }
 
 .sidebar-nav ul {
@@ -156,9 +209,11 @@ button{
 .sidebar-nav ul li a {
     text-decoration: none;
     color: #fff;
-    font-size: 18px;
-    display: block;
-    padding: 10px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 0;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
@@ -170,40 +225,52 @@ button{
 /* Main Content Area */
 .main-content {
     flex: 1;
-    padding: 20px;
+    padding: 40px 30px;
 }
 
 h1 {
-    font-size: 28px;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.smol{
+    font-size: 1rem;
     margin-bottom: 20px;
 }
 
 .dashboard-overview {
-    margin-bottom: 30px;
+    margin-bottom: 100px;
 }
 
 .quick-stats {
     display: flex;
     justify-content: space-between;
+    gap: 10px;
+    margin-top: 15px;
 }
 
 .stat-box {
     background-color: #fff;
     border: 1px solid #ddd;
-    padding: 20px;
+    padding: 30px;
     border-radius: 8px;
     width: 30%;
     text-align: center;
+    text-wrap: nowrap;
 }
 
 .stat-box h3 {
-    font-size: 20px;
+    font-size: 1.2rem;
     margin-bottom: 10px;
 }
 
 .stat-box p {
     font-size: 24px;
     font-weight: bold;
+}
+
+.manage-slot-cost, .add-balance{
+    width: 100%;
 }
 
 .manage-slot-cost, .add-balance, .system-analytics {
@@ -278,3 +345,46 @@ button[type="submit"] {
       input[type=number] {
         -moz-appearance: textfield;
       }
+
+
+      .error-message {
+        color: red;
+        margin-bottom: 10px;
+        text-align: center;
+        font-weight: bold;
+      }
+
+
+/* System Analytics */
+.system-analytics {
+    background-color: #fff;
+    padding: 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.time-filters {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.time-filter {
+    padding: 8px 16px;
+    background: #ccc;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.time-filter.active {
+    background: #19384a;
+    color: white;
+}
+
+.chart-container {
+    margin-top: 30px;
+    height: 400px;
+}

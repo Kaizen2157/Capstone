@@ -9,83 +9,114 @@
     <title>Registration</title>
 </head>
 <body>
-
-        <div class="logo">
-            <!-- <a href="frontend/home/index.html"> -->
-                <img src="logo-removebg-preview.png" alt="loading...">
-                <p>ParkWise</p>
-            <!-- </a> -->
-        </div>
+    <div class="logo">
+        <img src="logo-removebg-preview.png" alt="loading...">
+        <p>ParkWise</p>
+    </div>
 
     <div class="side-by-side">
-
         <div class="left">
-      
             <div class="wrapper">
-      
-              <form id="registerForm" action="sign-in.php" method="POST"> <!--database for registration-->
-      
-                <div class="head">
-                  <p>Please fill up the form</p>
-                  <h2>Login</h2>
-                </div>
-
-                <div class="tanginamo">
-                    <div class="input-field">
-                        <input type="text" name="first_name" required>
-                        <label>First name</label>
+                <form id="registerForm" action="sign-in.php" method="POST">
+                    <div class="head">
+                        <p>Please fill up the form</p>
+                        <h2>Sign-in</h2>
                     </div>
+
+                    <div class="tanginamo">
+                        <div class="input-field">
+                            <input type="text" name="first_name" required>
+                            <label>First name</label>
+                        </div>
     
-                    <div class="input-field">
-                        <input type="text" name="last_name" required>
-                        <label>Last name</label>
+                        <div class="input-field">
+                            <input type="text" name="last_name" required>
+                            <label>Last name</label>
+                        </div>
                     </div>
-                </div>
       
-                <div class="input-field">
-                  <input autocomplete="off" type="text" name="email" required>
-                  <label >Email Address</label>
-                </div>
+                    <div class="input-field">
+                        <input autocomplete="off" type="text" name="email" required>
+                        <label>Username</label>
+                    </div>
       
-                <div class="input-field">
-                  <input type="password" name="password" required id="password">
-                  <label>Enter password</label>
-                </div>
+                    <div class="input-field">
+                        <input type="password" name="password" required id="password">
+                        <label>Enter password</label>
+                    </div>
 
-                <!--look if they are match.-->
+                    <div class="input-field">
+                        <input type="password" required id="confirmPassword">
+                        <label>Confirm password</label>
+                    </div>
 
-                <div class="input-field">
-                    <input type="password" required id="confirmPassword">
-                    <label>Confirm password</label>
-                </div>
+                    <p id="error" style="color: red; display: none; font-size: 15px; padding: 10px 0;">Passwords do not match.</p>
 
-                <p id="error" style="color: red; display: none; font-size: 15px; padding: 10px 0;">Passwords do not match.</p>
-      
-                <!-- <button type="submit">Log In</button> -->
-      
-                <input type="submit" value="Register">
+                    <!-- Security Questions Section -->
+                    <!-- Add this inside your form, after the password confirmation -->
+                    <div id="securityQuestionsContainer" class="security-questions">
+                        <div class="security-toggle">
+                            <input type="checkbox" id="enableSecurity" name="enable_security">
+                            <label for="enableSecurity">
+                                <i class='bx bx-shield-quarter'></i> Set up security questions (recommended)
+                            </label>
+                        </div>
+                        
+                        <div class="questions-wrapper">
+                            <div class="question-group">
+                                <div class="custom-select">
+                                    <select name="question1" required disabled>
+                                        <option value="" selected disabled>Select first security question</option>
+                                        <option value="What was your first pet's name?">What was your first pet's name?</option>
+                                        <option value="What city were you born in?">What city were you born in?</option>
+                                        <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                                        <option value="What was your first car's model?">What was your first car's model?</option>
+                                        <option value="What was your childhood nickname?">What was your childhood nickname?</option>
+                                    </select>
+                                    <span class="custom-arrow"><i class='bx bx-chevron-down'></i></span>
+                                </div>
+                                <div class="input-field">
+                                    <input type="text" name="answer1" disabled>
+                                    <label>Your answer</label>
+                                </div>
+                            </div>
+                            
+                            <div class="question-group">
+                                <div class="custom-select">
+                                    <select name="question2" required disabled>
+                                        <option value="" selected disabled>Select second security question</option>
+                                        <option value="What was your first school's name?">What was your first school's name?</option>
+                                        <option value="What is your favorite book?">What is your favorite book?</option>
+                                        <option value="What was your childhood best friend's name?">What was your childhood best friend's name?</option>
+                                        <option value="What street did you grow up on?">What street did you grow up on?</option>
+                                        <option value="What was your first job?">What was your first job?</option>
+                                    </select>
+                                    <span class="custom-arrow"><i class='bx bx-chevron-down'></i></span>
+                                </div>
+                                <div class="input-field">
+                                    <input type="text" name="answer2" disabled>
+                                    <label>Your answer</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
-              </form>
+                    <input type="submit" value="Register">
+                </form>
               
-              <a href="../login/login.html">
-                <p class="lasta">Already have an account?</p>
-              </a>
-
+                <a href="../login/login.html">
+                    <p class="lasta">Already have an account?</p>
+                </a>
             </div>
-      
         </div>
-      
-      </div>
+    </div>
 
-      <script src="script.js"></script>
-      <script>
+    <script src="script.js"></script>
+    <script>
         const urlParams = new URLSearchParams(window.location.search);
         if (urlParams.get('registered')) {
-          alert('Registration successful! You can now log in.');
+            alert('Registration successful! You can now log in.');
         }
-      </script>
-      
-
-
+    </script>
 </body>
 </html>

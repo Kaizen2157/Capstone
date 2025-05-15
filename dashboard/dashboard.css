@@ -250,11 +250,17 @@ nav .btnn .dropdown .dropdown-content.show {
 
 /* Reservation History Table Styling */
 
+.reservation-history {
+    margin: 30px 0;
+}
+
 .reservation-history h2{
-    font-size: 24px;
-    font-weight: bold;
-    margin-bottom: 20px;
-    margin-top: 30px;
+    margin: 0 0 20px 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #19384a;
 }
 
 .reservation-history table {
@@ -295,51 +301,92 @@ nav .btnn .dropdown .dropdown-content.show {
 
 /* Transaction History */
 .transaction-history {
-    margin-top: 40px;
+    background: white;
 }
 
 .transaction-history h3 {
-    font-size: 18px;
-    font-weight: bold;
+    margin: 0 0 20px 0;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
     color: #19384a;
 }
 
-.transaction-history ul {
-    list-style: none;
-    padding: 0;
+.transaction-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.transaction-history li {
-    background-color: #fff;
-    padding: 12px;
-    margin-bottom: 10px;
-    border: 1px solid #ddd;
+.transaction-item {
+    padding: 16px;
+    border-radius: 8px;
+    border-left: 4px solid;
 }
 
-.transaction-history li:hover {
-    background-color: #f1f1f1;
+.transaction-item.credit {
+    border-color: #7ad75d;
+    background: rgba(46, 204, 113, 0.05);
 }
 
-/* Responsive Design */
-@media screen and (max-width: 768px) {
-    .top-align .balance {
-        padding: 20px 40px;
-    }
-    
-    .reservation-history table {
-        font-size: 12px;
-    }
-    
-    .reservation-history th, .reservation-history td {
-        padding: 10px 12px;
-    }
-    
-    .transaction-history li {
-        font-size: 14px;
-        padding: 10px;
-    }
+.transaction-item.debit {
+    border-color: #e74c3c;
+    background: rgba(231, 76, 60, 0.05);
 }
 
+.transaction-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+}
+
+.type-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 0.8rem;
+}
+
+.credit .type-badge {
+    background: rgba(46, 204, 113, 0.2);
+    color: #7ad75d;
+}
+
+.debit .type-badge {
+    background: rgba(231, 76, 60, 0.2);
+    color: #e74c3c;
+}
+
+.transaction-details {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.amount {
+    font-weight: 600;
+}
+
+.credit .amount {
+    color: #2ecc71;
+}
+
+.debit .amount {
+    color: #e74c3c;
+}
+
+.transaction-footer {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+}
+
+.empty-state, .error {
+    text-align: center;
+    padding: 20px;
+    color: #7f8c8d;
+}
 
 
 
@@ -403,4 +450,55 @@ nav .btnn .dropdown .dropdown-content.show {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+
+/* Logout Modal Styling */
+#logoutModal .modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+}
+
+#logoutModal .modal-header {
+    border-bottom: none;
+    padding: 1.5rem;
+    background-color: #f8f9fa;
+}
+
+#logoutModal .modal-title {
+    font-weight: 600;
+    color: #19384a;
+}
+
+#logoutModal .modal-body {
+    padding: 1.5rem;
+    font-size: 1.05rem;
+}
+
+#logoutModal .modal-footer {
+    border-top: none;
+    padding: 1rem 1.5rem;
+    gap: 10px;
+}
+
+#logoutModal .btn-secondary {
+    background-color: #f1f1f1;
+    border: none;
+    color: #333;
+    padding: 8px 20px;
+    border-radius: 8px;
+}
+
+#logoutModal .btn-danger {
+    background-color: #e74c3c;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+#logoutModal .btn-danger:hover {
+    background-color: #c0392b;
 }

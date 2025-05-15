@@ -64,3 +64,37 @@ form.addEventListener('submit', function (e) {
     }
 });
 
+
+// Password validation code remains the same...
+
+document.addEventListener('DOMContentLoaded', function() {
+    const securityCheckbox = document.getElementById('enableSecurity');
+    const securityContainer = document.getElementById('securityQuestionsContainer');
+    
+    if (!securityCheckbox || !securityContainer) {
+        console.error('Required elements not found');
+        return;
+    }
+
+    securityCheckbox.addEventListener('change', function() {
+        if (this.checked) {
+            securityContainer.classList.add('active');
+            // Enable all questions and answers
+            document.querySelectorAll('.security-questions select, .security-questions input[type="text"]').forEach(el => {
+                el.disabled = false;
+                el.required = true;
+            });
+        } else {
+            securityContainer.classList.remove('active');
+            // Disable all questions and answers
+            document.querySelectorAll('.security-questions select, .security-questions input[type="text"]').forEach(el => {
+                el.disabled = true;
+                el.required = false;
+                el.value = "";
+            });
+        }
+    });
+
+    // Initialize state - container should be hidden by default
+    securityContainer.classList.remove('active');
+});

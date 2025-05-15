@@ -16,7 +16,16 @@ $first_name = $_POST['first_name'];
 $last_name = $_POST['last_name'];
 $email = $_POST['email'];
 $plain_password = $_POST['password'];
-$hashed_password = password_hash($plain_password, PASSWORD_DEFAULT); //secure password.
+$hashed_password = password_hash($plain_password, PASSWORD_DEFAULT);
+
+// Get security questions if provided
+$question1 = isset($_POST['question1']) ? $_POST['question1'] : null;
+$answer1 = isset($_POST['answer1']) ? strtolower(trim($_POST['answer1'])) : null;
+$answer1_hash = $answer1 ? password_hash($answer1, PASSWORD_DEFAULT) : null;
+
+$question2 = isset($_POST['question2']) ? $_POST['question2'] : null;
+$answer2 = isset($_POST['answer2']) ? strtolower(trim($_POST['answer2'])) : null;
+$answer2_hash = $answer2 ? password_hash($answer2, PASSWORD_DEFAULT) : null;
 
 // 2. Check if email already exists before inserting
 $check = $conn->prepare("SELECT * FROM users WHERE email = ?");
@@ -30,9 +39,10 @@ if ($check->num_rows > 0) {
 }
 
 // 3. If not existing, insert the new user
-$sql = "INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?)";
+$sql = "INSERT INTO users (first_name, last_name, email, password, question1, answer1_hash, question2, answer2_hash) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 $stmt = $conn->prepare($sql);
-$stmt->bind_param("ssss", $first_name, $last_name, $email, $hashed_password);
+$stmt->bind_param("ssssssss", $first_name, $last_name, $email, $hashed_password, $question1, $answer1_hash, $question2, $answer2_hash);
 
 if ($stmt->execute()) {
     header("Location: ../login/login.html?registered=true");
@@ -40,18 +50,4 @@ if ($stmt->execute()) {
 } else {
     echo "Error: " . $stmt->error;
 }
-
-$_SESSION['user_id'] = $row['id'];
-$_SESSION['user_email'] = $row['email']; 
-
-$_SESSION['email'] = $row['email']; // or 'email' or whatever you want
-
-
-// echo "<script>
-//     sessionStorage.setItem('username', '" . $row['first_name'] . "');
-//     window.location.href = 'home-dashboard.html';
-// </script>";
-
-
-
 ?>

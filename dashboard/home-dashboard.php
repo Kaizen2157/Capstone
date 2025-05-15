@@ -2,19 +2,24 @@
 session_start();
 date_default_timezone_set('Asia/Manila');
 
-// Database connection
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "parking_system";
+       try {
+       $pdo = new PDO("mysql:host=localhost;dbname=parking_system", "root", "");
+       $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+       $pdo->exec("SET time_zone = '" . date('P') . "';");  // Use date('P') to get offset in +/-HH:mm format
+   } catch (PDOException $e) {
+       echo "Connection failed: " . $e->getMessage();
+   }
 
-$conn = new mysqli($host, $username, $password, $database);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+require_once '../db_connect.php'; // Include your database connection file
 
 if (!isset($_SESSION['user_id'])) {
-    die('User not logged in.');
+    // Clear any remaining session data
+    session_unset();
+    session_destroy();
+    
+    // Redirect to login
+    header('Location: ../frontend/backups/login/login.html?session_expired=1');
+    exit;
 }
 
 // Fetch cost if requested
@@ -49,16 +54,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // ✅ Validate booking date (today to 2 days ahead)
-    $today = new DateTime('today');
-    $maxDate = (new DateTime('today'))->modify('+2 days');
-    $inputDate = DateTime::createFromFormat('Y-m-d', $start_date);
+// Validate booking date (today to 2 days ahead)
+$today = new DateTime('today', new DateTimeZone('Asia/Manila'));
+$maxDate = (new DateTime('today', new DateTimeZone('Asia/Manila')))->modify('+2 days')->setTime(23, 59, 59);
+$inputDate = DateTime::createFromFormat('Y-m-d', $start_date, new DateTimeZone('Asia/Manila'));
 
-    if (!$inputDate || $inputDate < $today || $inputDate > $maxDate) {
-        echo "Invalid booking date. You can only book from today up to 2 days ahead.";
-        $conn->close();
-        exit;
-    }
+if (!$inputDate) {
+    echo json_encode([
+        'success' => false,
+        'message' => "Invalid date format."
+    ]);
+    exit;
+}
+
+// Set input date to start of day for comparison
+$inputDate->setTime(0, 0, 0);
+
+if ($inputDate < $today || $inputDate > $maxDate) {
+    echo json_encode([
+        'success' => false,
+        'message' => "Invalid booking date. You can only book from today up to 2 days ahead (until 11:59 PM)."
+    ]);
+    exit;
+}
 
     // ✅ Calculate end time
     $start_timestamp = strtotime("$start_date $start_time");
@@ -92,33 +110,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $update_balance_stmt->execute();
     $update_balance_stmt->close();
 
-    // Check for overlapping reservations on the same slot
-    $start_datetime = "$start_date $start_time";
-    $end_datetime = date('Y-m-d H:i:s', $end_timestamp);
-
-    $overlap_query = "SELECT * FROM reservations 
-                      WHERE slot_number = ? 
-                      AND status = 'reserved' 
-                      AND (
-                          (start_date = ? AND start_time < ? AND end_time > ?) OR
-                          (start_date = ? AND start_time < ? AND end_time > ?)
-                      )";
-
-    $check_stmt = $conn->prepare($overlap_query);
-    $check_stmt->bind_param("sssssss", 
-        $slot_number,
-        $start_date, $end_time, $start_time,
-        $start_date, $end_time, $start_time
-    );
-    $check_stmt->execute();
-    $overlap_result = $check_stmt->get_result();
-
-    if ($overlap_result->num_rows > 0) {
-        echo "Slot is already reserved for the selected time.";
-        $conn->close();
-        exit;
-    }
-    $check_stmt->close();
 
 
     // FOURTH: Proceed to save booking
@@ -145,14 +136,42 @@ $stmt->bind_param(
 );
 
 if ($stmt->execute()) {
+    $reservation_id = $stmt->insert_id; // Get the ID of the new reservation
+    
     echo "Booking saved successfully.";
     
-    // AFTER INSERTING THE BOOKING, UPDATE THE SLOT STATUS IN THE 'slots' TABLE
+    // Create datetime strings for slot reservation
+    $reservation_start = "$start_date $start_time";
+    $reservation_end = date('Y-m-d H:i:s', $end_timestamp);
+    
+    // Update the slot status
     $slot_update_stmt = $conn->prepare("UPDATE slots SET status = 'reserved', reserved_by = ?, reservation_start = ?, reservation_end = ? WHERE slot_number = ?");
-    $slot_update_stmt->bind_param("ssss", $user_id, $start_datetime, $end_datetime, $slot_number);
+    $slot_update_stmt->bind_param("isss", $user_id, $reservation_start, $reservation_end, $slot_number);
     
     if ($slot_update_stmt->execute()) {
         echo "Slot updated successfully.";
+        
+        // ✅ NEW: Record the transaction
+        // After successful reservation creation, record the transaction
+$transaction_stmt = $conn->prepare("INSERT INTO transactions 
+    (user_id, amount, type, reference_id, description, balance_after) 
+    VALUES (?, ?, ?, ?, ?, ?)");
+$description = "Parking reservation for slot $slot_number";
+$transaction_amount = -$total_cost; // Negative amount for deduction
+
+$transaction_stmt->bind_param("idssd", 
+    $user_id, 
+    $transaction_amount,
+    'reservation', // type
+    $reservation_id, // reference_id
+    $description,
+    $new_balance);
+    
+if (!$transaction_stmt->execute()) {
+    error_log("Transaction recording failed: " . $transaction_stmt->error);
+    // Don't exit, just log the error
+}
+$transaction_stmt->close();
     } else {
         echo "Error updating slot: " . $slot_update_stmt->error;
     }

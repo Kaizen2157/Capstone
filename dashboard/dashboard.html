@@ -40,7 +40,7 @@
 
             <div class="dropdown-menu" id="dropdown-menu">
 
-              <a href="javascript:void(0);" onclick="confirmLogout()"><i class='bx bx-exit'></i>Logout</a>
+              <a href="#" data-bs-toggle="modal" data-bs-target="#logoutModal"><i class='bx bx-exit'></i> Logout</a>
 
             </div>
 
@@ -103,11 +103,12 @@
 
     
     <section class="reservation-history">
-        <h2>Reservation History</h2>
+        <h2><i class='bx bx-compass'></i>Reservation History</h2>
         <table>
             <thead>
                 <tr>
                     <th>Slot</th>
+                    <th>Status</th>
                     <th>Start Date & Time - End Date & Time</th>
                     <th>Price</th>
                 </tr>
@@ -121,10 +122,10 @@
     
     
     <div class="transaction-history">
-        <h3>Transaction History</h3>
-        <ul id="transaction-history">
-            <!-- Transaction history will be populated dynamically -->
-        </ul>
+        <h3><i class='bx bx-history'></i> Transaction History</h3>
+        <div class="transaction-list">
+            <!-- Will be populated by JavaScript -->
+        </div>
     </div>
 
 
@@ -149,25 +150,57 @@
     </div>
   </div>
   
-
+  <!-- Logout Confirmation Modal -->
+<div class="modal fade" id="logoutModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirm Logout</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to logout?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirmLogoutBtn">Logout</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        fetch('get-balance.php')
-            .then(response => response.json())
-            .then(data => {
-                if (data.balance) {
-                    document.getElementById('balance-display').textContent = "₱" + data.balance;
-                } else {
-                    document.getElementById('balance-display').textContent = "Balance: Error";
+document.addEventListener("DOMContentLoaded", function() {
+    fetch('get-balance.php')
+        .then(response => response.json())
+        .then(data => {
+            const balanceDisplay = document.getElementById('balance-display');
+            if (data.balance) {
+                // Format with commas and 2 decimal places
+                const formatted = new Intl.NumberFormat('en-PH', {
+                    style: 'decimal',
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2
+                }).format(data.balance);
+                
+                // For home-dashboard (has "Balance:" text)
+                if (balanceDisplay.textContent.includes("Balance:")) {
+                    balanceDisplay.textContent = `₱ ${formatted}`;
+                } 
+                // For dashboard (just the amount)
+                else {
+                    balanceDisplay.textContent = `₱${formatted}`;
                 }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                document.getElementById('balance-display').textContent = "Balance: Error";
-            });
-    });
+            } else {
+                balanceDisplay.textContent = "Balance: Error";
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.getElementById('balance-display').textContent = "Balance: Error";
+        });
+});
 </script>
     
 <script src="script.js"></script>

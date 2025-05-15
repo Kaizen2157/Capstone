@@ -1,10 +1,9 @@
 <?php
 session_start();
 
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "parking_system";
+// Include required files
+require_once __DIR__ . '/admin-functions.php';  // Path to your functions file
+require_once __DIR__ . '/../db_connect.php';    // Path to your database connection
 
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
@@ -54,50 +53,67 @@ header("Pragma: no-cache");
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard</title>
     <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link rel="stylesheet" href="dashboard-admin.css">
 </head>
 <body>
     <div class="admin-container">
         <!-- Sidebar -->
         <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Admin Panel</h2>
-            </div>
-            <nav class="sidebar-nav">
-                <ul>
-                    <li><a href="#">Dashboard Overview</a></li>
-                    <li><a href="#">Manage Users</a></li>
-                    <li><a href="#">Manage Reservations</a></li>
-                    <li><a href="#">Slot Cost Management</a></li>
-                    <li><a href="#">Add Balance</a></li>
-                    <li><a href="#">System Analytics</a></li>
-                    <li><a href="logout-admin.php" id="logout-btn">Logout</a></li>
-                </ul>
-            </nav>
-        </aside>
+    <div class="sidebar-header">
+        <h2>Admin Panel</h2>
+    </div>
+    
+    <nav class="sidebar-nav">
+        <ul>
+            <li><a href="#dashboard-overview"><i class='bx bx-book-content'></i>Dashboard Overview</a></li>
+            <li><a href="#manage-users"><i class='bx bx-user-pin'></i>Manage Users</a></li>
+            <li><a href="#system-analytics"><i class='bx bx-bar-chart-alt-2'></i>System Analytics</a></li>
+        </ul>
+    </nav>
+    
+    <div class="sidebar-footer">
+        <a href="logout-admin.php" id="logout-btn"><i class='bx bx-log-out'></i>Logout</a>
+    </div>
+</aside>
 
         <!-- Main Content Area -->
         <main class="main-content">
-            <div class="dashboard-overview">
+            <div class="dashboard-overview" id="dashboard-overview">
                 <h1>Welcome, Admin</h1>
                 <p>Overview of your parking system</p>
                 <div class="quick-stats">
                     <div class="stat-box">
-                        <h3>Active Users</h3>
-                        <p id="active-users">120</p> <!-- Dynamic content -->
+                        <h3>Registered Users</h3>
+                        <p id="active-users"><?php echo getActiveUsersCount($conn); ?></p>
+                        <small>Total system users</small>
                     </div>
                     <div class="stat-box">
-                        <h3>Total Reservations</h3>
-                        <p id="total-reservations">350</p> <!-- Dynamic content -->
+                        <h3>Current Reservations</h3>
+                        <p id="current-reservations"><?php echo getCurrentReservations($conn); ?></p>
+                        <small>Active right now</small>
                     </div>
                     <div class="stat-box">
-                        <h3>Total Earnings</h3>
-                        <p id="total-earnings">₱14,000</p> <!-- Dynamic content -->
+                        <h3>Today's Earnings</h3>
+                        <p id="today-earnings">₱<?php echo number_format(getTodaysEarnings($conn), 2); ?></p>
+                        <small>From <?php echo getTodaysReservations($conn); ?> bookings</small>
+                    </div>
+                    <div class="stat-box">
+                        <h3>Available Slots</h3>
+                        <p id="available-slots"><?php echo getAvailableSlots($conn); ?>/<?php echo getTotalSlots($conn); ?></p>
+                        <small><?php echo getReservedSlots($conn); ?> reserved</small>
                     </div>
                 </div>
             </div>
 
-            <!-- Slot Cost Management -->
+            <span>
+                <h1>Manage Users</h1>
+                <p class="smol">Manage user accounts and parking slot costs</p>
+            </span>
+
+            <div class="align" id="manage-users">
+
+                <!-- Slot Cost Management -->
             <div class="manage-slot-cost">
                 <h2>Change Parking Slot Cost</h2>
                 <form id="costForm" method="POST" action="update-cost.php">
@@ -137,26 +153,43 @@ header("Pragma: no-cache");
 
             </div>
 
-            <!-- System Analytics -->
-            <div class="system-analytics">
-                <h2>System Analytics</h2>
-                <div class="analytics-stats">
-                    <div class="stat-box">
-                        <h3>Users Logged In Today</h3>
-                        <p id="users-logged-in-today">45</p> <!-- Dynamic content -->
-                    </div>
-                    <div class="stat-box">
-                        <h3>Reservations Made Today</h3>
-                        <p id="reservations-today">120</p> <!-- Dynamic content -->
-                    </div>
-                    <div class="stat-box">
-                        <h3>Total Earnings Today</h3>
-                        <p id="earnings-today">₱4,800</p> <!-- Dynamic content -->
-                    </div>
+            </div>
+
+            <div class="system-analytics" id="system-analytics">
+            <h2>System Analytics</h2>
+
+            <div class="time-filters">
+                <button class="time-filter active" data-range="today">Today</button>
+                <button class="time-filter" data-range="week">This Week</button>
+                <button class="time-filter" data-range="month">This Month</button>
+                <button class="time-filter" data-range="year">This Year</button>
+                <button class="time-filter" data-range="all">All Time</button>
+            </div>
+
+            <div class="analytics-stats">
+                <div class="stat-box">
+                    <h3>Peak Hours</h3>
+                    <p id="peak-hours"><?php echo getPeakHours($conn); ?></p>
+                    <small>Most active time</small>
+                </div>
+                <div class="stat-box">
+                    <h3>Avg. Duration</h3>
+                    <p id="avg-duration"><?php echo getAverageDuration($conn); ?> hrs</p>
+                    <small>Per reservation</small>
+                </div>
+                <div class="stat-box">
+                    <h3>Utilization Rate</h3>
+                    <p id="utilization-rate"><?php echo getUtilizationRate($conn); ?>%</p>
+                    <small>Slot efficiency</small>
                 </div>
             </div>
-        </main>
-    </div>
+
+            <div class="chart-container">
+                <canvas id="analyticsChart"></canvas>
+            </div>
+        </div>
+    </main>
+</div>
 
     
 
@@ -170,10 +203,66 @@ header("Pragma: no-cache");
     </div>
 
 
-    <canvas id="earningsChart"></canvas>
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="dashboard-script.js"></script>
+
+    <script>
+        // Initialize Chart
+const ctx = document.getElementById('analyticsChart').getContext('2d');
+let analyticsChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: <?php echo json_encode(getEarningsChartData($conn)['labels']); ?>,
+        datasets: [{
+            label: 'Reservations',
+            data: <?php echo json_encode(getEarningsChartData($conn)['values']); ?>,
+            backgroundColor: '#19384a',
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                title: {
+                    display: true,
+                    text: 'Number of Reservations'
+                }
+            },
+            x: {
+                title: {
+                    display: true,
+                    text: 'Time Period'
+                }
+            }
+        }
+    }
+});
+
+// Time filter functionality
+document.querySelectorAll('.time-filter').forEach(button => {
+    button.addEventListener('click', function() {
+        document.querySelectorAll('.time-filter').forEach(btn => btn.classList.remove('active'));
+        this.classList.add('active');
+        
+        const timeRange = this.dataset.range;
+        updateChartData(timeRange);
+    });
+});
+
+function updateChartData(range = 'today') {
+    fetch(`get-analytics-data.php?range=${range}`)
+        .then(response => response.json())
+        .then(data => {
+            analyticsChart.data.labels = data.labels;
+            analyticsChart.data.datasets[0].data = data.values;
+            analyticsChart.update();
+        })
+        .catch(error => console.error('Error:', error));
+}
+    </script>
 
     <script>
 

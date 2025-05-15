@@ -1,22 +1,23 @@
-        // Function to check if an element is in viewport
-        function isInViewport(element) {
-            const rect = element.getBoundingClientRect();
-            return (
-                rect.top <= (window.innerHeight || document.documentElement.clientHeight) &&
-                rect.bottom >= 0
-            );
+const descriptions = document.querySelectorAll('.description');
+
+descriptions.forEach((desc, index) => {
+    // Add initial direction class
+    if (index % 2 === 0) {
+        desc.classList.add('from-left');
+    } else {
+        desc.classList.add('from-right');
+    }
+});
+
+const observer = new IntersectionObserver(entries => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('animate');
+            observer.unobserve(entry.target);
         }
-        
-        // Function to add 'visible' class to elements in view
-        function fadeInOnScroll() {
-            const fadeElements = document.querySelectorAll('.imgone , .imgtwo');
-            fadeElements.forEach(element => {
-                if (isInViewport(element)) {
-                    element.classList.add('visible');
-                }
-            });
-        }
-        
-        // Listen for scroll event
-        window.addEventListener('scroll', fadeInOnScroll);
-        window.addEventListener('load', fadeInOnScroll); // Run on load in case elements are already in view
+    });
+}, { threshold: 0.2 });
+
+descriptions.forEach(desc => {
+    observer.observe(desc);
+});

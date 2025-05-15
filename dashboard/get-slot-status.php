@@ -10,6 +10,16 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
+// if (!isset($_SESSION['user_id'])) {
+//     // Clear any remaining session data
+//     session_unset();
+//     session_destroy();
+    
+//     // Redirect to login
+//     header('Location: ../frontend/backups/login/login.html?session_expired=1');
+//     exit;
+// }
+
 // Only fetch slots that are reserved today
 $query = "SELECT slot_number, status FROM reservations WHERE DATE(start_time) = CURDATE() AND status = 'reserved'";
 $result = $conn->query($query);

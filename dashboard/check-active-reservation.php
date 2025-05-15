@@ -12,11 +12,21 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// Check session
 if (!isset($_SESSION['user_id'])) {
-    echo json_encode(['error' => 'User not logged in']);
+    // Clear any remaining session data
+    session_unset();
+    session_destroy();
+    
+    // Redirect to login
+    header('Location: ../frontend/backups/login/login.html?session_expired=1');
     exit;
 }
+// Check if the user has an active reservation
+$query = "SELECT COUNT(*) AS count 
+          FROM reservations 
+          WHERE user_id = ? 
+            AND status = 'reserved' 
+            AND CONCAT(start_date, ' ', end_time) > NOW()";
 
 $userId = $_SESSION['user_id'];
 

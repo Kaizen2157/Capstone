@@ -6,14 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const usernameDisplay = document.getElementById('username-display');
     const dropdownMenu = document.getElementById('dropdown-menu');
-
-    const bookingDateInput = document.getElementById("booking-date");
-    const today = new Date();
-    const tomorrow = new Date();
-    const dayAfterTomorrow = new Date();
-
-    
-    
     
     // Fetch username logic (if applicable)
     const username = sessionStorage.getItem('username') || localStorage.getItem('username') || 'User';
@@ -24,7 +16,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Function to fetch and display balance
+        fetch('get-user.php')
+  .then(response => {
+    if (!response.ok) throw new Error('Network response was not ok');
+    return response.json();
+  })
+  .then(data => {
+    if (data.error) {
+      console.error('Server error:', data.error);
+      usernameDisplay.textContent = 'User';
+    } else {
+      usernameDisplay.textContent = data.name;
+      console.log('Fetched username:', data.name); // Debug log
+    }
+  })
+  .catch(err => {
+    console.error('Failed to fetch username:', err);
+    // Try to get the response text for debugging
+    fetch('get-user.php')
+      .then(r => r.text())
+      .then(text => console.error('Raw response:', text));
+    usernameDisplay.textContent = 'User';
+  });
+
+const bookingDateInput = document.getElementById("booking-date");
+
+// Get current date/time in Manila timezone
+let now = new Date();
+let manilaOffset = 8 * 60 * 60 * 1000; // UTC+8 for Manila
+let manilaTime = new Date(now.getTime() + manilaOffset);
+
+// Calculate date range (today to 2 days ahead)
+let today = new Date(manilaTime);
+let maxBookingDate = new Date(manilaTime);
+maxBookingDate.setDate(today.getDate() + 2);
+
+// Helper function to format date as YYYY-MM-DD
+let toDateInputFormat = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
+
+// Set min/max dates
+bookingDateInput.min = toDateInputFormat(today);
+bookingDateInput.max = toDateInputFormat(maxBookingDate);
+
+// Set default value to today
+bookingDateInput.value = toDateInputFormat(today);
+
+// Additional validation when form is submitted
+document.getElementById('proceed-btn').addEventListener('click', function(e) {
+    const selectedDate = new Date(bookingDateInput.value);
+    const todayStart = new Date(today);
+    todayStart.setHours(0, 0, 0, 0);
+    
+    const maxAllowedDate = new Date(maxBookingDate);
+    maxAllowedDate.setHours(23, 59, 59, 999); // End of day
+    
+    if (selectedDate < todayStart || selectedDate > maxAllowedDate) {
+        e.preventDefault();
+        alert("You can only book from today up to 2 days ahead (until 11:59 PM).");
+        bookingDateInput.value = toDateInputFormat(today);
+        return false;
+    }
+});
+
 // Update balance display
 fetch('get-balance.php')
     .then(response => response.json())
@@ -53,18 +111,6 @@ fetch('get-balance.php')
     })
     .catch(error => console.error('Error fetching balance:', error));
 
-    
-    
-
-    fetch('get-user.php')
-        .then(response => response.json())
-        .then(data => {
-            usernameDisplay.textContent = data.name || 'User';
-        })
-        .catch(err => {
-            console.error('Failed to fetch username:', err);
-            usernameDisplay.textContent = 'User';
-        });
 
     // Fetch slot cost from the server (assuming you have an endpoint to return the cost)
     fetch('home-dashboard.php?get_cost=true')
@@ -261,7 +307,6 @@ document.getElementById('proceed-btn').addEventListener('click', function (e) {
         toastElement.show();
     }
     
-    // Example fetch
     fetch('home-dashboard.php', {
         method: 'POST',
         body: formData // assuming you’re using FormData
@@ -277,30 +322,50 @@ document.getElementById('proceed-btn').addEventListener('click', function (e) {
     
 });
     
+// Get current date/time in Manila timezone
+ now = new Date();
+ manilaOffset = 8 * 60 * 60 * 1000; // UTC+8 for Manila
+ manilaTime = new Date(now.getTime() + manilaOffset);
+
+// Calculate today, tomorrow, and day after tomorrow
+ today = new Date(manilaTime);
+const tomorrow = new Date(manilaTime);
+const dayAfterTomorrow = new Date(manilaTime);
+
+// Set the dates properly
 tomorrow.setDate(today.getDate() + 1);
 dayAfterTomorrow.setDate(today.getDate() + 2);
 
-const toDateInputFormat = (date) => date.toISOString().split("T")[0];
+// Helper function to format date as YYYY-MM-DD
+toDateInputFormat = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+};
 
+// Set min/max dates for the calendar input
 bookingDateInput.min = toDateInputFormat(today);
 bookingDateInput.max = toDateInputFormat(dayAfterTomorrow);
 
-// Limit duration between 1 and 12 hours
+// Set default value to today
+bookingDateInput.value = toDateInputFormat(today);
+
+// Duration input handling
 const durationInput = document.getElementById("duration");
 durationInput.min = 1;
 durationInput.max = 12;
 
-// Calculate cost when the user selects duration
+// Calculate cost when duration changes
 durationInput.addEventListener('input', () => {
     const duration = durationInput.value;
-
     if (duration > 0) {
         const totalCost = duration * SLOT_COST;
         document.getElementById("total-cost").textContent = "Total Cost: ₱" + totalCost.toFixed(2);
     }
 });
 
-// Check if duration is more than 8 hours
+// Check if duration is more than 12 hours
 durationInput.addEventListener('change', () => {
     const duration = durationInput.value;
 
@@ -328,15 +393,45 @@ function closeReceipt() {
     window.location.href = "dashboard.html";
 }
 
+// Modern logout confirmation
+document.addEventListener('DOMContentLoaded', function() {
+    const logoutBtn = document.getElementById('confirmLogoutBtn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            // Show loading state
+            logoutBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Logging out...';
+            logoutBtn.disabled = true;
+            
+            // Perform logout
+            window.location.href = "logout.php";
+        });
+    }
+});
+
+// Check for valid session on page load
+document.addEventListener('DOMContentLoaded', function() {
+    fetch('check-session.php')
+        .then(response => response.json())
+        .then(data => {
+            if (!data.valid) {
+                // Force a hard refresh to clear cache
+                window.location.replace('../frontend/backups/login/login.html?session_expired=1');
+            }
+        });
+});
+
+// Modified logout function
 function confirmLogout() {
     if (confirm("Are you sure you want to logout?")) {
-        window.location.href = "logout.php";
+        // Clear client-side storage
+        sessionStorage.clear();
+        localStorage.clear();
+        
+        // Add cache-busting parameter
+        const logoutUrl = 'logout.php?t=' + new Date().getTime();
+        window.location.href = logoutUrl;
     }
 }
-
-// setTimeout(function() {
-//     window.location.href = "../frontend/backups/login/login.html"; // Redirect to login page after 3 seconds
-// }, 3000);
 
 // // Fetch recent reservation data and populate the table
 document.addEventListener("DOMContentLoaded", function () {
@@ -396,12 +491,13 @@ fetch('get-reservation-history.php')
     const endDateTimeStr = `${end.toLocaleDateString(undefined, dateOptions)}, ${end.toLocaleTimeString(undefined, timeOptions)}`;
 
     const row = `
-      <tr>
-        <td>${reservation.slot_number}</td>
-        <td>${startDateTimeStr} – ${endDateTimeStr}</td>
-        <td>₱${reservation.total_cost}</td>
-      </tr>
-    `;
+  <tr>
+    <td>${reservation.slot_number}</td>
+    <td>${reservation.status}</td>
+    <td>${startDateTimeStr} - ${endDateTimeStr}</td>
+    <td>₱${reservation.total_cost}</td>
+  </tr>
+`;
 
     historyTableBody.innerHTML += row;
   });
@@ -412,12 +508,6 @@ fetch('get-reservation-history.php')
 
 
 
-document.addEventListener('DOMContentLoaded', function () {
-    fetchBalance();
-});
-
-// // Call the function to load data on page load
-// window.onload = fetchBalance;
 
 // Function to fetch balance and transaction history
 document.addEventListener('DOMContentLoaded', function () {
@@ -512,39 +602,72 @@ if (!isPastReservation && !isTooLateToStart && r.start_button_clicked !== 1) {
                         });
                     });
 
-                    document.getElementById('start-now-btn').addEventListener('click', function () {
-                        const startModal = new bootstrap.Modal(document.getElementById('startConfirmationModal'));
-                        startModal.show();
-                    
-                        // Remove any previously bound handler to avoid duplicates
-                        const confirmBtn = document.getElementById('confirm-start-btn');
-                        const newBtn = confirmBtn.cloneNode(true); // clone to remove old listeners
-                        confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
-                    
-                        newBtn.addEventListener('click', function () {
-                            startModal.hide();
-                    
-                            fetch('start-reservation-now.php', {
+                    document.getElementById('start-now-btn').addEventListener('click', function() {
+                    const startModal = new bootstrap.Modal(document.getElementById('startConfirmationModal'));
+                    startModal.show();
+                                    
+                    // Remove any previously bound handler to avoid duplicates
+                    const confirmBtn = document.getElementById('confirm-start-btn');
+                    const newBtn = confirmBtn.cloneNode(true);
+                    confirmBtn.parentNode.replaceChild(newBtn, confirmBtn);
+                                    
+                    newBtn.addEventListener('click', async function() {
+                        try {
+                            // Show loading state
+                            newBtn.disabled = true;
+                            newBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+                        
+                            const response = await fetch('start-reservation-now.php', {
                                 method: 'POST',
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify({ reservationId: r.id })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    document.getElementById('start-now-btn').style.display = 'none';
-                                    startCountdown(endDateTime); // ⬅️ Start countdown only after confirmed and DB update succeeded
-                                } else {
-                                    alert('Failed to start reservation');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error starting reservation:', error);
                             });
-                        });
-                    });                    
+                        
+                            // Check if response is OK
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                throw new Error(`Server error: ${response.status} - ${errorText}`);
+                            }
+                        
+                            // Check content type
+                            const contentType = response.headers.get('content-type');
+                            if (!contentType || !contentType.includes('application/json')) {
+                                const text = await response.text();
+                                throw new Error(`Expected JSON but got: ${text.substring(0, 100)}...`);
+                            }
+                        
+                            const data = await response.json();
+                            console.log('Update response:', data);
+                        
+                            if (data.success) {
+                                startModal.hide();
+                                // Show success message before reload
+                                const messageBox = document.getElementById('message-box');
+                                messageBox.innerHTML = `
+                                    <div class="alert alert-success">
+                                        Reservation started successfully.
+                                    </div>
+                                `;
+                                setTimeout(() => window.location.reload(), 2000);
+                            } else {
+                                throw new Error(data.message || 'Failed to start reservation');
+                            }
+                        } catch (error) {
+                            console.error('Error starting reservation:', error);
+                            const messageBox = document.getElementById('message-box');
+                            messageBox.innerHTML = `
+                                <div class="alert alert-danger">
+                                    Error: ${error.message}
+                                </div>
+                            `;
+                        } finally {
+                            newBtn.disabled = false;
+                            newBtn.textContent = 'Confirm Start';
+                        }
+                    });
+                });                    
                 }
             } else {
                 section.innerHTML = '<p class="activealert">No active reservation found.</p>';
@@ -689,3 +812,54 @@ fetch('get-active-reservation.php') // Fetch active reservation data
         const timerInterval = setInterval(updateCountdown, 1000);
     }
     
+
+function loadTransactionHistory() {
+    fetch('get-transactions.php')
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            const container = document.querySelector('.transaction-list');
+            
+            if (data.error) {
+                container.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+                return;
+            }
+
+            if (!data.length) {
+                container.innerHTML = `<div class="alert alert-info">No transactions found</div>`;
+                return;
+            }
+
+            container.innerHTML = data.map(tx => `
+                <div class="transaction-item ${tx.is_credit ? 'credit' : 'debit'}">
+                    <div class="transaction-header">
+                        <span class="tx-type">${tx.type.toUpperCase()}</span>
+                        <span class="tx-date">${tx.date}</span>
+                    </div>
+                    <div class="transaction-details">
+                        <span class="tx-description">${tx.description}</span>
+                        <span class="tx-amount ${tx.is_credit ? 'text-success' : 'text-danger'}">
+                            ${tx.is_credit ? '+' : '-'}₱${tx.display_amount}
+                        </span>
+                    </div>
+                    <div class="transaction-footer">
+                        <span class="tx-balance">Balance: ₱${tx.balance_after}</span>
+                        ${tx.reference_id ? `<span class="tx-reference">Ref: #${tx.reference_id}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            document.querySelector('.transaction-list').innerHTML = `
+                <div class="alert alert-danger">
+                    Failed to load transactions: ${error.message}
+                </div>
+            `;
+        });
+}
+
+// Load on page init
+document.addEventListener('DOMContentLoaded', loadTransactionHistory);

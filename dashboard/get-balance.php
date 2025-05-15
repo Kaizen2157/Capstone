@@ -11,6 +11,17 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }   
 
+
+// if (!isset($_SESSION['user_id'])) {
+//     // Clear any remaining session data
+//     session_unset();
+//     session_destroy();
+    
+//     // Redirect to login
+//     header('Location: ../frontend/backups/login/login.html?session_expired=1');
+//     exit;
+// }
+
 $user_id = $_SESSION['user_id']; 
 
 // Get balance from the users table

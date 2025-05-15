@@ -32,5 +32,16 @@
 
     </div>
 
+    <script>
+        // Display error if login failed
+        const urlParams = new URLSearchParams(window.location.search);
+        const errorMessage = document.getElementById('error-message');
+      
+        if (urlParams.get('error') === '1') {
+          errorMessage.style.display = 'block';
+          errorMessage.innerText = 'Incorrect email or password. Please try again.';
+        }
+      </script>
+      
 </body>
 </html>
