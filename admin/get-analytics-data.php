@@ -10,7 +10,13 @@ if ($conn->connect_error) {
 }
 
 $range = $_GET['range'] ?? 'today';
-$data = getEarningsChartData($conn, $range);
+
+$data = [
+    'chart' => getEarningsChartData($conn, $range),
+    'earnings' => getEarningsByRange($conn, $range),
+    'totalEarnings' => getTotalEarningsByRange($conn, $range),
+    'totalBookings' => array_sum(array_column(getEarningsByRange($conn, $range), 'bookings'))
+];
 
 echo json_encode($data);
 $conn->close();

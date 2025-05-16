@@ -156,4 +156,113 @@ function getEarningsChartData($conn, $range = 'today') {
     return $data;
 }
 
+// Add these functions to your admin-functions.php
+
+function getEarningsByRange($conn, $range = 'today') {
+    $query = "";
+    
+    switch($range) {
+        case 'week':
+            $query = "SELECT 
+                        DATE(start_date) as date,
+                        SUM(total_cost) as earnings,
+                        COUNT(*) as bookings
+                      FROM reservations 
+                      WHERE YEARWEEK(start_date) = YEARWEEK(CURDATE()) 
+                      AND status = 'done'
+                      GROUP BY DATE(start_date) 
+                      ORDER BY DATE(start_date)";
+            break;
+        case 'month':
+            $query = "SELECT 
+                        DATE(start_date) as date,
+                        SUM(total_cost) as earnings,
+                        COUNT(*) as bookings
+                      FROM reservations 
+                      WHERE MONTH(start_date) = MONTH(CURDATE()) 
+                      AND status = 'done'
+                      GROUP BY DATE(start_date) 
+                      ORDER BY DATE(start_date)";
+            break;
+        case 'year':
+            $query = "SELECT 
+                        MONTHNAME(start_date) as month,
+                        SUM(total_cost) as earnings,
+                        COUNT(*) as bookings
+                      FROM reservations 
+                      WHERE YEAR(start_date) = YEAR(CURDATE()) 
+                      AND status = 'done'
+                      GROUP BY MONTH(start_date) 
+                      ORDER BY MONTH(start_date)";
+            break;
+        case 'all':
+            $query = "SELECT 
+                        YEAR(start_date) as year,
+                        SUM(total_cost) as earnings,
+                        COUNT(*) as bookings
+                      FROM reservations 
+                      WHERE status = 'done'
+                      GROUP BY YEAR(start_date) 
+                      ORDER BY YEAR(start_date)";
+            break;
+        default: // today
+            $query = "SELECT 
+                        HOUR(start_time) as hour,
+                        SUM(total_cost) as earnings,
+                        COUNT(*) as bookings
+                      FROM reservations 
+                      WHERE DATE(start_date) = CURDATE() 
+                      AND status = 'done'
+                      GROUP BY HOUR(start_time) 
+                      ORDER BY HOUR(start_time)";
+    }
+
+    $result = $conn->query($query);
+    $data = [];
+
+    while($row = $result->fetch_assoc()) {
+        $data[] = $row;
+    }
+
+    return $data;
+}
+
+function getTotalEarningsByRange($conn, $range = 'today') {
+    $query = "";
+    
+    switch($range) {
+        case 'week':
+            $query = "SELECT SUM(total_cost) as total 
+                      FROM reservations 
+                      WHERE YEARWEEK(start_date) = YEARWEEK(CURDATE()) 
+                      AND status = 'done'";
+            break;
+        case 'month':
+            $query = "SELECT SUM(total_cost) as total 
+                      FROM reservations 
+                      WHERE MONTH(start_date) = MONTH(CURDATE()) 
+                      AND status = 'done'";
+            break;
+        case 'year':
+            $query = "SELECT SUM(total_cost) as total 
+                      FROM reservations 
+                      WHERE YEAR(start_date) = YEAR(CURDATE()) 
+                      AND status = 'done'";
+            break;
+        case 'all':
+            $query = "SELECT SUM(total_cost) as total 
+                      FROM reservations 
+                      WHERE status = 'done'";
+            break;
+        default: // today
+            $query = "SELECT SUM(total_cost) as total 
+                      FROM reservations 
+                      WHERE DATE(start_date) = CURDATE() 
+                      AND status = 'done'";
+    }
+
+    $result = $conn->query($query);
+    return $result->fetch_row()[0] ?? 0;
+}
+
 ?>

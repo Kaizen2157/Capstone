@@ -96,7 +96,7 @@ header("Pragma: no-cache");
                     <div class="stat-box">
                         <h3>Today's Earnings</h3>
                         <p id="today-earnings">₱<?php echo number_format(getTodaysEarnings($conn), 2); ?></p>
-                        <small>From <?php echo getTodaysReservations($conn); ?> bookings</small>
+                        <small>From successful bookings</small> <?php //echo getTodaysReservations($conn); ?>
                     </div>
                     <div class="stat-box">
                         <h3>Available Slots</h3>
@@ -155,39 +155,39 @@ header("Pragma: no-cache");
 
             </div>
 
-            <div class="system-analytics" id="system-analytics">
-            <h2>System Analytics</h2>
+        <div class="system-analytics" id="system-analytics">
+    <h2>System Analytics</h2>
 
-            <div class="time-filters">
-                <button class="time-filter active" data-range="today">Today</button>
-                <button class="time-filter" data-range="week">This Week</button>
-                <button class="time-filter" data-range="month">This Month</button>
-                <button class="time-filter" data-range="year">This Year</button>
-                <button class="time-filter" data-range="all">All Time</button>
-            </div>
+    <div class="time-filters">
+        <button class="time-filter active" data-range="today">Today</button>
+        <button class="time-filter" data-range="week">This Week</button>
+        <button class="time-filter" data-range="month">This Month</button>
+        <button class="time-filter" data-range="year">This Year</button>
+        <button class="time-filter" data-range="all">All Time</button>
+    </div>
 
-            <div class="analytics-stats">
-                <div class="stat-box">
-                    <h3>Peak Hours</h3>
-                    <p id="peak-hours"><?php echo getPeakHours($conn); ?></p>
-                    <small>Most active time</small>
-                </div>
-                <div class="stat-box">
-                    <h3>Avg. Duration</h3>
-                    <p id="avg-duration"><?php echo getAverageDuration($conn); ?> hrs</p>
-                    <small>Per reservation</small>
-                </div>
-                <div class="stat-box">
-                    <h3>Utilization Rate</h3>
-                    <p id="utilization-rate"><?php echo getUtilizationRate($conn); ?>%</p>
-                    <small>Slot efficiency</small>
-                </div>
-            </div>
-
-            <div class="chart-container">
-                <canvas id="analyticsChart"></canvas>
-            </div>
+    <div class="analytics-stats">
+        <div class="stat-box">
+            <h3>Total Earnings</h3>
+            <p id="total-earnings">₱0.00</p>
+            <small id="earnings-range">Today</small>
         </div>
+        <div class="stat-box">
+            <h3>Completed Bookings</h3>
+            <p id="total-bookings">0</p>
+            <small id="bookings-range">Today</small>
+        </div>
+        <div class="stat-box">
+            <h3>Avg. Earnings</h3>
+            <p id="avg-earnings">₱0.00</p>
+            <small>Per booking</small>
+        </div>
+    </div>
+
+    <div class="chart-container">
+        <canvas id="analyticsChart"></canvas>
+    </div>
+</div>
     </main>
 </div>
 
@@ -206,6 +206,67 @@ header("Pragma: no-cache");
     
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="dashboard-script.js"></script>
+
+    <script>
+        // Add this to your dashboard JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    const timeFilters = document.querySelectorAll('.time-filter');
+    let currentRange = 'today';
+
+    // Load initial data
+    loadAnalyticsData(currentRange);
+
+    // Add click handlers for time filters
+    timeFilters.forEach(filter => {
+        filter.addEventListener('click', function() {
+            timeFilters.forEach(f => f.classList.remove('active'));
+            this.classList.add('active');
+            currentRange = this.dataset.range;
+            loadAnalyticsData(currentRange);
+        });
+    });
+
+    function loadAnalyticsData(range) {
+        fetch(`get-analytics.php?range=${range}`)
+            .then(response => response.json())
+            .then(data => {
+                // Update earnings display
+                document.getElementById('total-earnings').textContent = 
+                    `₱${data.totalEarnings.toFixed(2)}`;
+                document.getElementById('total-bookings').textContent = 
+                    data.totalBookings;
+                
+                const avgEarnings = data.totalBookings > 0 ? 
+                    (data.totalEarnings / data.totalBookings).toFixed(2) : 0;
+                document.getElementById('avg-earnings').textContent = 
+                    `₱${avgEarnings}`;
+                
+                // Update range labels
+                const rangeText = {
+                    'today': 'Today',
+                    'week': 'This Week',
+                    'month': 'This Month',
+                    'year': 'This Year',
+                    'all': 'All Time'
+                };
+                document.getElementById('earnings-range').textContent = rangeText[range];
+                document.getElementById('bookings-range').textContent = rangeText[range];
+                
+                // Update chart (you'll need to implement this based on your chart library)
+                updateAnalyticsChart(data.chart);
+            })
+            .catch(error => {
+                console.error('Error loading analytics:', error);
+            });
+    }
+
+    function updateAnalyticsChart(chartData) {
+        // Implement your chart update logic here
+        // This depends on which chart library you're using (Chart.js, etc.)
+        console.log('Chart data:', chartData);
+    }
+});
+    </script>
 
     <script>
         // Initialize Chart
