@@ -1,6 +1,6 @@
 <?php
 session_start();
-header('Content-Type: application/json');
+header('Content-Type: application/json'); //added
 $host = "localhost";
 $username = "root";
 $password = "";
