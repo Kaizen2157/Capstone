@@ -1,40 +1,37 @@
 <?php
 session_start();
-// Database connection
-$host = "localhost";
-$username = "root";
-$password = "";
-$database = "parking_system";
+require_once '../db_connect.php';
 
-$conn = new mysqli($host, $username, $password, $database);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if (!isset($_SESSION['user_id'])) {
-    // Clear any remaining session data
-    session_unset();
-    session_destroy();
-    
-    // Redirect to login
-    header('Location: ../frontend/backups/login/login.html?session_expired=1');
-    exit;
-}
-
-// Mark expired reservations as done
 date_default_timezone_set('Asia/Manila');
-$now = date('H:i:s');
-$today = date('Y-m-d');
+$now = date('Y-m-d H:i:s');
 
-$conn->query("UPDATE reservations 
-              SET status = 'reserved' 
-              WHERE status = 'reserved' 
-              AND start_date <= '$today' 
-              AND end_time <= '$now'");
+// First, run cleanup of expired reservations
+$cleanupQuery = "UPDATE reservations r
+                JOIN slots s ON r.slot_number = s.slot_number
+                SET r.status = 'done',
+                    s.status = 'available',
+                    s.reserved_by = NULL,
+                    s.reservation_start = NULL,
+                    s.reservation_end = NULL
+                WHERE r.status = 'reserved' 
+                AND CONCAT(r.end_date, ' ', r.end_time) <= ?";
+                
+$cleanupStmt = $conn->prepare($cleanupQuery);
+$cleanupStmt->bind_param("s", $now);
+$cleanupStmt->execute();
+$affectedRows = $cleanupStmt->affected_rows;
+$cleanupStmt->close();
 
+// Log cleanup activity
+error_log("Cleaned up $affectedRows expired reservations at $now");
 
-$sql = "SELECT slot_number FROM reservations 
-        WHERE status = 'reserved' AND end_time >= ?";
+// Now get currently reserved slots
+$sql = "SELECT s.slot_number 
+        FROM slots s
+        JOIN reservations r ON s.slot_number = r.slot_number
+        WHERE r.status = 'reserved' 
+        AND CONCAT(r.end_date, ' ', r.end_time) > ?";
+        
 $stmt = $conn->prepare($sql);
 $stmt->bind_param("s", $now);
 $stmt->execute();
@@ -45,5 +42,8 @@ while ($row = $result->fetch_assoc()) {
     $slots[] = $row['slot_number'];
 }
 
-echo json_encode(['reservedSlots' => $slots]);
+echo json_encode([
+    'reservedSlots' => $slots,
+    'cleaned' => $affectedRows
+]);
 ?>

@@ -34,6 +34,21 @@ if (isset($_GET['get_cost']) && $_GET['get_cost'] == 'true') {
     exit;
 }
 
+// Check if selected time is in the past
+if (strtotime("$start_date $start_time") < time()) {
+    echo json_encode([
+        'success' => false,
+        'message' => "Cannot create reservation in the past"
+    ]);
+    exit;
+}
+
+function isTimeInFuture($date, $time) {
+    $reservationDateTime = new DateTime("$date $time", new DateTimeZone('Asia/Manila'));
+    $currentDateTime = new DateTime('now', new DateTimeZone('Asia/Manila'));
+    return $reservationDateTime > $currentDateTime;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Booking form data
     $user_id = $_SESSION['user_id'];
@@ -112,11 +127,17 @@ if ($inputDate < $today || $inputDate > $maxDate) {
 
 
 
-    // FOURTH: Proceed to save booking
+// FOURTH: Proceed to save booking
 $status = 'reserved'; // Set status explicitly
 
+// Calculate if reservation is for current time
+$reservationTime = strtotime("$start_date $start_time");
+$currentTime = time();
+$isFutureReservation = ($reservationTime > $currentTime);
+
 $stmt = $conn->prepare("INSERT INTO reservations 
-    (user_id, first_name, last_name, contact_number, car_plate, slot_number, start_date, start_time, end_time, duration_hours, total_cost, status) 
+    (user_id, first_name, last_name, contact_number, car_plate, slot_number, 
+     start_date, start_time, end_time, duration_hours, total_cost, status) 
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
 $stmt->bind_param(
