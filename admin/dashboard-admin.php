@@ -1,13 +1,33 @@
 <?php
-session_start();
+// Set session security options BEFORE starting the session
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1); // Only if you're using HTTPS
+ini_set('session.use_strict_mode', 1);
+
+session_start(); // Now it's safe to start the session
 
 // Include required files
-require_once __DIR__ . '/admin-functions.php';  // Path to your functions file
-require_once __DIR__ . '/../db_connect.php';    // Path to your database connection
+require_once __DIR__ . '/admin-functions.php';
+require_once __DIR__ . '/../db_connect.php';
+
 
 $conn = new mysqli($host, $username, $password, $database);
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
+}
+
+// Debug code - add this before the condition
+$adminId = $_SESSION['admin_id'] ?? 0;
+$canCreate = canCreateAdmins($conn, $adminId);
+error_log("Admin ID: $adminId, Can create admins: " . ($canCreate ? 'YES' : 'NO'));
+
+// Verify admin is logged in
+// Validate admin session
+if (!validateAdminSession($conn)) {
+    session_unset();
+    session_destroy();
+    header("Location: adminlog.html");
+    exit();
 }
 
 // Fetch current cost per hour from the database
@@ -18,31 +38,12 @@ if ($cost_result && $cost_result->num_rows > 0) {
     $current_cost = $row['parking_cost'];
 }
 
-// Check if admin is logged in
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    // Clear session data and cookies
-    session_unset();
-    session_destroy();
-
-    // Clear session cookie
-    if (ini_get("session.use_cookies")) {
-        $params = session_get_cookie_params();
-        setcookie(session_name(), '', time() - 42000,
-            $params["path"], $params["domain"],
-            $params["secure"], $params["httponly"]
-        );
-    }
-
-    header("Location: adminlog.html");
-    exit();
-}
-
 // Prevent caching
 header("Expires: Tue, 01 Jan 2000 00:00:00 GMT");
 header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
 header("Cache-Control: no-store, no-cache, must-revalidate, max-age=0");
 header("Cache-Control: post-check=0, pre-check=0", false);
-header("Cache-Control: must-revalidate"); // 👈 important to revalidate
+header("Cache-Control: must-revalidate"); // 👈 im                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          portant to revalidate
 header("Pragma: no-cache");
 ?>
 
@@ -57,25 +58,31 @@ header("Pragma: no-cache");
     <link rel="stylesheet" href="dashboard-admin.css">
 </head>
 <body>
-    <div class="admin-container">
+<div class="admin-container">
         <!-- Sidebar -->
-        <aside class="sidebar">
-    <div class="sidebar-header">
-        <h2>Admin Panel</h2>
-    </div>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h2>Admin Panel</h2>
+        </div>
     
-    <nav class="sidebar-nav">
-        <ul>
-            <li><a href="#dashboard-overview"><i class='bx bx-book-content'></i>Dashboard Overview</a></li>
-            <li><a href="#manage-users"><i class='bx bx-user-pin'></i>Manage Users</a></li>
-            <li><a href="#system-analytics"><i class='bx bx-bar-chart-alt-2'></i>System Analytics</a></li>
-        </ul>
-    </nav>
+        <nav class="sidebar-nav">
+            <ul>
+                <li><a href="#dashboard-overview"><i class='bx bx-book-content'></i>Dashboard Overview</a></li>
+                <li><a href="#manage-users"><i class='bx bx-user-pin'></i>Manage Users</a></li>
+                <li><a href="#system-analytics"><i class='bx bx-bar-chart-alt-2'></i>System Analytics</a></li>
+                <?php 
+                // Check if admin_id exists and can create admins
+                if (isset($_SESSION['admin_id']) && canCreateAdmins($conn, $_SESSION['admin_id'])): ?>
+                    <li><a href="#manage-admins"><i class='bx bx-shield'></i>Manage Admins</a></li>
+                <?php endif; ?>
+                <li><a href="#ca"><i class='bx bx-user-circle'></i> Admins</a></li>
+            </ul>
+        </nav>
     
-    <div class="sidebar-footer">
-        <a href="logout-admin.php" id="logout-btn"><i class='bx bx-log-out'></i>Logout</a>
-    </div>
-</aside>
+        <div class="sidebar-footer">
+            <a href="logout-admin.php" id="logout-btn"><i class='bx bx-log-out'></i>Logout</a>
+        </div>
+    </aside>
 
         <!-- Main Content Area -->
         <main class="main-content">
@@ -188,6 +195,56 @@ header("Pragma: no-cache");
         <canvas id="analyticsChart"></canvas>
     </div>
 </div>
+<?php if (canCreateAdmins($conn, $_SESSION['admin_id'])): ?>
+<div class="manage-admins" id="manage-admins">
+    <h2>Manage Administrators</h2>
+    
+    <!-- Add New Admin Form -->
+    <div class="admin-form">
+        <h3>Add New Administrator</h3>
+        <form id="add-admin-form">
+            <div class="form-group">
+                <label for="admin-username">Username:</label>
+                <input type="text" id="admin-username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="admin-password">Password:</label>
+                <input type="password" id="admin-password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="admin-confirm-password">Confirm Password:</label>
+                <input type="password" id="admin-confirm-password" name="confirm_password" required>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="is_superadmin"> Grant Super Admin privileges
+                </label>
+            </div>
+            <button type="submit" class="btn-add-admin">Add Administrator</button>
+        </form>
+    </div>
+    
+    <!-- Admin List -->
+    <div class="admin-list" id="ca">
+        <h3>Current Administrators</h3>
+        <table class="admins-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Created By</th>
+                    <th>Created At</th>
+                    <th>Privileges</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="admins-table-body">
+                <!-- Will be populated by JavaScript -->
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php endif; ?>
     </main>
 </div>
 
@@ -441,6 +498,118 @@ document.getElementById("add-balance-form").addEventListener("submit", function(
 ">
     User not found. Please try again.
 </div>
+
+<script>
+    // Load admins table
+function loadAdminsTable() {
+    fetch('get-admins.php')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('admins-table-body');
+            tableBody.innerHTML = '';
+            
+            const currentAdminId = <?php echo isset($_SESSION['admin_id']) ? (int)$_SESSION['admin_id'] : 0; ?>;
+            
+            data.admins.forEach(admin => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${admin.id}</td>
+                    <td>${admin.username}</td>
+                    <td>${admin.created_by_name || 'System'}</td>
+                    <td>${admin.created_at}</td>
+                    <td>${admin.is_superadmin ? 'Super Admin' : 'Regular Admin'}</td>
+                    <td class="admin-actions">
+                        ${admin.is_superadmin ? '' : `<button class="btn-edit-admin" data-id="${admin.id}">Edit</button>`}
+                        ${admin.id !== currentAdminId ? 
+                            `<button class="btn-delete-admin" data-id="${admin.id}">Delete</button>` : ''}
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+            
+            // Add event listeners to buttons
+            document.querySelectorAll('.btn-edit-admin').forEach(btn => {
+                btn.addEventListener('click', editAdmin);
+            });
+            
+            document.querySelectorAll('.btn-delete-admin').forEach(btn => {
+                btn.addEventListener('click', deleteAdmin);
+            });
+        });
+}
+
+// Add new admin
+document.getElementById('add-admin-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const username = document.getElementById('admin-username').value;
+    const password = document.getElementById('admin-password').value;
+    const confirmPassword = document.getElementById('admin-confirm-password').value;
+    const isSuperadmin = document.querySelector('input[name="is_superadmin"]').checked;
+    
+    if (password !== confirmPassword) {
+        alert('Passwords do not match!');
+        return;
+    }
+    
+    const formData = new FormData();
+    formData.append('username', username);
+    formData.append('password', password);
+    formData.append('is_superadmin', isSuperadmin ? 1 : 0);
+    
+    fetch('add-admin.php', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Admin added successfully!');
+            document.getElementById('add-admin-form').reset();
+            loadAdminsTable();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    });
+});
+
+// Edit admin (you would implement this similarly)
+function editAdmin(e) {
+    const adminId = e.target.dataset.id;
+    // Implement edit functionality
+}
+
+// Delete admin
+function deleteAdmin(e) {
+    if (!confirm('Are you sure you want to delete this admin?')) return;
+    
+    const adminId = e.target.dataset.id;
+    
+    fetch('delete-admin.php', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `admin_id=${adminId}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Admin deleted successfully!');
+            loadAdminsTable();
+        } else {
+            alert('Error: ' + data.message);
+        }
+    });
+}
+
+// Load the table when the page loads
+document.addEventListener('DOMContentLoaded', function() {
+    if (document.getElementById('manage-admins')) {
+        loadAdminsTable();
+    }
+});
+</script>
 
 <script>
 document.getElementById('costForm').addEventListener('submit', function(e) {

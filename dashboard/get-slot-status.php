@@ -1,61 +1,92 @@
 <?php
 session_start();
 require_once '../db_connect.php';
+$conn->query("SET time_zone = '+08:00'"); // For Asia/Manila
 
 header('Content-Type: application/json');
 date_default_timezone_set('Asia/Manila');
-$now = date('Y-m-d H:i:s');
+$current_time = date('Y-m-d H:i:s');
 
-// First clean up any expired reservations
+// 1. Clean up expired reservations
 $cleanupQuery = "UPDATE reservations r
                 JOIN slots s ON r.slot_number = s.slot_number
                 SET r.status = 'done',
-                    s.status = 'available',
-                    s.reserved_by = NULL,
-                    s.reservation_start = NULL,
-                    s.reservation_end = NULL
+                    s.status = 'available'
                 WHERE r.status = 'reserved' 
-                AND CONCAT(r.end_date, ' ', r.end_time) <= ?";
+                AND CONCAT(r.start_date, ' ', r.end_time) < ?";
 $cleanupStmt = $conn->prepare($cleanupQuery);
-$cleanupStmt->bind_param("s", $now);
+$cleanupStmt->bind_param("s", $current_time);
 $cleanupStmt->execute();
-$cleanupStmt->close();
+$cleanupAffected = $cleanupStmt->affected_rows;
 
-// Get all slots with their reservation status
-$query = "SELECT 
-            s.slot_number as id, 
-            CASE 
-                WHEN r.id IS NOT NULL 
-                AND r.status = 'reserved'
-                AND CONCAT(r.start_date, ' ', r.start_time) <= ?
-                AND CONCAT(r.end_date, ' ', r.end_time) > ? THEN 'reserved'
-                ELSE 'available'
-            END as status
-          FROM slots s
-          LEFT JOIN reservations r ON s.slot_number = r.slot_number 
-              AND r.status = 'reserved'
-              AND CONCAT(r.start_date, ' ', r.start_time) <= ?
-              AND CONCAT(r.end_date, ' ', r.end_time) > ?";
-          
-$stmt = $conn->prepare($query);
-$stmt->bind_param("ssss", $now, $now, $now, $now);
-$stmt->execute();
-$result = $stmt->get_result();
+// 2. Get all active and future reservations
+$reservationsQuery = "SELECT 
+                        r.id,
+                        r.slot_number,
+                        r.status,
+                        CONCAT(r.start_date, ' ', r.start_time) as start_datetime,
+                        CONCAT(r.start_date, ' ', r.end_time) as end_datetime
+                      FROM reservations r
+                      WHERE r.status = 'reserved'
+                      AND CONCAT(r.start_date, ' ', r.end_time) > ?
+                      ORDER BY r.start_date, r.start_time";
+$reservationsStmt = $conn->prepare($reservationsQuery);
+$reservationsStmt->bind_param("s", $current_time);
+$reservationsStmt->execute();
+$reservationsResult = $reservationsStmt->get_result();
+$allReservations = $reservationsResult->fetch_all(MYSQLI_ASSOC);
 
+// 3. Get currently active reservations
+$activeQuery = "SELECT 
+                  r.slot_number
+                FROM reservations r
+                WHERE r.status = 'reserved'
+                AND ? BETWEEN 
+                    TIMESTAMP(r.start_date, r.start_time) AND 
+                    TIMESTAMP(r.start_date, r.end_time)";
+$activeStmt = $conn->prepare($activeQuery);
+$activeStmt->bind_param("s", $current_time);
+$activeStmt->execute();
+$activeResult = $activeStmt->get_result();
+$activeSlotNumbers = array_column($activeResult->fetch_all(MYSQLI_ASSOC), 'slot_number');
+
+// 4. Prepare slots array with reservation details
+$slotsQuery = "SELECT slot_number as id FROM slots ORDER BY slot_number";
+$slotsResult = $conn->query($slotsQuery);
 $slots = [];
-while ($row = $result->fetch_assoc()) {
-    $slots[] = [
-        'id' => $row['id'],
-        'status' => $row['status']
-    ];
+
+while ($slot = $slotsResult->fetch_assoc()) {
+    $slotId = $slot['id'];
+    $slotData = ['slot' => $slotId];
+    
+    // Check if slot has active or future reservations
+    foreach ($allReservations as $reservation) {
+        if ($reservation['slot_number'] == $slotId) {
+            $slotData['status'] = 'reserved';
+            $slotData['reservation_id'] = $reservation['id'];
+            $slotData['start_datetime'] = $reservation['start_datetime'];
+            $slotData['end_datetime'] = $reservation['end_datetime'];
+            break;
+        }
+    }
+    
+    // Default to available if no reservation found
+    if (!isset($slotData['status'])) {
+        $slotData['status'] = 'available';
+    }
+    
+    $slots[] = $slotData;
 }
 
+// 5. Return the response (only 'success' and 'slots')
 echo json_encode([
     'success' => true,
-    'slots' => $slots,
-    'timestamp' => $now
+    'slots' => $slots
 ]);
 
-$stmt->close();
+// Close statements and connection
+$cleanupStmt->close();
+$reservationsStmt->close();
+$activeStmt->close();
 $conn->close();
 ?>

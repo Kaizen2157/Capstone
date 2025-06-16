@@ -87,8 +87,9 @@ nav .logo{
 
 nav .logo img{
     object-fit: cover;
-    width: 8vw;
-    height: 9vh;
+    width: 15vw;
+    mix-blend-mode: multiply;
+    height: 10vh;
 }
 
 nav .logo a{

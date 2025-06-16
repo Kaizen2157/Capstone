@@ -40,15 +40,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const bookingDateInput = document.getElementById("booking-date");
 
-    // Get current date/time in Manila timezone
-    let now = new Date();
-    let manilaOffset = 8 * 60 * 60 * 1000; // UTC+8 for Manila
-    let manilaTime = new Date(now.getTime() + manilaOffset);
+// Get current date/time in Manila timezone
+function getManilaTime() {
+    const now = new Date();
+    const manilaTimeStr = now.toLocaleString('en-US', {
+        timeZone: 'Asia/Manila',
+        hour12: false
+    });
+    return new Date(manilaTimeStr);
+}
 
-    // Calculate date range (today to 2 days ahead)
-    let today = new Date(manilaTime);
-    let maxBookingDate = new Date(manilaTime);
-    maxBookingDate.setDate(today.getDate() + 2);
+let manilaTime = getManilaTime();
+let today = new Date(manilaTime);
+today.setHours(0, 0, 0, 0); // Start of day in Manila
+
+let maxBookingDate = new Date(today);
+maxBookingDate.setDate(today.getDate() + 2); // 2 days from today in Manila
 
     // Helper function to format date as YYYY-MM-DD
     let toDateInputFormat = (date) => {
@@ -68,16 +75,19 @@ document.addEventListener('DOMContentLoaded', () => {
     // Additional validation when form is submitted
     document.getElementById('proceed-btn').addEventListener('click', function(e) {
         const selectedDate = new Date(bookingDateInput.value);
-        const todayStart = new Date(today);
+        const manilaNow = getManilaTime();
+        
+        const todayStart = new Date(manilaNow);
         todayStart.setHours(0, 0, 0, 0);
-        
-        const maxAllowedDate = new Date(maxBookingDate);
+
+        const maxAllowedDate = new Date(todayStart);
+        maxAllowedDate.setDate(todayStart.getDate() + 2);
         maxAllowedDate.setHours(23, 59, 59, 999); // End of day
-        
+
         if (selectedDate < todayStart || selectedDate > maxAllowedDate) {
             e.preventDefault();
-            alert("You can only book from today up to 2 days ahead (until 11:59 PM).");
-            bookingDateInput.value = toDateInputFormat(today);
+            alert("You can only book from today up to 2 days ahead (until 11:59 PM Manila time).");
+            bookingDateInput.value = toDateInputFormat(todayStart);
             return false;
         }
     });
@@ -118,7 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
     // Function to check and update slot status
-    // Function to check and update slot status
 function checkSlotStatus() {
     fetch('get-slot-status.php')
         .then(response => response.json())
@@ -156,36 +165,36 @@ function checkSlotStatus() {
         });
 }
 
-    // Function to update slot colors based on reservation status
-function updateSlotColors() {
-    fetch('get-slot-status.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                data.slots.forEach(slot => {
-                    const slotElement = document.getElementById(`slot-${slot.id}`);
-                    if (slotElement) {
-                        if (slot.status === 'reserved') {
-                            // Make slot red and unclickable
-                            slotElement.classList.remove('available', 'selected');
-                            slotElement.classList.add('reserved');
-                            slotElement.style.cursor = "not-allowed";
-                            slotElement.style.pointerEvents = 'none';
-                        } else if (!slotElement.classList.contains('selected') && !slotElement.classList.contains('disabled')) {
-                            // Make slot green and clickable
-                            slotElement.classList.remove('reserved');
-                            slotElement.classList.add('available');
-                            slotElement.style.cursor = "pointer";
-                            slotElement.style.pointerEvents = 'auto';
-                        }
-                    }
-                });
-            }
-        })
-        .catch(error => {
-            console.error('Error checking slot status:', error);
-        });
-}
+//     // Function to update slot colors based on reservation status
+// function updateSlotColors() {
+//     fetch('get-slot-status.php')
+//         .then(response => response.json())
+//         .then(data => {
+//             if (data.success) {
+//                 data.slots.forEach(slot => {
+//                     const slotElement = document.getElementById(`slot-${slot.id}`);
+//                     if (slotElement) {
+//                         if (slot.status === 'reserved') {
+//                             // Make slot red and unclickable
+//                             slotElement.classList.remove('available', 'selected');
+//                             slotElement.classList.add('reserved');
+//                             slotElement.style.cursor = "not-allowed";
+//                             slotElement.style.pointerEvents = 'none';
+//                         } else if (!slotElement.classList.contains('selected') && !slotElement.classList.contains('disabled')) {
+//                             // Make slot green and clickable
+//                             slotElement.classList.remove('reserved');
+//                             slotElement.classList.add('available');
+//                             slotElement.style.cursor = "pointer";
+//                             slotElement.style.pointerEvents = 'auto';
+//                         }
+//                     }
+//                 });
+//             }
+//         })
+//         .catch(error => {
+//             console.error('Error checking slot status:', error);
+//         });
+// }
 
     // Initial slot status check
     checkSlotStatus();

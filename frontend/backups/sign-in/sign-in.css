@@ -17,6 +17,7 @@ body, .side-by-side .left .wrapper form .forget span {
 body {
   cursor: default; /* Optional: Sets the default cursor */
   background-color: #efefef;
+  padding: 15px;
 }
   
 
@@ -26,11 +27,8 @@ body {
 }
 
 .logo img{
-  object-fit: cover;
-  width: 8vw;
-  padding: 0;
-  margin: 0;
-  height: 10vh;
+    width: 10vw;
+  mix-blend-mode: multiply;
 }
 
 .logo p{

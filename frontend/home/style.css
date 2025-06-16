@@ -84,7 +84,7 @@ nav .logo{
 
 nav .logo img{
     object-fit: cover;
-    width: 8vw;
+    width: 13vw;
     height: 10vh;
 }
 
@@ -326,6 +326,7 @@ nav .links a>button:hover{
 
 .footer img{
     width: 10vw;
+    mix-blend-mode: multiply;
 }
 
 .footer .details{

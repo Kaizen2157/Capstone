@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 // admin-functions.php
 
 function getActiveUsersCount($conn) {
@@ -69,25 +71,27 @@ function getPeakHours($conn) {
     
     if ($result && $result->num_rows > 0) {
         $data = $result->fetch_assoc();
-        $hour = (int)$data['hour'];
-        
-        // Convert to 12-hour format with AM/PM
-        $period = $hour >= 12 ? 'PM' : 'AM';
-        $displayHour = $hour % 12;
-        $displayHour = $displayHour ? $displayHour : 12; // Handle midnight (0 becomes 12 AM)
-        
-        $nextHour = ($hour + 1) % 24;
-        $nextPeriod = $nextHour >= 12 ? 'PM' : 'AM';
-        $nextDisplayHour = $nextHour % 12;
-        $nextDisplayHour = $nextDisplayHour ? $nextDisplayHour : 12;
-        
-        return sprintf(
-            "%02d:00 %s - %02d:00 %s", 
-            $displayHour, 
-            $period, 
-            $nextDisplayHour, 
-            $nextPeriod
-        );
+        if ($data && isset($data['hour'])) { // Added check
+            $hour = (int)$data['hour'];
+            
+            // Convert to 12-hour format with AM/PM
+            $period = $hour >= 12 ? 'PM' : 'AM';
+            $displayHour = $hour % 12;
+            $displayHour = $displayHour ? $displayHour : 12;
+            
+            $nextHour = ($hour + 1) % 24;
+            $nextPeriod = $nextHour >= 12 ? 'PM' : 'AM';
+            $nextDisplayHour = $nextHour % 12;
+            $nextDisplayHour = $nextDisplayHour ? $nextDisplayHour : 12;
+            
+            return sprintf(
+                "%02d:00 %s - %02d:00 %s", 
+                $displayHour, 
+                $period, 
+                $nextDisplayHour, 
+                $nextPeriod
+            );
+        }
     }
     
     return "No data available";
@@ -96,7 +100,13 @@ function getPeakHours($conn) {
 function getAverageDuration($conn) {
     $query = "SELECT AVG(duration_hours) FROM reservations";
     $result = $conn->query($query);
-    return number_format($result->fetch_row()[0] ?? 0, 1);
+    
+    if ($result) {
+        $row = $result->fetch_row();
+        return number_format($row[0] ?? 0, 1);
+    }
+    
+    return number_format(0, 1);
 }
 
 function getUtilizationRate($conn) {
@@ -105,7 +115,54 @@ function getUtilizationRate($conn) {
               FROM reservations 
               WHERE DATE(start_date) = CURDATE()";
     $result = $conn->query($query);
-    return number_format($result->fetch_row()[0] ?? 0, 1);
+    
+    if ($result) {
+        $row = $result->fetch_row();
+        return number_format($row[0] ?? 0, 1);
+    }
+    
+    return number_format(0, 1);
+}
+
+function isSuperAdmin($conn, $admin_id) {
+    $stmt = $conn->prepare("SELECT is_superadmin FROM admins WHERE id = ?");
+    if (!$stmt) {
+        error_log("Prepare failed: " . $conn->error);
+        return false;
+    }
+    
+    $stmt->bind_param("i", $admin_id);
+    if (!$stmt->execute()) {
+        error_log("Execute failed: " . $stmt->error);
+        return false;
+    }
+    
+    $result = $stmt->get_result();
+    if (!$result) {
+        error_log("Get result failed: " . $stmt->error);
+        return false;
+    }
+    
+    $row = $result->fetch_assoc();
+    return ($row && isset($row['is_superadmin'])) ? $row['is_superadmin'] == 1 : false;
+}
+
+function validateAdminSession($conn) {
+    if (!isset($_SESSION['admin_id'])) {
+        return false;
+    }
+    
+    $stmt = $conn->prepare("SELECT id FROM admins WHERE id = ?");
+    $stmt->bind_param("i", $_SESSION['admin_id']);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    
+    return $result->num_rows > 0;
+}
+
+function canCreateAdmins($conn, $admin_id) {
+    // Only superadmins can create other admins in this implementation
+    return isSuperAdmin($conn, $admin_id);
 }
 
 function getEarningsChartData($conn, $range = 'today') {
