@@ -17,8 +17,12 @@
   }
 
   body{
-    width: 100%;
-  }
+    width: 100% auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
 
 
   /* adminlog.html */
@@ -176,23 +180,27 @@ button{
     overflow-y: auto; /* Scrollable if content overflows */
 }
 
-.sidebar-nav ul 
 
 /* Logout Link Styling */
 #logout-btn {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #ff6b6b; /* Distinct color for logout */
-    transition: color 0.3s;
+    color: #fff; /* Distinct color for logout */
+    text-decoration: none;
+    padding: 15px;
+    border-radius: 10px;
+    transition: all 0.3s;
 }
 
+
 #logout-btn:hover {
-    color: #ff5252;
+    background-color: #e74c3c;
 }
 
 .sidebar-footer > a{
     text-decoration: none;
+    color: #fff;
 }
 
 /* Icon Styling (if using Boxicons) */
@@ -216,7 +224,7 @@ button{
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 10px 5px;
+    padding: 15px;
     border-radius: 5px;
     transition: background-color 0.3s;
 }
