@@ -1,75 +1,92 @@
 <?php
 session_start();
-// Database connection
+header('Content-Type: application/json');
+date_default_timezone_set('Asia/Manila');
+
+// Database configuration
 $host = "localhost";
 $username = "root";
 $password = "";
 $database = "parking_system";
 
-$conn = new mysqli($host, $username, $password, $database);
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
-
-if (!isset($_SESSION['user_id'])) {
-    session_unset();
-    session_destroy();
-    header('Location: ../frontend/backups/login/login.html?session_expired=1');
-    exit;
-}
-
-// Set timezone and get current datetime
-date_default_timezone_set('Asia/Manila');
-$current_datetime = date('Y-m-d H:i:s');
-
-// First, mark expired reservations as done
-$update_query = "UPDATE reservations 
-                SET status = 'done' 
-                WHERE status = 'reserved' 
-                AND CONCAT(start_date, ' ', end_time) < ?";
-
-// When reservation is completed (e.g., in a separate script like complete-reservation.php)
-$query = "UPDATE reservations SET status = 'done' WHERE id = ? AND status = 'reserved'";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $reservation_id);
-$stmt->execute();
-
-// Record the transaction ONLY now
-if ($stmt->affected_rows > 0) {
-    $transaction_stmt = $conn->prepare("INSERT INTO transactions 
-        (user_id, amount, type, reference_id, description, balance_after) 
-        VALUES (?, ?, 'reservation', ?, ?, ?)");
+try {
+    $conn = new mysqli($host, $username, $password, $database);
     
-    $description = "Parking completed for reservation #$reservation_id";
-    $transaction_stmt->bind_param("idssd", 
-        $user_id, 
-        -$total_cost, // Deduct now
-        $reservation_id,
-        $description,
-        $new_balance);
+    if ($conn->connect_error) {
+        throw new Exception("Database connection failed: " . $conn->connect_error);
+    }
+
+    if (!isset($_SESSION['user_id'])) {
+        throw new Exception("Session expired");
+    }
+
+    // Set timezone for MySQL
+    if (!$conn->query("SET time_zone = '+08:00'")) {
+        throw new Exception("Failed to set timezone");
+    }
+
+    $current_time = date('Y-m-d H:i:s');
+
+    // Get ALL active reservations (current and future)
+    $query = "SELECT 
+                r.slot_number, 
+                r.start_date,
+                r.start_time,
+                r.end_time,
+                CASE 
+                    WHEN ? BETWEEN TIMESTAMP(r.start_date, r.start_time) AND TIMESTAMP(r.start_date, r.end_time) THEN 'active'
+                    ELSE 'reserved'
+                END AS status
+              FROM reservations r
+              WHERE r.status = 'reserved'
+              AND TIMESTAMP(r.start_date, r.end_time) > ?
+              ORDER BY r.start_date, r.start_time, r.slot_number";
+
+    $stmt = $conn->prepare($query);
+    if (!$stmt) {
+        throw new Exception("Prepare failed: " . $conn->error);
+    }
+
+    if (!$stmt->bind_param("ss", $current_time, $current_time)) {
+        throw new Exception("Binding parameters failed");
+    }
+
+    if (!$stmt->execute()) {
+        throw new Exception("Execute failed: " . $stmt->error);
+    }
+
+    $result = $stmt->get_result();
+    $reservations = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $reservations[] = [
+            'slot' => $row['slot_number'],
+            'date' => $row['start_date'],
+            'start_time' => $row['start_time'],
+            'end_time' => $row['end_time'],
+            'status' => $row['status']
+        ];
+    }
+
+    $stmt->close();
+    $conn->close();
+
+    echo json_encode([
+        'success' => true,
+        'reservations' => $reservations,
+        'current_time' => $current_time,
+        'count' => count($reservations)
+    ]);
+
+} catch (Exception $e) {
+    // Clean up any open connections
+    if (isset($conn)) $conn->close();
+    if (isset($stmt)) $stmt->close();
     
-    $transaction_stmt->execute();
-}
-                
-$stmt = $conn->prepare($update_query);
-$stmt->bind_param('s', $current_datetime);
-$stmt->execute();
-
-// Then check for active reservations
-$query = "SELECT id, slot_number, start_time, end_time 
-          FROM reservations 
-          WHERE user_id = ? 
-          AND status = 'reserved' 
-          AND CONCAT(start_date, ' ', end_time) > ?";
-          
-$stmt = $conn->prepare($query);
-$stmt->bind_param('is', $_SESSION['user_id'], $current_datetime);
-$stmt->execute();
-$result = $stmt->get_result();
-
-if ($result->num_rows > 0) {
-    echo json_encode(['hasActiveReservation' => true]);
-} else {
-    echo json_encode(['hasActiveReservation' => false]);
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage(),
+        'error' => true
+    ]);
 }
 ?>

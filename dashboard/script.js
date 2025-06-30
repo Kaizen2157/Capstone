@@ -40,22 +40,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const bookingDateInput = document.getElementById("booking-date");
 
-// Get current date/time in Manila timezone
-function getManilaTime() {
-    const now = new Date();
-    const manilaTimeStr = now.toLocaleString('en-US', {
-        timeZone: 'Asia/Manila',
-        hour12: false
-    });
-    return new Date(manilaTimeStr);
-}
+    // Get current date/time in Manila timezone
+    function getManilaTime() {
+        const now = new Date();
+        const manilaTimeStr = now.toLocaleString('en-US', {
+            timeZone: 'Asia/Manila',
+            hour12: false
+        });
+        return new Date(manilaTimeStr);
+    }
 
-let manilaTime = getManilaTime();
-let today = new Date(manilaTime);
-today.setHours(0, 0, 0, 0); // Start of day in Manila
+    let manilaTime = getManilaTime();
+    let today = new Date(manilaTime);
+    today.setHours(0, 0, 0, 0); // Start of day in Manila
 
-let maxBookingDate = new Date(today);
-maxBookingDate.setDate(today.getDate() + 2); // 2 days from today in Manila
+    let maxBookingDate = new Date(today);
+    maxBookingDate.setDate(today.getDate() + 2); // 2 days from today in Manila
 
     // Helper function to format date as YYYY-MM-DD
     let toDateInputFormat = (date) => {
@@ -128,73 +128,42 @@ maxBookingDate.setDate(today.getDate() + 2); // 2 days from today in Manila
         });
 
     // Function to check and update slot status
-function checkSlotStatus() {
-    fetch('get-slot-status.php')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update UI with current slot status
-                data.slots.forEach(slot => {
-                    const slotElement = document.getElementById(`slot-${slot.id}`);
-                    if (slotElement) {
-                        if (slot.status === 'reserved') {
-                            slotElement.classList.remove('available', 'selected');
-                            slotElement.classList.add('reserved');
-                            slotElement.style.cursor = "not-allowed";
-                            slotElement.style.pointerEvents = 'none';
-                        } else {
-                            // Only make available if not selected or disabled
-                            if (!slotElement.classList.contains('selected') && !slotElement.classList.contains('disabled')) {
-                                slotElement.classList.remove('reserved');
-                                slotElement.classList.add('available');
-                                slotElement.style.cursor = "pointer";
-                                slotElement.style.pointerEvents = 'auto';
+    function checkSlotStatus() {
+        fetch('get-slot-status.php')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update UI with current slot status
+                    data.slots.forEach(slot => {
+                        const slotElement = document.getElementById(`slot-${slot.id}`);
+                        if (slotElement) {
+                            if (slot.status === 'reserved') {
+                                slotElement.classList.remove('available', 'selected');
+                                slotElement.classList.add('reserved');
+                                slotElement.style.cursor = "not-allowed";
+                                slotElement.style.pointerEvents = 'none';
+                            } else {
+                                // Only make available if not selected or disabled
+                                if (!slotElement.classList.contains('selected') && !slotElement.classList.contains('disabled')) {
+                                    slotElement.classList.remove('reserved');
+                                    slotElement.classList.add('available');
+                                    slotElement.style.cursor = "pointer";
+                                    slotElement.style.pointerEvents = 'auto';
+                                }
                             }
                         }
+                    });
+                    
+                    // If any slots were cleaned up, log it
+                    if (data.cleaned > 0) {
+                        console.log(`Cleaned up ${data.cleaned} expired reservations`);
                     }
-                });
-                
-                // If any slots were cleaned up, log it
-                if (data.cleaned > 0) {
-                    console.log(`Cleaned up ${data.cleaned} expired reservations`);
                 }
-            }
-        })
-        .catch(error => {
-            console.error('Error checking slot status:', error);
-        });
-}
-
-//     // Function to update slot colors based on reservation status
-// function updateSlotColors() {
-//     fetch('get-slot-status.php')
-//         .then(response => response.json())
-//         .then(data => {
-//             if (data.success) {
-//                 data.slots.forEach(slot => {
-//                     const slotElement = document.getElementById(`slot-${slot.id}`);
-//                     if (slotElement) {
-//                         if (slot.status === 'reserved') {
-//                             // Make slot red and unclickable
-//                             slotElement.classList.remove('available', 'selected');
-//                             slotElement.classList.add('reserved');
-//                             slotElement.style.cursor = "not-allowed";
-//                             slotElement.style.pointerEvents = 'none';
-//                         } else if (!slotElement.classList.contains('selected') && !slotElement.classList.contains('disabled')) {
-//                             // Make slot green and clickable
-//                             slotElement.classList.remove('reserved');
-//                             slotElement.classList.add('available');
-//                             slotElement.style.cursor = "pointer";
-//                             slotElement.style.pointerEvents = 'auto';
-//                         }
-//                     }
-//                 });
-//             }
-//         })
-//         .catch(error => {
-//             console.error('Error checking slot status:', error);
-//         });
-// }
+            })
+            .catch(error => {
+                console.error('Error checking slot status:', error);
+            });
+    }
 
     // Initial slot status check
     checkSlotStatus();
@@ -285,6 +254,38 @@ function checkSlotStatus() {
         userInfo.textContent = (firstName && lastName && contactNumber) ? `Name: ${firstName} ${lastName} | Contact: ${contactNumber}` : 'Please fill in your name and contact details';
     }
 
+    // Function to check time conflicts
+    function checkTimeConflict(date, startTime, endTime, slotNumber) {
+        return fetch('check-time-conflict.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                date: date,
+                start_time: startTime,
+                end_time: endTime,
+                slot_number: slotNumber
+            })
+        })
+        .then(response => {
+            if (!response.ok) throw new Error('Network response was not ok');
+            return response.json();
+        })
+        .then(data => {
+            return data.hasConflict;
+        });
+    }
+
+    // Function to show toast message
+    function showToast(message) {
+        const toastMessage = document.getElementById("toastMessage");
+        toastMessage.textContent = message;
+    
+        const toastElement = new bootstrap.Toast(document.getElementById("errorToast"));
+        toastElement.show();
+    }
+
     // Handle Proceed Button Click for E-Receipt
     document.getElementById('proceed-btn').addEventListener('click', function (e) {
         e.preventDefault();
@@ -355,52 +356,79 @@ function checkSlotStatus() {
         document.getElementById('hidden-selected-slot').value = selectedArray.join(', ');
         document.getElementById('hidden-total-cost').value = totalCost.toFixed(2);
 
-        // Update Receipt
-        document.getElementById('receipt-user').textContent = `Name: ${firstName} ${lastName}`;
-        document.getElementById('receipt-contact').textContent = `Contact: ${contact}`;
-        document.getElementById('receipt-plate').textContent = `Plate Number: ${plateNumber}`;
-        document.getElementById('receipt-slot').textContent = `Slot: ${selectedArray.join(', ')}`;
-        document.getElementById('receipt-date').textContent = `Start Date & Time: ${bookingDate} ${startTime}`;
-        document.getElementById('receipt-end-date').textContent = `End Date & Time: ${endDate} ${endTime}`;
-        document.getElementById('receipt-total').textContent = `Total Cost: ₱${totalCost}`;
+        // Check for time conflicts before proceeding
+        checkTimeConflict(bookingDate, startTime, endTime, selectedArray[0])
+            .then(hasConflict => {
+                if (hasConflict) {
+                    showToast("This slot is already reserved for the selected time period. Please choose a different time or slot.");
+                    return;
+                }
 
-        // Show Receipt Popup
-        document.getElementById('receipt-popup').style.display = 'flex';
+                // Update Receipt
+                document.getElementById('receipt-user').textContent = `Name: ${firstName} ${lastName}`;
+                document.getElementById('receipt-contact').textContent = `Contact: ${contact}`;
+                document.getElementById('receipt-plate').textContent = `Plate Number: ${plateNumber}`;
+                document.getElementById('receipt-slot').textContent = `Slot: ${selectedArray.join(', ')}`;
+                document.getElementById('receipt-date').textContent = `Start Date & Time: ${bookingDate} ${startTime}`;
+                document.getElementById('receipt-end-date').textContent = `End Date & Time: ${endDate} ${endTime}`;
+                document.getElementById('receipt-total').textContent = `Total Cost: ₱${totalCost}`;
 
-        // AJAX to save booking
-        const formData = new FormData();
-        formData.append('first_name', firstName);
-        formData.append('last_name', lastName);
-        formData.append('contact_number', contact);
-        formData.append('car_plate', plateNumber);
-        formData.append('slot_number', selectedArray.join(', '));
-        formData.append('start_date', bookingDate);
-        formData.append('end_date', endDate);
-        formData.append('end_time', endTime);
-        formData.append('start_time', startTime);
-        formData.append('duration', durationHours);
-        formData.append('total_cost', totalCost);
+                // Show Receipt Popup
+                document.getElementById('receipt-popup').style.display = 'flex';
 
-        function showToast(message) {
-            const toastMessage = document.getElementById("toastMessage");
-            toastMessage.textContent = message;
-        
-            const toastElement = new bootstrap.Toast(document.getElementById("errorToast"));
-            toastElement.show();
+                // AJAX to save booking
+                const formData = new FormData();
+                formData.append('first_name', firstName);
+                formData.append('last_name', lastName);
+                formData.append('contact_number', contact);
+                formData.append('car_plate', plateNumber);
+                formData.append('slot_number', selectedArray.join(', '));
+                formData.append('start_date', bookingDate);
+                formData.append('end_date', endDate);
+                formData.append('end_time', endTime);
+                formData.append('start_time', startTime);
+                formData.append('duration', durationHours);
+                formData.append('total_cost', totalCost);
+
+                // Replace the fetch call in the proceed button click handler with this:
+fetch('home-dashboard.php', {
+    method: 'POST',
+    body: formData
+})
+.then(response => {
+    if (!response.ok) {
+        throw new Error('Network response was not ok');
+    }
+    return response.text().then(text => {
+        try {
+            return text ? JSON.parse(text) : {};
+        } catch (e) {
+            return {
+                success: false,
+                message: text || 'Unknown error occurred'
+            };
         }
-        
-        fetch('home-dashboard.php', {
-            method: 'POST',
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success) {
-                showToast(data.message);
-            } else {
-                // proceed with success logic
-            }
-        });
+    });
+})
+.then(data => {
+    if (data.success) {
+        showToast("Reservation created successfully!");
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    } else {
+        showToast(data.message || "Failed to create reservation");
+    }
+})
+// .catch(error => {
+//     console.error('Error:', error);
+//     showToast("An error occurred while processing your request");
+// });
+            })
+            .catch(error => {
+                console.error('Error checking time conflict:', error);
+                showToast("Error checking slot availability. Please try again.");
+            });
     });
     
     // Duration input handling
@@ -778,3 +806,107 @@ function cleanupExpiredReservations() {
             console.error('Error cleaning expired reservations:', error);
         });
 }
+
+function updateReservationMonitor() {
+    // Show loading state
+    const monitorContent = document.getElementById('monitor-content');
+    monitorContent.innerHTML = '<p>Loading reservation data...</p>';
+
+    fetch('get-active-reservation.php')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data.success) {
+                throw new Error(data.message || 'Failed to fetch reservations');
+            }
+
+            if (data.reservations.length === 0) {
+                monitorContent.innerHTML = '<p>No reservations found</p>';
+                return;
+            }
+
+            let html = '<table style="width: 100%; border-collapse: collapse; margin-top: 10px;">';
+            html += '<tr style="background: #19384a; color: white;">';
+            html += '<th style="padding: 8px; text-align: left;">Slot</th>';
+            html += '<th style="padding: 8px; text-align: left;">Date</th>';
+            html += '<th style="padding: 8px; text-align: left;">Time</th>';
+            html += '<th style="padding: 8px; text-align: left;">Status</th>';
+            html += '</tr>';
+
+            data.reservations.forEach(res => {
+                try {
+                    const formattedDate = new Date(res.date).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                    
+                    const startTime = new Date(`1970-01-01T${res.start_time}`).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    const endTime = new Date(`1970-01-01T${res.end_time}`).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+                    
+                    const rowStyle = res.status === 'active' 
+                        ? 'background-color: #ffe8e8;' 
+                        : 'background-color: #e8f4ff;';
+                    
+                    html += `<tr style="border-bottom: 1px solid #eee; ${rowStyle}">`;
+                    html += `<td style="padding: 8px;">${res.slot}</td>`;
+                    html += `<td style="padding: 8px;">${formattedDate}</td>`;
+                    html += `<td style="padding: 8px;">${startTime} - ${endTime}</td>`;
+                    html += `<td style="padding: 8px; text-transform: capitalize;">${res.status}</td>`;
+                    html += `</tr>`;
+                } catch (e) {
+                    console.error('Error formatting reservation:', res, e);
+                }
+            });
+
+            html += '</table>';
+            monitorContent.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error fetching reservations:', error);
+            monitorContent.innerHTML = `
+                <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px;">
+                    Error loading reservation data: ${error.message}
+                </div>
+            `;
+        });
+}
+
+// Initial load with error handling
+try {
+    updateReservationMonitor();
+} catch (e) {
+    console.error('Initial load error:', e);
+    document.getElementById('monitor-content').innerHTML = `
+        <div style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; border-radius: 4px;">
+            Failed to initialize reservation monitor
+        </div>
+    `;
+}
+
+// Refresh button with error handling
+document.getElementById('refresh-monitor')?.addEventListener('click', () => {
+    try {
+        updateReservationMonitor();
+    } catch (e) {
+        console.error('Refresh error:', e);
+    }
+});
+
+// Auto-refresh with error handling
+const refreshInterval = setInterval(() => {
+    try {
+        updateReservationMonitor();
+    } catch (e) {
+        console.error('Auto-refresh error:', e);
+    }
+}, 30000);
+
+// Clean up on page unload
+window.addEventListener('beforeunload', () => {
+    clearInterval(refreshInterval);
+});

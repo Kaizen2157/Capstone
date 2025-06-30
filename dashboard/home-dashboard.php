@@ -1,24 +1,26 @@
 <?php
 session_start();
 date_default_timezone_set('Asia/Manila');
+header('Content-Type: application/json');
 
-       try {
-       $pdo = new PDO("mysql:host=localhost;dbname=parking_system", "root", "");
-       $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-       $pdo->exec("SET time_zone = '" . date('P') . "';");  // Use date('P') to get offset in +/-HH:mm format
-   } catch (PDOException $e) {
-       echo "Connection failed: " . $e->getMessage();
-   }
+// Turn off HTML errors
+ini_set('display_errors', 0);
+ini_set('display_startup_errors', 0);
+error_reporting(E_ALL);
 
-require_once '../db_connect.php'; // Include your database connection file
+try {
+    $pdo = new PDO("mysql:host=localhost;dbname=parking_system", "root", "");
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    $pdo->exec("SET time_zone = '" . date('P') . "';");
+} catch (PDOException $e) {
+    echo json_encode(['success' => false, 'message' => "Database connection failed"]);
+    exit;
+}
+
+require_once '../db_connect.php';
 
 if (!isset($_SESSION['user_id'])) {
-    // Clear any remaining session data
-    session_unset();
-    session_destroy();
-    
-    // Redirect to login
-    header('Location: ../frontend/backups/login/login.html?session_expired=1');
+    echo json_encode(['success' => false, 'message' => "Session expired"]);
     exit;
 }
 
@@ -27,19 +29,7 @@ if (isset($_GET['get_cost']) && $_GET['get_cost'] == 'true') {
     $query = "SELECT parking_cost FROM settings WHERE id = 1";
     $result = $conn->query($query);
     $row = $result->fetch_assoc();
-    $parkingCost = $row['parking_cost'];
-
-    header('Content-Type: application/json');
-    echo json_encode(['cost' => $parkingCost]);
-    exit;
-}
-
-// Check if selected time is in the past
-if (strtotime("$start_date $start_time") < time()) {
-    echo json_encode([
-        'success' => false,
-        'message' => "Cannot create reservation in the past"
-    ]);
+    echo json_encode(['cost' => $row['parking_cost']]);
     exit;
 }
 
@@ -49,8 +39,31 @@ function isTimeInFuture($date, $time) {
     return $reservationDateTime > $currentDateTime;
 }
 
+function hasTimeConflict($conn, $slot_number, $start_date, $start_time, $end_time) {
+    $query = "SELECT id FROM reservations 
+              WHERE slot_number = ? 
+              AND status = 'reserved'
+              AND start_date = ?
+              AND (
+                  (start_time < ? AND end_time > ?) OR
+                  (start_time < ? AND end_time > ?) OR
+                  (start_time >= ? AND end_time <= ?)
+              )";
+    
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("ssssssss", 
+        $slot_number,
+        $start_date,
+        $end_time, $start_time,
+        $end_time, $start_time,
+        $start_time, $end_time
+    );
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->num_rows > 0;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Booking form data
     $user_id = $_SESSION['user_id'];
     $first_name = $_POST['first_name'];
     $last_name = $_POST['last_name'];
@@ -62,160 +75,151 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $duration_hours = intval($_POST['duration']);
     $total_cost = floatval($_POST['total_cost']);
 
-    // ✅ Validate duration (1 to 12 hours)
-    if ($duration_hours < 1 || $duration_hours > 12) {
-        echo "Invalid duration. Please select between 1 and 12 hours.";
-        $conn->close();
+    // Validate time is not in past
+    if (strtotime("$start_date $start_time") < time()) {
+        echo json_encode(['success' => false, 'message' => "Cannot create reservation in the past"]);
         exit;
     }
 
-// Validate booking date (today to 2 days ahead)
-$today = new DateTime('today', new DateTimeZone('Asia/Manila'));
-$maxDate = (new DateTime('today', new DateTimeZone('Asia/Manila')))->modify('+2 days')->setTime(23, 59, 59);
-$inputDate = DateTime::createFromFormat('Y-m-d', $start_date, new DateTimeZone('Asia/Manila'));
+    // Validate duration
+    if ($duration_hours < 1 || $duration_hours > 12) {
+        echo json_encode(['success' => false, 'message' => "Invalid duration. Please select between 1 and 12 hours."]);
+        exit;
+    }
 
-if (!$inputDate) {
-    echo json_encode([
-        'success' => false,
-        'message' => "Invalid date format."
-    ]);
-    exit;
-}
+    // Validate date format and range
+    $today = new DateTime('today', new DateTimeZone('Asia/Manila'));
+    $maxDate = (clone $today)->modify('+2 days')->setTime(23, 59, 59);
+    $inputDate = DateTime::createFromFormat('Y-m-d', $start_date, new DateTimeZone('Asia/Manila'));
+    
+    if (!$inputDate) {
+        echo json_encode(['success' => false, 'message' => "Invalid date format."]);
+        exit;
+    }
 
-// Set input date to start of day for comparison
-$inputDate->setTime(0, 0, 0);
+    $inputDate->setTime(0, 0, 0);
+    if ($inputDate < $today || $inputDate > $maxDate) {
+        echo json_encode(['success' => false, 'message' => "Invalid booking date. You can only book from today up to 2 days ahead."]);
+        exit;
+    }
 
-if ($inputDate < $today || $inputDate > $maxDate) {
-    echo json_encode([
-        'success' => false,
-        'message' => "Invalid booking date. You can only book from today up to 2 days ahead (until 11:59 PM)."
-    ]);
-    exit;
-}
-
-    // ✅ Calculate end time
+    // Calculate end time
     $start_timestamp = strtotime("$start_date $start_time");
     $end_timestamp = $start_timestamp + ($duration_hours * 3600);
     $end_time = date('H:i:s', $end_timestamp);
 
-    // FIRST: Fetch user's current balance
+    // Check for time conflicts
+    if (hasTimeConflict($conn, $slot_number, $start_date, $start_time, $end_time)) {
+        echo json_encode(['success' => false, 'message' => "This slot is already reserved for the selected time period."]);
+        exit;
+    }
+
+    // Check balance
     $balance_stmt = $conn->prepare("SELECT balance FROM users WHERE id = ?");
     $balance_stmt->bind_param("i", $user_id);
     $balance_stmt->execute();
-    $balance_result = $balance_stmt->get_result();
-    $user = $balance_result->fetch_assoc();
+    $user = $balance_stmt->get_result()->fetch_assoc();
     $balance_stmt->close();
 
     if (!$user) {
-        die("User not found.");
-    }
-
-    // SECOND: Check if balance is enough
-    if ($user['balance'] < $total_cost) {
-        echo json_encode(['success' => false, 'message' => 'Insufficient balance.']);
-        $conn->close();
+        echo json_encode(['success' => false, 'message' => "User not found."]);
         exit;
     }
-    
 
-    // THIRD: Deduct balance
+    $required_deposit = $total_cost * 0.5;
+    if ($user['balance'] < $required_deposit) {
+        echo json_encode([
+            'success' => false,
+            'message' => "Insufficient balance. You need at least 50% of the total cost (₱" . number_format($required_deposit, 2) . ") to make a reservation."
+        ]);
+        exit;
+    }
+
+    if ($user['balance'] < $total_cost) {
+        echo json_encode([
+            'success' => false,
+            'message' => "Insufficient balance for full payment. You need ₱" . number_format($total_cost, 2) . " but only have ₱" . number_format($user['balance'], 2)
+        ]);
+        exit;
+    }
+
+    // Deduct balance
     $new_balance = $user['balance'] - $total_cost;
     $update_balance_stmt = $conn->prepare("UPDATE users SET balance = ? WHERE id = ?");
     $update_balance_stmt->bind_param("di", $new_balance, $user_id);
     $update_balance_stmt->execute();
     $update_balance_stmt->close();
 
+    // Create reservation
+    $stmt = $conn->prepare("INSERT INTO reservations 
+        (user_id, first_name, last_name, contact_number, car_plate, slot_number, 
+         start_date, start_time, end_time, duration_hours, total_cost, status) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
+    $status = 'reserved';
+    $stmt->bind_param(
+        "issssssssdds",
+        $user_id,
+        $first_name,
+        $last_name,
+        $contact_number,
+        $car_plate,
+        $slot_number,
+        $start_date,
+        $start_time,
+        $end_time,
+        $duration_hours,
+        $total_cost,
+        $status
+    );
 
-// FOURTH: Proceed to save booking
-$status = 'reserved'; // Set status explicitly
-
-// Calculate if reservation is for current time
-$reservationTime = strtotime("$start_date $start_time");
-$currentTime = time();
-$isFutureReservation = ($reservationTime > $currentTime);
-
-$stmt = $conn->prepare("INSERT INTO reservations 
-    (user_id, first_name, last_name, contact_number, car_plate, slot_number, 
-     start_date, start_time, end_time, duration_hours, total_cost, status) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-$stmt->bind_param(
-    "issssssssdds",
-    $user_id,
-    $first_name,
-    $last_name,
-    $contact_number,
-    $car_plate,
-    $slot_number,
-    $start_date,
-    $start_time,
-    $end_time,
-    $duration_hours,
-    $total_cost,
-    $status
-);
-
-if ($stmt->execute()) {
-    $reservation_id = $stmt->insert_id; // Get the ID of the new reservation
-    
-    echo "Booking saved successfully.";
-    
-    // Create datetime strings for slot reservation
-    $reservation_start = "$start_date $start_time";
-    $reservation_end = date('Y-m-d H:i:s', $end_timestamp);
-    
-    // Update the slot status
-    $slot_update_stmt = $conn->prepare("UPDATE slots SET status = 'reserved', reserved_by = ?, reservation_start = ?, reservation_end = ? WHERE slot_number = ?");
-    $slot_update_stmt->bind_param("isss", $user_id, $reservation_start, $reservation_end, $slot_number);
-    
-    if ($slot_update_stmt->execute()) {
-        echo "Slot updated successfully.";
+    if ($stmt->execute()) {
+        $reservation_id = $stmt->insert_id;
+        $reservation_start = "$start_date $start_time";
+        $reservation_end = date('Y-m-d H:i:s', $end_timestamp);
         
-        // ✅ NEW: Record the transaction
-        // After successful reservation creation, record the transaction
-$transaction_stmt = $conn->prepare("INSERT INTO transactions 
-    (user_id, amount, type, reference_id, description, balance_after) 
-    VALUES (?, ?, ?, ?, ?, ?)");
-$description = "Parking reservation for slot $slot_number";
-$transaction_amount = -$total_cost; // Negative amount for deduction
-
-$transaction_stmt->bind_param("idssd", 
-    $user_id, 
-    $transaction_amount,
-    'reservation', // type
-    $reservation_id, // reference_id
-    $description,
-    $new_balance);
-    
-if (!$transaction_stmt->execute()) {
-    error_log("Transaction recording failed: " . $transaction_stmt->error);
-    // Don't exit, just log the error
-}
-$transaction_stmt->close();
+        // Update slot status
+        $slot_update_stmt = $conn->prepare("UPDATE slots SET status = 'reserved', reserved_by = ?, reservation_start = ?, reservation_end = ? WHERE slot_number = ?");
+        $slot_update_stmt->bind_param("isss", $user_id, $reservation_start, $reservation_end, $slot_number);
+        
+        if ($slot_update_stmt->execute()) {
+            // Record transaction
+            $transaction_stmt = $conn->prepare("INSERT INTO transactions 
+                (user_id, amount, type, reference_id, description, balance_after) 
+                VALUES (?, ?, ?, ?, ?, ?)");
+            $transaction_stmt->bind_param("idssd", 
+                $user_id, 
+                -$total_cost,
+                'reservation',
+                $reservation_id,
+                "Parking reservation for slot $slot_number",
+                $new_balance);
+                
+            $transaction_stmt->execute();
+            $transaction_stmt->close();
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Reservation created successfully',
+                'reservation_id' => $reservation_id,
+                'receipt_data' => [
+                    'name' => "$first_name $last_name",
+                    'contact' => $contact_number,
+                    'plate' => $car_plate,
+                    'slot' => $slot_number,
+                    'start' => "$start_date $start_time",
+                    'end' => $reservation_end,
+                    'total' => $total_cost
+                ]
+            ]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Error updating slot status']);
+        }
     } else {
-        echo "Error updating slot: " . $slot_update_stmt->error;
+        echo json_encode(['success' => false, 'message' => 'Error creating reservation']);
     }
-
-    $slot_update_stmt->close();
-    
-} else {
-    echo "Error: " . $stmt->error;
+    exit;
 }
 
-} else {
-    echo "Invalid request.";
-}
-
-// Fetch user balance to display
-$user_id = $_SESSION['user_id'];
-$balance = 0.00;
-$sql = "SELECT balance FROM users WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$stmt->bind_result($balance);
-$stmt->fetch();
-$stmt->close();
-$conn->close();
+echo json_encode(['success' => false, 'message' => 'Invalid request']);
 ?>
