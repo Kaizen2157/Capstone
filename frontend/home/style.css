@@ -861,6 +861,289 @@ nav .links a>button:hover{
   margin-top: 20px;
 }
 
+
+/* Terms Section */
+#terms {
+  padding: 60px 20px;
+  background-color: #ffffff;
+}
+
+.terms-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+#terms h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+#terms p {
+  font-size: 17px;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+#terms ul {
+  padding-left: 20px;
+  font-size: 17px;
+  color: #555;
+  line-height: 1.8;
+}
+
+#terms ul li {
+  margin-bottom: 10px;
+}
+
+/* Privacy Policy Section */
+#privacy {
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+}
+
+.privacy-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+#privacy h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #333;
+  text-align: center;
+}
+
+#privacy h3 {
+  color: #007BFF;
+  margin-top: 30px;
+  margin-bottom: 10px;
+}
+
+#privacy p {
+  font-size: 17px;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 20px;
+}
+
+#privacy ul {
+  padding-left: 20px;
+  font-size: 17px;
+  color: #555;
+  line-height: 1.8;
+}
+
+#privacy ul li {
+  margin-bottom: 10px;
+}
+
+/* About Section Styles */
+#about {
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+}
+
+.about-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+#about h2 {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+#about .slogan {
+  text-align: center;
+  font-size: 18px;
+  color: #007BFF;
+  font-weight: bold;
+  margin-bottom: 40px;
+}
+
+#about p {
+  font-size: 17px;
+  color: #555;
+  line-height: 1.8;
+  margin-bottom: 30px;
+}
+
+#about h3 {
+  color: #333;
+  margin-top: 40px;
+}
+
+#about ul {
+  color: #555;
+  font-size: 17px;
+  line-height: 1.8;
+  padding-left: 20px;
+}
+
+#about ul li {
+  margin-bottom: 10px;
+}
+
+/* FAQ Section Styles */
+#faq {
+  padding: 60px 20px;
+  background-color: #ffffff;
+}
+
+.faq-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+#faq h2 {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 40px;
+  color: #333;
+}
+
+.faq-item {
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  transition: transform 0.3s;
+}
+
+.faq-item:hover {
+  transform: translateY(-3px);
+}
+
+.faq-item h3 {
+  color: #007BFF;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+
+.faq-item p {
+  color: #555;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.faq-contact {
+  text-align: center;
+  margin-top: 40px;
+  font-size: 17px;
+  color: #333;
+}
+
+/* Contact Section */
+#contact {
+  padding: 60px 20px;
+  background-color: #f9f9f9;
+}
+
+.contact-container {
+  max-width: 800px;
+  margin: auto;
+  text-align: center;
+}
+
+#contact h2 {
+  font-size: 36px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.contact-info p {
+  font-size: 17px;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.contact-form {
+  margin-top: 30px;
+}
+
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+
+.contact-form button {
+  background-color: #007BFF;
+  color: #fff;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.contact-form button:hover {
+  background-color: #0056b3;
+}
+
+
+/* Pricing Section */
+#pricing {
+  padding: 60px 20px;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.pricing-container {
+  max-width: 1000px;
+  margin: auto;
+}
+
+#pricing h2 {
+  font-size: 36px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+#pricing p {
+  font-size: 17px;
+  color: #555;
+  margin-bottom: 40px;
+}
+
+.pricing-card {
+  background-color: #f9f9f9;
+  border-radius: 12px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.pricing-card h3 {
+  color: #007BFF;
+  margin-bottom: 10px;
+}
+
+.pricing-card .price {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.pricing-card ul {
+  list-style: none;
+  padding: 0;
+}
+
+.pricing-card ul li {
+  margin-bottom: 10px;
+  color: #555;
+}
+
 /* Terms Section */
 #terms {
   padding: 60px 20px;
