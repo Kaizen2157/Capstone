@@ -40,3 +40,57 @@ document.querySelectorAll('.sidebar-nav a[href^="#"]').forEach(anchor => {
         });
     });
 });
+
+// Sidebar toggle for mobile
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebar = document.querySelector('.sidebar');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarOverlay = document.createElement('div');
+    sidebarOverlay.className = 'sidebar-overlay';
+    document.body.appendChild(sidebarOverlay);
+
+    // Toggle sidebar
+    sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+        sidebarOverlay.classList.toggle('active');
+    });
+
+    // Close sidebar when clicking overlay
+    sidebarOverlay.addEventListener('click', function() {
+        sidebar.classList.remove('active');
+        this.classList.remove('active');
+    });
+
+    // Adjust chart on resize
+    window.addEventListener('resize', function() {
+        if (analyticsChart) {
+            analyticsChart.resize();
+        }
+    });
+
+    // Responsive table handling
+    makeTablesResponsive();
+});
+
+function makeTablesResponsive() {
+    const tables = document.querySelectorAll('table');
+    
+    tables.forEach(table => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'table-responsive';
+        table.parentNode.insertBefore(wrapper, table);
+        wrapper.appendChild(table);
+    });
+}
+
+// Handle window resize
+let resizeTimer;
+window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+        // Update chart size if needed
+        if (typeof analyticsChart !== 'undefined') {
+            analyticsChart.resize();
+        }
+    }, 250);
+});

@@ -656,3 +656,298 @@ button[type="submit"] {
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* ========== RESPONSIVE STYLES ========== */
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 250px;
+    }
+    .main-content {
+        margin-left: 250px;
+        width: calc(100% - 250px);
+    }
+    
+    .quick-stats {
+        flex-wrap: wrap;
+    }
+    
+    .stat-box {
+        width: 48%;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 992px) {
+    .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+        z-index: 1000;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    #sidebar-toggle {
+        display: block;
+    }
+    
+    .align {
+        flex-direction: column;
+    }
+    
+    .analytics-stats {
+        flex-direction: column;
+    }
+    
+    .analytics-stats .stat-box {
+        width: 100%;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 768px) {
+    .quick-stats {
+        flex-direction: column;
+    }
+    
+    .stat-box {
+        width: 100%;
+    }
+    
+    .time-filters {
+        flex-wrap: wrap;
+    }
+    
+    .time-filter {
+        flex: 1 0 45%;
+        margin-bottom: 10px;
+    }
+    
+    .admins-table {
+        font-size: 0.9rem;
+    }
+    
+    .admins-table th, 
+    .admins-table td {
+        padding: 10px 5px;
+    }
+}
+
+@media (max-width: 576px) {
+    .main-content {
+        padding: 20px 15px;
+    }
+    
+    .sidebar {
+        width: 80%;
+    }
+    
+    .chart-container {
+        height: 300px;
+    }
+    
+    .admin-form {
+        padding: 15px;
+    }
+    
+    .form-group input[type="text"],
+    .form-group input[type="password"],
+    .form-group input[type="number"] {
+        padding: 10px 12px;
+    }
+    
+    .btn-add-admin {
+        padding: 10px 15px;
+    }
+}
+
+/* Mobile Toggle Button - Hidden by default */
+#sidebar-toggle {
+    display: none; /* Hidden on all screens by default */
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 999;
+    background: #19384a;
+    color: white;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Center the icon */
+#sidebar-toggle i {
+    font-size: 1.5rem;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Show toggle button only on mobile screens */
+@media (max-width: 992px) {
+    #sidebar-toggle {
+        display: flex; /* Only shows when screen width ≤ 992px */
+    }
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+    display: none;
+}
+
+.sidebar-overlay.active {
+    display: block;
+}
+
+@media (max-width: 1400px) {
+    .admin-container .sidebar .sidebar-nav ul{
+        overflow-y: hidden;
+    }
+}
+
+/* ===== ADMIN LOGIN RESPONSIVE STYLES ===== */
+@media (max-width: 1200px) {
+    .container {
+        padding: 30px 50px;
+        gap: 40px;
+    }
+    
+    .container .left img {
+        width: 25vw;
+    }
+    
+    .container .right .login-container h2 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 992px) {
+    .container {
+        flex-direction: column;
+        padding: 40px 30px;
+        gap: 30px;
+    }
+    
+    .container .left {
+        border-right: none;
+        border-bottom: 1px solid #19384a;
+        padding: 0 0 30px 0;
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .container .left img {
+        width: 30vw;
+        max-width: 200px;
+    }
+    
+    .container .right {
+        width: 100%;
+        padding: 0;
+    }
+    
+    form {
+        gap: 40px;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 30px 20px;
+        width: 90%;
+        margin: 0 auto;
+    }
+    
+    .container .right .login-container h2 {
+        font-size: 2rem;
+    }
+    
+    .container .right .login-container p {
+        font-size: 0.9rem;
+        margin-bottom: 25px;
+    }
+    
+    .container .right input {
+        padding: 12px;
+    }
+    
+    button {
+        padding: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    .container {
+        padding: 25px 15px;
+        width: 95%;
+    }
+    
+    .container .left img {
+        width: 40vw;
+    }
+    
+    .container .right .login-container h2 {
+        font-size: 1.8rem;
+    }
+    
+    .form-group {
+        gap: 15px;
+    }
+    
+    .error-message {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .container {
+        padding: 20px 15px;
+    }
+    
+    .container .right .login-container h2 {
+        font-size: 1.6rem;
+    }
+    
+    .container .right input {
+        padding: 10px;
+    }
+    
+    button {
+        padding: 10px;
+        font-size: 1rem;
+    }
+}
+
+/* Error message styling */
+.error-message {
+    color: #e74c3c;
+    margin-top: 15px;
+    text-align: center;
+    font-weight: 500;
+    display: none;
+    background-color: #fde8e8;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #f5c6cb;
+}

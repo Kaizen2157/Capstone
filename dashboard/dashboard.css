@@ -23,7 +23,7 @@
     .user-dropdown .drop{
         display: flex;
         align-content: center;
-        gap: 25px;
+        gap: 15px;
         font-size: 1rem;
         font-weight: 600;
     }
@@ -54,7 +54,8 @@
   
   .dropdown-menu a {
     display: block;
-    padding: 10px;
+    padding: 12px 15px;
+    font-size: 1rem;
     color: #333;
     text-decoration: none;
   }
@@ -70,12 +71,14 @@
 
   nav{
     display: flex;
-    padding: 0 25px;
+    width: 100%;
+    padding: 0 15px;
     justify-content: space-between;
     align-items: center;
     transition: all 0.5s ease-in-out;
     border-bottom: 2px solid #ccc;
     box-shadow: 0 0 20px 0 rgb(226, 226, 226);
+    flex-wrap: wrap;
 }
 
 nav .logo{
@@ -86,10 +89,11 @@ nav .logo{
 }
 
 nav .logo img{
-    object-fit: cover;
-    width: 15vw;
+    width: auto;
+    height: auto;
+    max-width: 180px;
+    max-height: 70px;
     mix-blend-mode: multiply;
-    height: 10vh;
 }
 
 nav .logo a{
@@ -99,10 +103,10 @@ nav .logo a{
     text-decoration: none;
 }
 
-nav .logo p{
+/* nav .logo p{
     font-size: 20px;
     font-weight: 600;
-}
+} */
 
 nav .btnn{
     display: flex;
@@ -202,9 +206,8 @@ nav .btnn .dropdown .dropdown-content.show {
 
 
 .all{
-    padding: 35px 70px;
+    padding: 20px;
     width: 100%;
-    max-width: auto;
 }
 
 
@@ -215,6 +218,9 @@ nav .btnn .dropdown .dropdown-content.show {
     display: flex;
     align-items: center;
     gap: 40px;
+    padding: 25px;
+    width: 100%;
+    margin-bottom: 20px;
 }
 
 .top-align .balance{
@@ -240,6 +246,8 @@ nav .btnn .dropdown .dropdown-content.show {
     font-size: 1.5rem;
     font-weight: 600;
     color: #19384a;
+    word-break: break-word;
+    text-align: center;
 }
 
 .top-align .balance h2{
@@ -251,7 +259,9 @@ nav .btnn .dropdown .dropdown-content.show {
 /* Reservation History Table Styling */
 
 .reservation-history {
-    margin: 30px 0;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 20px 0;
 }
 
 .reservation-history h2{
@@ -263,7 +273,10 @@ nav .btnn .dropdown .dropdown-content.show {
     color: #19384a;
 }
 
-.reservation-history table {
+.reservation-history table,
+.transaction-history table {
+    overflow-x: auto;
+    /* display: block; */
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
@@ -273,7 +286,8 @@ nav .btnn .dropdown .dropdown-content.show {
 
 .reservation-history th,
 .reservation-history td {
-    padding: 12px 15px;
+    padding: 8px 10px;
+    font-size: 0.85rem;
     text-align: center;
     border-bottom: 1px solid #ddd;
 }
@@ -320,7 +334,7 @@ nav .btnn .dropdown .dropdown-content.show {
 }
 
 .transaction-item {
-    padding: 16px;
+    padding: 12px;
     border-radius: 8px;
     border-left: 4px solid;
 }
@@ -396,9 +410,9 @@ nav .btnn .dropdown .dropdown-content.show {
     padding: 27px 45px;
 }
 
-#message-box {
+/* #message-box {
     margin-top: 20px;
-}
+} */
 
 .alert {
     margin-bottom: 10px;
@@ -407,8 +421,8 @@ nav .btnn .dropdown .dropdown-content.show {
 
 /* You can add this to your existing CSS file */
 .modal-dialog {
-    max-width: 500px;
-    margin: 100px auto;
+    max-width: 95%;
+    margin: 20px auto;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -552,4 +566,114 @@ nav .btnn .dropdown .dropdown-content.show {
   align-items: center;
   justify-content: center;
   font-size: 0.7rem;
+}
+
+/* ===== Responsive Breakpoints ===== */
+@media (min-width: 768px) {
+    .all {
+        padding: 35px;
+    }
+    
+    .top-align {
+        flex-direction: row;
+        align-items: flex-start;
+    }
+    
+    .top-align .balance {
+        width: auto;
+        padding: 30px 60px;
+    }
+    
+    .reservation-history th,
+    .reservation-history td {
+        padding: 12px 15px;
+        font-size: 1rem;
+    }
+}
+
+@media (min-width: 992px) {
+    .all {
+        padding: 35px 70px;
+    }
+    
+    .logo img {
+        max-width: 200px;
+        max-height: 80px;
+    }
+}
+
+/* ===== Table Responsiveness ===== */
+@media (max-width: 767px) {
+    /* Make tables scroll horizontally */
+    .reservation-history {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Compact table cells */
+    .reservation-history th, 
+    .reservation-history td {
+        white-space: nowrap;
+        min-width: 100px;
+    }
+    
+    /* Adjust date/time column */
+    .reservation-history td:nth-child(3) {
+        min-width: 180px;
+    }
+    
+    /* Transaction items */
+    .transaction-header,
+    .transaction-details {
+        flex-direction: column;
+        gap: 5px;
+    }
+}
+
+/* ===== Balance Display ===== */
+#balance-display {
+    font-size: 1.2rem;
+    word-break: break-all;
+}
+
+@media (min-width: 576px) {
+    #balance-display {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 692px) {
+    .all .top-align{
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 320px) {
+    nav .logo a img{
+        width: 30vw;
+        height: 7vh;
+    }
+
+    .user-dropdown{
+        display: flex;
+        align-items: center;
+    }
+
+    nav .btnn .user-dropdown .drop a, nav .btnn .user-dropdown .drop .dropdown-menu>a {
+        font-size: 0.8rem;
+    }
+
+    nav, nav .user-dropdown .drop {
+        display: flex;
+        align-items: center;
+    }
+
+    .all .balance{
+        padding: 20px 50px;
+    }
+
+    .all .balance #balance-display {
+        font-size: 1rem;
+        word-break: break-word;
+    }
 }

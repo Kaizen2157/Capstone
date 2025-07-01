@@ -2,17 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="shortcut icon" href="logo-removebg-preview.png" type="image/x-icon">
     <title>Admin Login</title>
     <link rel="stylesheet" href="dashboard-admin.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
 </head>
 <body class="adminlog">
-    
     <div class="container">
-
         <div class="left">
-            <img src="../Screenshot 2025-05-29 221245.png">
+            <img src="../Screenshot 2025-05-29 221245.png" alt="Admin Logo">
         </div>
         <div class="right">
             <div class="login-container">
@@ -21,26 +20,23 @@
                 <form action="adminlog.php" method="POST">
                     <div class="form-group">
                         <input type="text" id="username" name="username" required placeholder="Username" autocomplete="off">
-
-                        <input type="password" id="pas  sword" name="password" required placeholder="Password" autocomplete="off">
+                        <input type="password" id="password" name="password" required placeholder="Password" autocomplete="off">
                     </div>
                     <button type="submit" id="login-btn">Login</button>
                 </form>
+                <div id="error-message" class="error-message"></div>
             </div>
         </div>
-
     </div>
 
     <script>
-        // Display error if login failed
         const urlParams = new URLSearchParams(window.location.search);
         const errorMessage = document.getElementById('error-message');
       
         if (urlParams.get('error') === '1') {
-          errorMessage.style.display = 'block';
-          errorMessage.innerText = 'Incorrect email or password. Please try again.';
+            errorMessage.style.display = 'block';
+            errorMessage.innerText = 'Incorrect username or password. Please try again.';
         }
-      </script>
-      
+    </script>
 </body>
 </html>

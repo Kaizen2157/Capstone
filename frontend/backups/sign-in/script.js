@@ -98,3 +98,45 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize state - container should be hidden by default
     securityContainer.classList.remove('active');
 });
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Security questions toggle
+    const securityCheckbox = document.getElementById('enableSecurity');
+    const securityContainer = document.getElementById('securityQuestionsContainer');
+    
+    if (securityCheckbox && securityContainer) {
+        securityCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                securityContainer.classList.add('active');
+                document.querySelectorAll('.security-questions select, .security-questions input[type="text"]').forEach(el => {
+                    el.disabled = false;
+                    el.required = true;
+                });
+            } else {
+                securityContainer.classList.remove('active');
+                document.querySelectorAll('.security-questions select, .security-questions input[type="text"]').forEach(el => {
+                    el.disabled = true;
+                    el.required = false;
+                    el.value = "";
+                });
+            }
+        });
+        
+        // Initialize state
+        securityContainer.classList.remove('active');
+    }
+
+    // Responsive adjustments
+    function handleResponsive() {
+        const form = document.querySelector('.wrapper form');
+        if (window.innerWidth < 768) {
+            // Mobile-specific adjustments
+        } else {
+            // Desktop-specific adjustments
+        }
+    }
+    
+    // Run on load and resize
+    handleResponsive();
+    window.addEventListener('resize', handleResponsive);
+});

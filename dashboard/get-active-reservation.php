@@ -9,6 +9,8 @@ $username = "root";
 $password = "";
 $database = "parking_system";
 
+$response = ['success' => false, 'message' => 'Unknown error'];
+
 try {
     $conn = new mysqli($host, $username, $password, $database);
     
@@ -20,23 +22,28 @@ try {
         throw new Exception("Session expired");
     }
 
+    $current_user_id = $_SESSION['user_id'];
+
     // Set timezone for MySQL
-    if (!$conn->query("SET time_zone = '+08:00'")) {
-        throw new Exception("Failed to set timezone");
-    }
+    $conn->query("SET time_zone = '+08:00'");
 
     $current_time = date('Y-m-d H:i:s');
 
-    // Get ALL active reservations (current and future)
+    // Get ALL active reservations (current and future) with user info
     $query = "SELECT 
                 r.slot_number, 
+                r.user_id,
                 r.start_date,
                 r.start_time,
                 r.end_time,
                 CASE 
                     WHEN ? BETWEEN TIMESTAMP(r.start_date, r.start_time) AND TIMESTAMP(r.start_date, r.end_time) THEN 'active'
                     ELSE 'reserved'
-                END AS status
+                END AS status,
+                CASE
+                    WHEN r.user_id = ? THEN 1
+                    ELSE 0
+                END AS is_current_user
               FROM reservations r
               WHERE r.status = 'reserved'
               AND TIMESTAMP(r.start_date, r.end_time) > ?
@@ -47,7 +54,7 @@ try {
         throw new Exception("Prepare failed: " . $conn->error);
     }
 
-    if (!$stmt->bind_param("ss", $current_time, $current_time)) {
+    if (!$stmt->bind_param("sis", $current_time, $current_user_id, $current_time)) {
         throw new Exception("Binding parameters failed");
     }
 
@@ -64,7 +71,8 @@ try {
             'date' => $row['start_date'],
             'start_time' => $row['start_time'],
             'end_time' => $row['end_time'],
-            'status' => $row['status']
+            'status' => $row['status'],
+            'is_current_user' => $row['is_current_user']
         ];
     }
 
@@ -75,7 +83,8 @@ try {
         'success' => true,
         'reservations' => $reservations,
         'current_time' => $current_time,
-        'count' => count($reservations)
+        'count' => count($reservations),
+        'current_user_id' => $current_user_id
     ]);
 
 } catch (Exception $e) {

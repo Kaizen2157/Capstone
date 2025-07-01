@@ -616,7 +616,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 if (!isPastReservation && !isTooLateToStart && r.start_button_clicked !== 1) {
                     buttonsHTML += `<button id="cancel-reservation-btn" class="btn btn-danger me-2">Cancel Reservation</button>`;
-                    buttonsHTML += `<button id="start-now-btn" class="btn btn-success">Start Now</button>`;
+                    // buttonsHTML += `<button id="start-now-btn" class="btn btn-success">Start Now</button>`;
                 }
 
                 section.innerHTML = `
@@ -848,15 +848,21 @@ function updateReservationMonitor() {
                     const startTime = new Date(`1970-01-01T${res.start_time}`).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     const endTime = new Date(`1970-01-01T${res.end_time}`).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
                     
-                    const rowStyle = res.status === 'active' 
+                    // Apply red background only for current user's reservations
+                    const rowStyle = res.is_current_user 
                         ? 'background-color: #ffe8e8;' 
-                        : 'background-color: #e8f4ff;';
+                        : 'background-color: #ffffff;';
+                    
+                    // Make current user's reservations more prominent
+                    const statusText = res.is_current_user 
+                        ? `<strong>${res.status} (Yours)</strong>` 
+                        : res.status;
                     
                     html += `<tr style="border-bottom: 1px solid #eee; ${rowStyle}">`;
                     html += `<td style="padding: 8px;">${res.slot}</td>`;
                     html += `<td style="padding: 8px;">${formattedDate}</td>`;
                     html += `<td style="padding: 8px;">${startTime} - ${endTime}</td>`;
-                    html += `<td style="padding: 8px; text-transform: capitalize;">${res.status}</td>`;
+                    html += `<td style="padding: 8px; text-transform: capitalize;">${statusText}</td>`;
                     html += `</tr>`;
                 } catch (e) {
                     console.error('Error formatting reservation:', res, e);
@@ -910,3 +916,93 @@ const refreshInterval = setInterval(() => {
 window.addEventListener('beforeunload', () => {
     clearInterval(refreshInterval);
 });
+
+
+
+// Responsive initialization
+function initResponsive() {
+    // Adjust table headers for mobile
+    if (window.innerWidth < 768) {
+        document.querySelectorAll('.reservation-history th').forEach(th => {
+            const text = th.textContent;
+            if (text.length > 10) {
+                th.setAttribute('data-short', text.split(' ')[0]);
+            }
+        });
+    }
+    
+    // Balance display formatting
+    const balanceDisplay = document.getElementById('balance-display');
+    if (balanceDisplay && window.innerWidth < 576) {
+        const balance = balanceDisplay.textContent;
+        if (balance.length > 12) {
+            balanceDisplay.textContent = balance.replace('Balance: ', '');
+        }
+    }
+}
+
+// Run on load and resize
+window.addEventListener('DOMContentLoaded', initResponsive);
+window.addEventListener('resize', initResponsive);
+
+// Add this to your existing JavaScript
+
+// Make reservation monitor collapsible on small screens
+document.addEventListener('DOMContentLoaded', function() {
+    // Create toggle button for mobile
+    const monitor = document.getElementById('reservation-monitor');
+    if (window.innerWidth <= 400) {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.className = 'toggle-monitor';
+        toggleBtn.innerHTML = '<i class="bx bx-info-circle"></i>';
+        toggleBtn.addEventListener('click', function() {
+            monitor.classList.toggle('collapsed');
+        });
+        monitor.insertBefore(toggleBtn, monitor.firstChild);
+        monitor.classList.add('collapsed');
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth <= 400) {
+            if (!document.querySelector('.toggle-monitor')) {
+                const toggleBtn = document.createElement('button');
+                toggleBtn.className = 'toggle-monitor';
+                toggleBtn.innerHTML = '<i class="bx bx-info-circle"></i>';
+                toggleBtn.addEventListener('click', function() {
+                    monitor.classList.toggle('collapsed');
+                });
+                monitor.insertBefore(toggleBtn, monitor.firstChild);
+            }
+        } else {
+            const toggleBtn = document.querySelector('.toggle-monitor');
+            if (toggleBtn) {
+                toggleBtn.remove();
+            }
+            monitor.classList.remove('collapsed');
+        }
+    });
+
+    // Adjust slot sizes on load
+    adjustSlotSizes();
+    window.addEventListener('resize', adjustSlotSizes);
+});
+
+// Function to adjust slot sizes dynamically
+function adjustSlotSizes() {
+    const slots = document.querySelectorAll('.slotone > p');
+    if (slots.length === 0) return;
+
+    const containerWidth = document.querySelector('.slotone').clientWidth;
+    const isMobile = window.innerWidth < 768;
+    
+    slots.forEach(slot => {
+        if (isMobile) {
+            slot.style.width = 'calc(50% - 20px)';
+            slot.style.height = '15vh';
+        } else {
+            slot.style.width = '';
+            slot.style.height = '';
+        }
+    });
+}

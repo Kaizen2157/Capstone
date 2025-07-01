@@ -697,3 +697,308 @@ footer{
 #balanceAlertModal .btn:hover {
     opacity: 0.9;
 }
+
+/* General responsive adjustments */
+@media (max-width: 1200px) {
+    .bookslot .book .slots .slotone > p {
+        width: 13vw;
+    }
+}
+@media (max-width: 992px) {
+    .bookslot .book {
+        flex-direction: column;
+    }
+    
+    .bookslot .book .slots,
+    #booking-details {
+        width: 100% !important;
+    }
+    
+    .bookslot .book .slots .slotone {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .bookslot .book .slots .slotone > p {
+        width: 25vw;
+        height: 20vh;
+        margin: 10px;
+    }
+    
+    #booking-details h3 {
+        width: 100% !important;
+    }
+    
+    .details .info label,
+    .details .time label {
+        width: 100% !important;
+    }
+    
+    .details .info input,
+    .details .time input {
+        width: 100% !important;
+    }
+    
+    /* Reservation monitor */
+    #reservation-monitor {
+        width: 35vw;
+    }
+}
+
+@media (max-width: 768px) {
+    nav .logo img {
+        width: 25vw;
+    }
+    
+    .bookslot .hint {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+    
+    .bookslot .book .slots .slotone > p {
+        width: 30vw;
+        height: 15vh;
+    }
+    
+    /* Reservation monitor */
+    #reservation-monitor {
+        width: 50vw;
+        bottom: 10px;
+        left: 10px;
+        padding: 10px;
+    }
+    
+    #reservation-monitor h4 {
+        font-size: 1rem;
+    }
+    
+    #reservation-monitor table {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 576px) {
+    nav {
+        padding: 0 10px;
+    }
+    
+    nav .logo img {
+        width: 40vw;
+    }
+    
+    .bookslot {
+        padding: 15px;
+    }
+    
+    .bookslot .book .slots .slotone > p {
+        width: 40vw;
+        height: 12vh;
+        font-size: 1rem;
+    }
+    
+    #booking-details {
+        padding: 15px;
+    }
+    
+    .details .info .name,
+    .details .info .other {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .time span {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    
+    /* Balance display */
+    #balance-display {
+        font-size: 0.9rem;
+    }
+    
+    /* Reservation monitor - hide on very small screens */
+    #reservation-monitor {
+        width: 90vw;
+        max-height: 30vh;
+        overflow-y: auto;
+    }
+    
+    #reservation-monitor h4 {
+        font-size: 0.9rem;
+    }
+    
+    #reservation-monitor table {
+        font-size: 11px;
+    }
+    
+    #reservation-monitor th,
+    #reservation-monitor td {
+        padding: 4px 6px;
+    }
+}
+
+/* Add this for the reservation monitor */
+.reservation-monitor {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+    padding: 15px;
+    transition: all 0.3s ease;
+}
+
+/* Make the monitor collapsible on small screens */
+@media (max-width: 400px) {
+    .reservation-monitor.collapsed {
+        width: 40px;
+        height: 40px;
+        overflow: hidden;
+        padding: 5px;
+    }
+    
+    .reservation-monitor.collapsed #monitor-content,
+    .reservation-monitor.collapsed h4 {
+        display: none;
+    }
+    
+    .reservation-monitor.collapsed #refresh-monitor {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
+}
+
+/* Add toggle button for mobile */
+.reservation-monitor .toggle-monitor {
+    display: none;
+}
+
+@media (max-width: 400px) {
+    .reservation-monitor .toggle-monitor {
+        display: block;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+}
+
+/* Logo Styles */
+.logo-container {
+    display: flex;
+    align-items: center;
+    height: 10vh; /* Adjust based on your nav height */
+    max-height: 80px; /* Prevent logo from becoming too tall */
+    padding: 5px 0;
+}
+
+.logo-img {
+    height: 100%; /* Make height responsive to container */
+    width: auto; /* Maintain aspect ratio */
+    max-width: 200px; /* Maximum logo width */
+    object-fit: contain; /* Ensure whole logo is visible */
+    mix-blend-mode: multiply;
+    transition: all 0.3s ease; /* Smooth resizing */
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    .logo-img {
+        max-width: 180px;
+    }
+}
+
+@media (max-width: 992px) {
+    .logo-img {
+        max-width: 170px;
+    }
+}
+
+@media (max-width: 768px) {
+    .logo-container {
+        height: 11vh;
+    }
+    .logo-img {
+        max-width: 160px;
+    }
+}
+
+@media (max-width: 576px) {
+    .logo-container {
+        height: 10vh;
+        max-height: 80px;
+    }
+    .logo-img {
+        max-width: 140px;
+    }
+}
+
+@media (max-width: 400px) {
+    .logo-img {
+        max-width: 130px;
+    }
+}
+
+@media (max-width: 667px) {
+    nav .btn p:nth-child(1){
+      display: none;
+    }
+}
+
+@media (max-width: 554px) {
+    .bookslot .head p:nth-child(1){
+      text-align: center;
+    }
+    nav .btn .user-dropdown .drop a, .dropdown-menu a{
+      font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 992px) {
+    #booking-form .book .slots{
+      padding: 30px 15px;
+    }
+
+    #booking-form .book .slots .slotone .slot{
+      height: 35vh;
+      width: 18vw;
+    }
+
+    #booking-form{
+      padding: 15px;
+    }
+
+    body{
+      overflow-x: hidden;
+    }
+}
+
+@media (max-width: 897px) {
+    #reservation-monitor>h4{
+      font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 680px) {
+  .reservation-monitor .monitor{
+    width: 25vw;
+    overflow-x:hidden;
+  }
+  #monitor-content{
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 545px) {
+    .reservation-monitor .monitor{
+        width: 500000000vw;
+    }
+}

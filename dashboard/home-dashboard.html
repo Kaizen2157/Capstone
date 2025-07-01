@@ -18,7 +18,9 @@
     <nav>
         <div class="logo">
             <a href="home-dashboard.html">
-                <img src="../Screenshot 2025-05-29 221245.png" alt="loading...">
+                <div class="logo-container">
+                    <img src="../Screenshot 2025-05-29 221245.png" alt="loading..." class="logo-img">
+                </div>
             </a>
         </div>
         <div class="btn">
@@ -28,7 +30,7 @@
             <div class="user-dropdown">
                 <div class="drop">
                     <a href="dashboard.html">Dashboard</a>
-                    <a href="docs.html" target="_blank">Docs</a>
+                    <!-- <a href="docs.html" target="_blank">Docs</a> -->
                     <p id="username-display">User</p>
                 </div>
                 <div class="dropdown-menu" id="dropdown-menu">
@@ -38,7 +40,7 @@
         </div>
     </nav>
 
-    <div class="bookslot">
+    <div class="bookslot container-fluid">
         <div class="head d-flex justify-content-between align-items-center flex-wrap gap-3">
             <p class="mb-0 fs-4 fw-semibold">BOOK YOUR SLOT</p>
             <div class="hint d-flex gap-4">
@@ -58,8 +60,8 @@
         </div>
     
         <form id="booking-form" action="home-dashboard.php" method="POST">
-            <div class="book">
-                <div class="slots">
+            <div class="book row g-3">
+                <div class="slots col-md-6 col-lg-5">
                     <div class="slotone">
                         <p class="slot available" data-slot="1" id="slot-1">1</p>
                         <p class="slot available" data-slot="2" id="slot-2">2</p>
@@ -67,7 +69,7 @@
                     </div>
                 </div>
     
-                <div id="booking-details">
+                <div id="booking-details" class="col-md-6 col-lg-7">
                     <h3>Booking Details</h3>
                     <div class="details">
                         <div class="info">
@@ -168,9 +170,9 @@
   </div>
 </div>
 
-<div id="reservation-monitor" style="position: fixed; bottom: 20px; left: 20px; width: 25vw; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); z-index: 1000; padding: 15px;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <h4 style="margin: 0;">Live Slot Status</h4>
+<div id="reservation-monitor" style="position: fixed; bottom: 20px; left: 20px; width: 25vw; background: white; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.3); z-index: 1000; padding: 15px;" class="reservation-monitor">
+    <div class="monitor" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h4 style="margin: 0; font-weight: 700;">Live Slot Status</h4>
         <button id="refresh-monitor" style="background: none; border: none; cursor: pointer;">
             <i class='bx bx-refresh'></i>
         </button>
